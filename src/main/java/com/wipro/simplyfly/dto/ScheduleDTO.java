@@ -3,10 +3,17 @@ package com.wipro.simplyfly.dto;
 import java.time.LocalDateTime;
 
 public class ScheduleDTO {
+	private Long id;
 	private LocalDateTime departure_time;
 	private LocalDateTime arrival_time;
 	private int total_seats;
 	private int available_seats;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public LocalDateTime getDeparture_time() {
 		return departure_time;
 	}
@@ -21,7 +28,6 @@ public class ScheduleDTO {
 	}
 	public int getTotal_seats() {
 		return total_seats;
-		
 	}
 	public void setTotal_seats(int total_seats) {
 		this.total_seats = total_seats;
