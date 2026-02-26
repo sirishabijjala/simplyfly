@@ -3,14 +3,26 @@ package com.wipro.simplyfly.entity;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 @Entity
-@Table(name = "simplyflydb")
+@Table(name = "schedule")
 public class Schedule {
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private LocalDateTime departure_time;
 	private LocalDateTime arrival_time;
 	private int total_seats;
 	private int available_seats;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	public LocalDateTime getDeparture_time() {
 		return departure_time;
 	}
@@ -35,8 +47,10 @@ public class Schedule {
 	public void setAvailable_seats(int available_seats) {
 		this.available_seats = available_seats;
 	}
-	public Schedule(LocalDateTime departure_time, LocalDateTime arrival_time, int total_seats, int available_seats) {
+	public Schedule(Long id, LocalDateTime departure_time, LocalDateTime arrival_time, int total_seats,
+			int available_seats) {
 		super();
+		this.id = id;
 		this.departure_time = departure_time;
 		this.arrival_time = arrival_time;
 		this.total_seats = total_seats;
@@ -44,7 +58,6 @@ public class Schedule {
 	}
 	public Schedule() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 }
