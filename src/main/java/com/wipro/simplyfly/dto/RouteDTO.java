@@ -1,7 +1,5 @@
 package com.wipro.simplyfly.dto;
 
-import jakarta.persistence.Column;
-
 public class RouteDTO {
 	
 	    private int id;
