@@ -29,6 +29,19 @@ public class Flight {
 
     public Flight() {
     }
+    
+
+	public Flight(Long id, String flightNumber, String flightName, FlightOwner flightowner, String checkInBaggage,
+			String cabinBaggage) {
+		super();
+		this.id = id;
+		this.flightNumber = flightNumber;
+		this.flightName = flightName;
+		this.flightowner = flightowner;
+		this.checkInBaggage = checkInBaggage;
+		this.cabinBaggage = cabinBaggage;
+	}
+
 
 	public Long getId() {
 		return id;
@@ -76,6 +89,20 @@ public class Flight {
 
 	public void setCabinBaggage(String cabinBaggage) {
 		this.cabinBaggage = cabinBaggage;
+	}
+
+	public FlightOwner getFlightowner() {
+		return flightowner;
+	}
+
+	public void setFlightowner(FlightOwner flightowner) {
+		this.flightowner = flightowner;
+	}
+
+	@Override
+	public String toString() {
+		return "Flight [id=" + id + ", flightNumber=" + flightNumber + ", flightName=" + flightName + ", flightowner="
+				+ flightowner + ", checkInBaggage=" + checkInBaggage + ", cabinBaggage=" + cabinBaggage + "]";
 	}
 
     
