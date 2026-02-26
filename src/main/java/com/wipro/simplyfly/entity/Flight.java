@@ -1,7 +1,20 @@
 package com.wipro.simplyfly.entity;
 
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "flights")
@@ -19,25 +32,35 @@ public class Flight {
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
-    private FlightOwner flightowner;
+    private FlightOwner flightOwner;
 
     @Column(name = "check_in_baggage")
     private String checkInBaggage;
 
     @Column(name = "cabin_baggage")
     private String cabinBaggage;
+    
+    @ManyToOne
+    @JoinColumn(name="route_id", nullable=false)
+    private Route route;
+    
+    @OneToMany(mappedBy="flight", cascade=CascadeType.ALL)
+    @JsonIgnore
+    private List<Schedule> schedules;
+    
 
     public Flight() {
     }
     
 
-	public Flight(Long id, String flightNumber, String flightName, FlightOwner flightowner, String checkInBaggage,
+	public Flight(Long id, String flightNumber, String flightName, FlightOwner flightOwner, Route route,String checkInBaggage,
 			String cabinBaggage) {
 		super();
 		this.id = id;
 		this.flightNumber = flightNumber;
 		this.flightName = flightName;
-		this.flightowner = flightowner;
+		this.flightOwner = flightOwner;
+		this.route = route;
 		this.checkInBaggage = checkInBaggage;
 		this.cabinBaggage = cabinBaggage;
 	}
@@ -67,13 +90,7 @@ public class Flight {
 		this.flightName = flightName;
 	}
 
-	public FlightOwner getOwner() {
-		return flightowner;
-	}
 
-	public void setOwner(FlightOwner owner) {
-		this.flightowner = owner;
-	}
 
 	public String getCheckInBaggage() {
 		return checkInBaggage;
@@ -91,18 +108,38 @@ public class Flight {
 		this.cabinBaggage = cabinBaggage;
 	}
 
-	public FlightOwner getFlightowner() {
-		return flightowner;
+	public FlightOwner getFlightOwner() {
+		return flightOwner;
 	}
 
-	public void setFlightowner(FlightOwner flightowner) {
-		this.flightowner = flightowner;
+	public void setFlightOwner(FlightOwner flightOwner) {
+		this.flightOwner = flightOwner;
 	}
+  
+	public Route getRoute() {
+		return route;
+	}
+
+
+	public void setRoute(Route route) {
+		this.route = route;
+	}
+
+
+	public List<Schedule> getSchedules() {
+		return schedules;
+	}
+
+
+	public void setSchedules(List<Schedule> schedules) {
+		this.schedules = schedules;
+	}
+
 
 	@Override
 	public String toString() {
-		return "Flight [id=" + id + ", flightNumber=" + flightNumber + ", flightName=" + flightName + ", flightowner="
-				+ flightowner + ", checkInBaggage=" + checkInBaggage + ", cabinBaggage=" + cabinBaggage + "]";
+		return "Flight [id=" + id + ", flightNumber=" + flightNumber + ", flightName=" + flightName + ", flightOwner="
+				+ flightOwner + ", checkInBaggage=" + checkInBaggage + ", cabinBaggage=" + cabinBaggage + "]";
 	}
 
     

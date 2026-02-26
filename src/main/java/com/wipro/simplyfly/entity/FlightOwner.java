@@ -1,5 +1,6 @@
 package com.wipro.simplyfly.entity;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 
@@ -18,7 +19,7 @@ public class FlightOwner {
     private String email;
 
     // One Owner → Many Flights
-    @OneToMany(mappedBy = "flightowner", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "flightOwner", cascade = CascadeType.ALL)
     private List<Flight> flights;
 
     public FlightOwner() {
