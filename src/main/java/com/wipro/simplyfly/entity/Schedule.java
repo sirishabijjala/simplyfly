@@ -2,62 +2,94 @@ package com.wipro.simplyfly.entity;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 @Entity
 @Table(name = "schedule")
 public class Schedule {
-	@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private LocalDateTime departure_time;
-	private LocalDateTime arrival_time;
-	private int total_seats;
-	private int available_seats;
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public LocalDateTime getDeparture_time() {
-		return departure_time;
-	}
-	public void setDeparture_time(LocalDateTime departure_time) {
-		this.departure_time = departure_time;
-	}
-	public LocalDateTime getArrival_time() {
-		return arrival_time;
-	}
-	public void setArrival_time(LocalDateTime arrival_time) {
-		this.arrival_time = arrival_time;
-	}
-	public int getTotal_seats() {
-		return total_seats;
-	}
-	public void setTotal_seats(int total_seats) {
-		this.total_seats = total_seats;
-	}
-	public int getAvailable_seats() {
-		return available_seats;
-	}
-	public void setAvailable_seats(int available_seats) {
-		this.available_seats = available_seats;
-	}
-	public Schedule(Long id, LocalDateTime departure_time, LocalDateTime arrival_time, int total_seats,
-			int available_seats) {
-		super();
-		this.id = id;
-		this.departure_time = departure_time;
-		this.arrival_time = arrival_time;
-		this.total_seats = total_seats;
-		this.available_seats = available_seats;
-	}
-	public Schedule() {
-		super();
-	}
-	
+    private Long id;
+
+    @Column(name = "departure_time", nullable = false)
+    private LocalDateTime departureTime;
+
+    @Column(name = "arrival_time", nullable = false)
+    private LocalDateTime arrivalTime;
+
+    @Column(name = "total_seats", nullable = false)
+    private int totalSeats;
+
+    @Column(name = "available_seats", nullable = false)
+    private int availableSeats;
+
+    // 🔹 Many Schedules belong to One Flight
+    @ManyToOne
+    @JoinColumn(name = "flight_id", nullable = false)
+
+    // Constructors
+    public Schedule() {}
+
+    public Schedule(LocalDateTime departureTime, LocalDateTime arrivalTime,
+                    int totalSeats, int availableSeats, Flight flight) {
+        this.departureTime = departureTime;
+        this.arrivalTime = arrivalTime;
+        this.totalSeats = totalSeats;
+        this.availableSeats = availableSeats;
+        this.flight = flight;
+    }
+
+    // Getters and Setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDateTime getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(LocalDateTime departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public int getTotalSeats() {
+        return totalSeats;
+    }
+
+    public void setTotalSeats(int totalSeats) {
+        this.totalSeats = totalSeats;
+    }
+
+    public int getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public void setAvailableSeats(int availableSeats) {
+        this.availableSeats = availableSeats;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void setFlight(Flight flight) {
+        this.flight = flight;
+    }
 }
