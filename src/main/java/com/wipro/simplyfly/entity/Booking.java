@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,16 +16,16 @@ import jakarta.persistence.Table;
 @Table(name="bookings")
 public class Booking {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id; //pk
 	@Column(unique = true)
 	private String bookingReference;
-	@ManyToOne
-	@JoinColumn(name="user_id")
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="user_id",nullable=false)
 	private User user;//fk
-	@ManyToOne
-	@JoinColumn(name="flight_id")
-	private Flight flight; //fk
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="schedule_id",nullable=false)
+	private Schedule schedule; //fk
 	private int numberOfSeats;
 	private double totalAmount;
 	private String bookingStatus;
@@ -33,13 +34,13 @@ public class Booking {
 	public Booking() {
 		super();
 	}
-	public Booking(Long id, String bookingReference, User user, Flight flight, int numberOfSeats, double totalAmount,
-			String bookingStatus, LocalDateTime bookingDate) {
+	public Booking(Long id, String bookingReference, User user, Schedule schedule, int numberOfSeats,
+			double totalAmount, String bookingStatus, LocalDateTime bookingDate) {
 		super();
 		this.id = id;
 		this.bookingReference = bookingReference;
 		this.user = user;
-		this.flight = flight;
+		this.schedule = schedule;
 		this.numberOfSeats = numberOfSeats;
 		this.totalAmount = totalAmount;
 		this.bookingStatus = bookingStatus;
@@ -63,11 +64,11 @@ public class Booking {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	public Flight getFlight() {
-		return flight;
+	public Schedule getSchedule() {
+		return schedule;
 	}
-	public void setFlight(Flight flight) {
-		this.flight = flight;
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
 	}
 	public int getNumberOfSeats() {
 		return numberOfSeats;
@@ -95,8 +96,10 @@ public class Booking {
 	}
 	@Override
 	public String toString() {
-		return "Booking [id=" + id + ", bookingReference=" + bookingReference + ", user=" + user + ", flight=" + flight
-				+ ", numberOfSeats=" + numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus="
+		return "Booking [id=" + id + ", bookingReference=" + bookingReference + ", user=" + user + ", schedule="
+				+ schedule + ", numberOfSeats=" + numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus="
 				+ bookingStatus + ", bookingDate=" + bookingDate + "]";
 	}
+	
+	
 }

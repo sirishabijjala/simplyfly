@@ -12,6 +12,7 @@ public class BookingResponseDTO {
 	private double totalAmount;
 	private String bookingStatus;
 	private LocalDateTime bookingDate;
+	private String userName;
 	public BookingResponseDTO() {
 		super();
 	}
@@ -82,6 +83,13 @@ public class BookingResponseDTO {
 	}
 	public void setBookingDate(LocalDateTime bookingDate) {
 		this.bookingDate = bookingDate;
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 	@Override
 	public String toString() {

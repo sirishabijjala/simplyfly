@@ -7,6 +7,7 @@ public interface ITransactionService {
 	 TransactionResponseDTO makePayment(Long bookingId,
              TransactionRequestDTO request);
 
-TransactionResponseDTO getTransaction(Long transactionId);
+TransactionResponseDTO getTransaction(Long id);
+TransactionResponseDTO refundPayment(Long bookingId);
 
 }
