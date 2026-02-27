@@ -37,28 +37,53 @@ public class AdminServiceImp implements IAdminService {
 	@Autowired
 	BookingRepository bookingRepo;
 
+
 	@Override
 	public List<UserDTO> manageUsers() {
-		// TODO Auto-generated method stub
-		return null;
+		List<User> users = userRepo.findAll();
+		List<UserDTO> dtos = new ArrayList<>();
+		for (User u : users) {
+			UserDTO d = new UserDTO();
+			d.setId(u.getId());
+			d.setName(u.getName());
+			d.setEmail(u.getEmail());
+			d.setPhone(u.getPhone());
+			d.setRole(u.getRole());
+			dtos.add(d);
+		}
+		return dtos;
 	}
 
 	@Override
 	public UserDTO addUser(UserDTO userDTO) {
-		// TODO Auto-generated method stub
-		return null;
+		User u = new User();
+		u.setName(userDTO.getName());
+		u.setEmail(userDTO.getEmail());
+		u.setPassword(userDTO.getPassword());
+		u.setPhone(userDTO.getPhone());
+		u.setRole(userDTO.getRole());
+
+		User saved = userRepo.save(u);
+		userDTO.setId(saved.getId());
+		return userDTO;
 	}
 
 	@Override
 	public UserDTO updateUser(Long userId, UserDTO userDTO) {
-		// TODO Auto-generated method stub
+		User u = userRepo.findById(userId).orElse(null);
+		if (u != null) {
+			u.setName(userDTO.getName());
+			u.setPhone(userDTO.getPhone());
+			userRepo.save(u);
+			return userDTO;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean deleteUser(Long userId) {
-		// TODO Auto-generated method stub
-		return false;
+		userRepo.deleteById(userId);
+		return true;
 	}
 
 	@Override
@@ -122,4 +147,5 @@ public class AdminServiceImp implements IAdminService {
 	}
 
 
+	
 }
