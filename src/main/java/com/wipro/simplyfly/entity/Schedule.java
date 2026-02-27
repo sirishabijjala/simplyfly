@@ -1,63 +1,111 @@
 package com.wipro.simplyfly.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 @Entity
-@Table(name = "schedule")
+@Table(name = "schedules")
 public class Schedule {
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private LocalDateTime departure_time;
-	private LocalDateTime arrival_time;
-	private int total_seats;
-	private int available_seats;
+
+	private LocalDate departureDate;
+
+	private LocalTime departureTime;
+
+	private double fare;
+
+	private int availableSeats;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "flight_id", nullable = false)
+	private Flight flight;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "route_id", nullable = false)
+	private Route route;
+
+	public Schedule() {
+	}
+
+	public Schedule(LocalDate departureDate, LocalTime departureTime, double fare, int availableSeats, Flight flight,
+			Route route) {
+		this.departureDate = departureDate;
+		this.departureTime = departureTime;
+		this.fare = fare;
+		this.availableSeats = availableSeats;
+		this.flight = flight;
+		this.route = route;
+	}
+
 	public Long getId() {
 		return id;
 	}
-	public void setId(Long id) {
-		this.id = id;
+
+	public LocalDate getDepartureDate() {
+		return departureDate;
 	}
-	public LocalDateTime getDeparture_time() {
-		return departure_time;
+
+	public void setDepartureDate(LocalDate departureDate) {
+		this.departureDate = departureDate;
 	}
-	public void setDeparture_time(LocalDateTime departure_time) {
-		this.departure_time = departure_time;
+
+	public LocalTime getDepartureTime() {
+		return departureTime;
 	}
-	public LocalDateTime getArrival_time() {
-		return arrival_time;
+
+	public void setDepartureTime(LocalTime departureTime) {
+		this.departureTime = departureTime;
 	}
-	public void setArrival_time(LocalDateTime arrival_time) {
-		this.arrival_time = arrival_time;
+
+	public double getFare() {
+		return fare;
 	}
-	public int getTotal_seats() {
-		return total_seats;
+
+	public void setFare(double fare) {
+		this.fare = fare;
 	}
-	public void setTotal_seats(int total_seats) {
-		this.total_seats = total_seats;
+
+	public int getAvailableSeats() {
+		return availableSeats;
 	}
-	public int getAvailable_seats() {
-		return available_seats;
+
+	public void setAvailableSeats(int availableSeats) {
+		this.availableSeats = availableSeats;
 	}
-	public void setAvailable_seats(int available_seats) {
-		this.available_seats = available_seats;
+
+	public Flight getFlight() {
+		return flight;
 	}
-	public Schedule(Long id, LocalDateTime departure_time, LocalDateTime arrival_time, int total_seats,
-			int available_seats) {
-		super();
-		this.id = id;
-		this.departure_time = departure_time;
-		this.arrival_time = arrival_time;
-		this.total_seats = total_seats;
-		this.available_seats = available_seats;
+
+	public void setFlight(Flight flight) {
+		this.flight = flight;
 	}
-	public Schedule() {
-		super();
+
+	public Route getRoute() {
+		return route;
 	}
-	
+
+	public void setRoute(Route route) {
+		this.route = route;
+	}
+
+	@Override
+	public String toString() {
+		return "Schedule{" + "id=" + id + ", departureDate=" + departureDate + ", departureTime=" + departureTime
+				+ ", fare=" + fare + ", availableSeats=" + availableSeats + ", flightId="
+				+ (flight != null ? flight.getId() : null) + ", routeId=" + (route != null ? route.getId() : null)
+				+ '}';
+	}
 }
