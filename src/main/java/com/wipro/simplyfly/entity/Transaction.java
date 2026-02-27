@@ -18,7 +18,7 @@ public class Transaction {
 	@Column(unique = true)
 	private String transactionId;
 	@OneToOne
-	@JoinColumn(name="id")
+	@JoinColumn(name="booking_id")
 	private Booking booking;
 	private double amount;
 	private String paymentMethod;

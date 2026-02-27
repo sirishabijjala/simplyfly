@@ -20,10 +20,10 @@ public class Booking {
 	@Column(unique = true)
 	private String bookingReference;
 	@ManyToOne
-	@JoinColumn(name="id")
+	@JoinColumn(name="user_id")
 	private User user;//fk
 	@ManyToOne
-	@JoinColumn(name="id")
+	@JoinColumn(name="flight_id")
 	private Flight flight; //fk
 	private int numberOfSeats;
 	private double totalAmount;

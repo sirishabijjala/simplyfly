@@ -8,7 +8,7 @@ import com.wipro.simplyfly.entity.User;
 import com.wipro.simplyfly.repository.UserRepository;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements IUserService {
 
     @Autowired
     private UserRepository userRepository;
