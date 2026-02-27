@@ -99,9 +99,4 @@ public class Booking {
 				+ ", numberOfSeats=" + numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus="
 				+ bookingStatus + ", bookingDate=" + bookingDate + "]";
 	}
-	
-	
-	
-	
-
 }
