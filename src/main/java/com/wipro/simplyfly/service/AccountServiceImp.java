@@ -1,7 +1,6 @@
 package com.wipro.simplyfly.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +11,7 @@ import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.repository.AccountRepository;
 @Service
 public class AccountServiceImp implements AccountService{
-	
+
 	   @Autowired
 	    private AccountRepository repository;
 

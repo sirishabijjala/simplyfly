@@ -37,7 +37,6 @@ public class AdminServiceImp implements IAdminService {
 	@Autowired
 	BookingRepository bookingRepo;
 
-
 	@Override
 	public List<UserDTO> manageUsers() {
 		List<User> users = userRepo.findAll();
@@ -88,64 +87,125 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public List<FlightOwnerDTO> manageFlightOwners() {
-		// TODO Auto-generated method stub
-		return null;
+		List<FlightOwner> owners = ownerRepo.findAll();
+		List<FlightOwnerDTO> dtos = new ArrayList<>();
+		for (FlightOwner o : owners) {
+			FlightOwnerDTO d = new FlightOwnerDTO();
+			d.setId(o.getId());
+			d.setName(o.getName());
+			d.setEmail(o.getEmail());
+			dtos.add(d);
+		}
+		return dtos;
 	}
 
 	@Override
 	public FlightOwnerDTO addFlightOwner(FlightOwnerDTO ownerDTO) {
-		// TODO Auto-generated method stub
-		return null;
+		FlightOwner o = new FlightOwner();
+		o.setName(ownerDTO.getName());
+		o.setEmail(ownerDTO.getEmail());
+
+		FlightOwner saved = ownerRepo.save(o);
+		ownerDTO.setId(saved.getId());
+		return ownerDTO;
 	}
 
 	@Override
 	public FlightOwnerDTO updateFlightOwner(Long ownerId, FlightOwnerDTO ownerDTO) {
-		// TODO Auto-generated method stub
+		FlightOwner o = ownerRepo.findById(ownerId).orElse(null);
+		if (o != null) {
+			o.setName(ownerDTO.getName());
+			ownerRepo.save(o);
+			return ownerDTO;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean deleteFlightOwner(Long ownerId) {
-		// TODO Auto-generated method stub
-		return false;
+		ownerRepo.deleteById(ownerId);
+		return true;
 	}
 
 	@Override
 	public List<RouteDTO> manageRoutes() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Route> routes = routeRepo.findAll();
+		List<RouteDTO> dtos = new ArrayList<>();
+		for (Route r : routes) {
+			RouteDTO d = new RouteDTO();
+			d.setId(r.getId());
+			d.setSource(r.getSource());
+			d.setDestination(r.getDestination());
+			d.setDistance(r.getDistance());
+			d.setEstimatedDuration(r.getEstimatedDuration());
+			dtos.add(d);
+		}
+		return dtos;
 	}
 
 	@Override
 	public RouteDTO addRoute(RouteDTO routeDTO) {
-		// TODO Auto-generated method stub
-		return null;
+		Route r = new Route();
+		r.setSource(routeDTO.getSource());
+		r.setDestination(routeDTO.getDestination());
+		r.setDistance(routeDTO.getDistance());
+		r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+
+		Route saved = routeRepo.save(r);
+		routeDTO.setId(saved.getId());
+		return routeDTO;
 	}
 
 	@Override
 	public RouteDTO updateRoute(int routeId, RouteDTO routeDTO) {
-		// TODO Auto-generated method stub
+		Route r = routeRepo.findById(routeId).orElse(null);
+		if (r != null) {
+			r.setSource(routeDTO.getSource());
+			r.setDestination(routeDTO.getDestination());
+			r.setDistance(routeDTO.getDistance());
+			r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+			routeRepo.save(r);
+			return routeDTO;
+		}
 		return null;
 	}
 
 	@Override
 	public boolean deleteRoute(int routeId) {
-		// TODO Auto-generated method stub
-		return false;
+		routeRepo.deleteById(routeId);
+		return true;
 	}
 
 	@Override
 	public List<BookingResponseDTO> manageBookings() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Booking> bookings = bookingRepo.findAll();
+		List<BookingResponseDTO> dtos = new ArrayList<>();
+
+		for (Booking b : bookings) {
+			BookingResponseDTO d = new BookingResponseDTO();
+			d.setBookingId(b.getId());
+			d.setBookingReference(b.getBookingReference());
+			d.setBookingStatus(b.getBookingStatus());
+			d.setBookingDate(b.getBookingDate());
+			d.setNumberOfSeats(b.getNumberOfSeats());
+			d.setTotalAmount(b.getTotalAmount());
+			d.setFlightName("N/A");
+			d.setOrigin("N/A");
+			d.setDestination("N/A");
+
+			dtos.add(d);
+		}
+		return dtos;
 	}
 
 	@Override
 	public boolean cancelBooking(Long bookingId) {
-		// TODO Auto-generated method stub
+		Booking b = bookingRepo.findById(bookingId).orElse(null);
+		if (b != null) {
+			b.setBookingStatus("CANCELLED");
+			bookingRepo.save(b);
+			return true;
+		}
 		return false;
 	}
-
-
-	
 }

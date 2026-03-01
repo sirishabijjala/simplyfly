@@ -9,7 +9,7 @@ public class SimplyFlyApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SimplyFlyApplication.class, args);
 	}
-	
-	
+
+
 
 }

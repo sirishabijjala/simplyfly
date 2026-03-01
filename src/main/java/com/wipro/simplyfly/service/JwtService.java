@@ -23,7 +23,7 @@ public class JwtService {
 	public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
 	// BELOW METHODS GENERATE AND GIVEN TOKEN
-	
+
 	public String createToken(Map<String, Object> claims, String username) {
 
 		return Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
@@ -47,10 +47,10 @@ public class JwtService {
 
 	}
 
-	
+
 	// BELOW METHODS HELP TO READ TOKEN FROM CLIENT AND GET Claims , username, exp time etc from token
-	
-	
+
+
 	private Claims extractAllClaims(String token) {
 
 		return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
@@ -60,7 +60,7 @@ public class JwtService {
 	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 
 		final Claims claims = extractAllClaims(token);
-		
+
 
 		return claimsResolver.apply(claims);
 
@@ -74,7 +74,7 @@ public class JwtService {
 	        return extractClaim(token, Claims::getExpiration);
 	    }
 
-	
+
 	    private Boolean isTokenExpired(String token) {
 	        return extractExpiration(token).before(new Date());
 	    }
@@ -82,17 +82,17 @@ public class JwtService {
 	    public Boolean validateToken(String token, UserDetails userDetails) {
 	        final String username = extractUsername(token);
 	        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-	    } 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	    }
+
+
+
+
+
+
+
+
+
+
+
+
 }

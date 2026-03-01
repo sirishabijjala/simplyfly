@@ -64,6 +64,6 @@ public class TransactionResponseDTO {
 				+ ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus + ", transactionDate="
 				+ transactionDate + "]";
 	}
-	
+
 
 }
