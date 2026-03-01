@@ -11,6 +11,8 @@ import com.wipro.simplyfly.dto.LoginRequest;
 import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.service.AccountService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -18,15 +20,15 @@ public class AuthController {
 	@Autowired
     private AccountService accountService;
 
-    // 🔹 Register API
+    //  Register API
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest request) {
+    public String register(@Valid @RequestBody RegisterRequest request) {
         return accountService.register(request);
     }
 
-    // 🔹 Login API
+    //  Login API
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         return accountService.login(request);
     }
 

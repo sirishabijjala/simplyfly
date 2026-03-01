@@ -22,7 +22,7 @@ public class AccountServiceImp implements AccountService{
 	    @Autowired
 	    private JwtService jwtService;
 
-	    // 🔹 REGISTER METHOD
+	    //REGISTER METHOD
 	    @Override
 	    public String register(RegisterRequest request) {
 
@@ -35,7 +35,7 @@ public class AccountServiceImp implements AccountService{
 	        account.setName(request.getName());
 	        account.setEmail(request.getEmail());
 	        account.setPassword(passwordEncoder.encode(request.getPassword()));
-	        account.setRole(request.getRole());   // ROLE_USER / ROLE_ADMIN
+	        account.setRole(request.getRole());   // USER / ADMIN / OWNER
 	        account.setActive(true);
 
 	        repository.save(account);
@@ -43,7 +43,7 @@ public class AccountServiceImp implements AccountService{
 	        return "Account Registered Successfully";
 	    }
 
-	    // 🔹 LOGIN METHOD
+	    //LOGIN METHOD
 	    @Override
 	    public AuthResponse login(LoginRequest request) {
 
