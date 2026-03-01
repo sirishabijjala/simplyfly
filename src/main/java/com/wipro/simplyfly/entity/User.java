@@ -1,8 +1,6 @@
 package com.wipro.simplyfly.entity;
 
 import jakarta.persistence.*;
-
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,7 +31,12 @@ public class User {
 
     private LocalDateTime createdDate;
 
-    // Relationship with Booking
+    // 🔥 OneToOne Relationship with Account
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private Account account;
+
+    // OneToMany Relationship with Booking
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Booking> bookings;
 
@@ -43,7 +46,8 @@ public class User {
         this.createdDate = LocalDateTime.now();
     }
 
-    public User(String name, String email, String password, String phone, String role) {
+    public User(String name, String email, String password,
+                String phone, String role, Account account) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -51,6 +55,7 @@ public class User {
         this.role = role;
         this.enabled = true;
         this.createdDate = LocalDateTime.now();
+        this.account = account;
     }
 
     // ================= GETTERS & SETTERS =================
@@ -117,6 +122,14 @@ public class User {
 
     public void setCreatedDate(LocalDateTime createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public List<Booking> getBookings() {
