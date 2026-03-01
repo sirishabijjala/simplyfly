@@ -1,9 +1,14 @@
 package com.wipro.simplyfly.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.UserDTO;
+import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.entity.User;
 import com.wipro.simplyfly.repository.UserRepository;
 
@@ -13,45 +18,90 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
 
-        // Convert DTO → Entity
-        User user = new User();
-        user.setName(userDTO.getName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
-        user.setPhone(userDTO.getPhone());
-        user.setRole(userDTO.getRole());
-        user.setEnabled(true);
+        Account account = new Account();
+        account.setName(userDTO.getName());
+        account.setEmail(userDTO.getEmail());
+        account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        account.setRole(userDTO.getRole());
+        account.setActive(true);
 
-        // Save into DB
+        User user = new User(
+                userDTO.getName(),
+                userDTO.getEmail(),
+                passwordEncoder.encode(userDTO.getPassword()),
+                userDTO.getPhone(),
+                userDTO.getRole(),
+                account
+        );
+
         User savedUser = userRepository.save(user);
 
-        // Convert Entity → DTO
-        UserDTO responseDTO = new UserDTO();
-        responseDTO.setId(savedUser.getId());
-        responseDTO.setName(savedUser.getName());
-        responseDTO.setEmail(savedUser.getEmail());
-        responseDTO.setPhone(savedUser.getPhone());
-        responseDTO.setRole(savedUser.getRole());
-        responseDTO.setEnabled(savedUser.isEnabled());
-        responseDTO.setCreatedDate(savedUser.getCreatedDate());
-
-        return responseDTO;
+        return convertToDTO(savedUser);
     }
 
     @Override
     public UserDTO getUserById(Long userId) {
 
-        User user = userRepository.findById(userId)
-                .orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
 
-        if (user == null) {
-            return null;
+        if (user == null) return null;
+
+        return convertToDTO(user);
+    }
+
+    @Override
+    public List<UserDTO> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDTO updateUser(Long userId, UserDTO userDTO) {
+
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null) return null;
+
+        user.setName(userDTO.getName());
+        user.setPhone(userDTO.getPhone());
+        user.setRole(userDTO.getRole());
+
+        User updatedUser = userRepository.save(user);
+
+        return convertToDTO(updatedUser);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public UserDTO loginUser(String email, String password) {
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return convertToDTO(user);
         }
 
+        return null;
+    }
+
+    // ===== Mapping Method =====
+    private UserDTO convertToDTO(User user) {
+
         UserDTO dto = new UserDTO();
+
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
