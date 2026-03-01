@@ -9,42 +9,28 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "route")
 public class Route {
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
 
-    @Column(nullable = false)
-    private String source;
+	@Column(nullable = false)
+	private String source;
 
-    @Column(nullable = false)
-    private String destination;
+	@Column(nullable = false)
+	private String destination;
 
-    private Double distance;
+	private Double distance;
 
-    private String estimatedDuration;
+	private String estimatedDuration;
 
-    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
-    private List<Flight> flights;
-
-	public Route() {
-		super();
-	}
-
-
-	public Route(int id, String source, String destination, Double distance, String estimatedDuration,
-			List<Flight> flights) {
-		super();
-		this.id = id;
-		this.source = source;
-		this.destination = destination;
-		this.distance = distance;
-		this.estimatedDuration = estimatedDuration;
-		this.flights = flights;
-	}
-
+	@OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
+	private List<Flight> flights;
 
 	public int getId() {
 		return id;
@@ -97,7 +83,7 @@ public class Route {
 	@Override
 	public String toString() {
 		return "Route [id=" + id + ", source=" + source + ", destination=" + destination + ", distance=" + distance
-				+ ", estimatedDuration=" + estimatedDuration + "]";
+				+ ", estimatedDuration=" + estimatedDuration + ", flights=" + flights + "]";
 	}
 
 }

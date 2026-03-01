@@ -17,7 +17,6 @@ public class FlightDTO {
 
 	 public FlightDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	 }
 
 	 public FlightDTO(Long id, String flightNumber, String flightName, FlightOwnerDTO flightownerdto,

@@ -1,24 +1,36 @@
 package com.wipro.simplyfly.entity;
 
-import java.time.LocalDateTime;   
-import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "schedules")
 public class Schedule {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private LocalDateTime departureTime;
-    private LocalDateTime arrivalTime;
+	private LocalDateTime departureDate;
+	private LocalDateTime departureTime;
+	private LocalDateTime arrivalTime;
 
-    private int totalSeats;
-    private int availableSeats;
+	private int totalSeats;
+	private int availableSeats;
 
-    @ManyToOne
-    @JoinColumn(name = "flight_id")
-    private Flight flight;
+	private double fare;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "flight_id", nullable = false)
+	private Flight flight;
 
 	public Long getId() {
 		return id;
@@ -26,6 +38,14 @@ public class Schedule {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public LocalDateTime getDepartureDate() {
+		return departureDate;
+	}
+
+	public void setDepartureDate(LocalDateTime departureDate) {
+		this.departureDate = departureDate;
 	}
 
 	public LocalDateTime getDepartureTime() {
@@ -60,6 +80,14 @@ public class Schedule {
 		this.availableSeats = availableSeats;
 	}
 
+	public double getFare() {
+		return fare;
+	}
+
+	public void setFare(double fare) {
+		this.fare = fare;
+	}
+
 	public Flight getFlight() {
 		return flight;
 	}
@@ -68,19 +96,11 @@ public class Schedule {
 		this.flight = flight;
 	}
 
-	public Schedule(Long id, LocalDateTime departureTime, LocalDateTime arrivalTime, int totalSeats, int availableSeats,
-			Flight flight) {
-		super();
-		this.id = id;
-		this.departureTime = departureTime;
-		this.arrivalTime = arrivalTime;
-		this.totalSeats = totalSeats;
-		this.availableSeats = availableSeats;
-		this.flight = flight;
+	@Override
+	public String toString() {
+		return "Schedule [id=" + id + ", departureDate=" + departureDate + ", departureTime=" + departureTime
+				+ ", arrivalTime=" + arrivalTime + ", totalSeats=" + totalSeats + ", availableSeats=" + availableSeats
+				+ ", fare=" + fare + ", flight=" + flight + "]";
 	}
 
-	public Schedule() {
-		super();
-	}
-    
 }

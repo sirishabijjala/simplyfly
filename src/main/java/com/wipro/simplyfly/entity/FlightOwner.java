@@ -1,4 +1,5 @@
 package com.wipro.simplyfly.entity;
+
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -7,30 +8,31 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 
 @Entity
 @Table(name = "flightowner")
 public class FlightOwner {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private String name;
+	@Column(nullable = false)
+	private String name;
 
-    @Column(unique = true)
-    private String email;
+	@Column(unique = true)
+	private String email;
 
-    // One Owner → Many Flights
-    @OneToMany(mappedBy = "flightOwner", cascade = CascadeType.ALL)
-    private List<Flight> flights;
+	@ManyToOne
+	@JoinColumn(name = "account_id")
+	private Account account;
 
-    public FlightOwner() {
-    }
+	@OneToMany(mappedBy = "flightOwner", cascade = CascadeType.ALL)
+	private List<Flight> flights;
 
 	public Long getId() {
 		return id;
@@ -56,6 +58,14 @@ public class FlightOwner {
 		this.email = email;
 	}
 
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
+
 	public List<Flight> getFlights() {
 		return flights;
 	}
@@ -64,5 +74,10 @@ public class FlightOwner {
 		this.flights = flights;
 	}
 
+	@Override
+	public String toString() {
+		return "FlightOwner [id=" + id + ", name=" + name + ", email=" + email + ", account=" + account + ", flights="
+				+ flights + "]";
+	}
 
 }

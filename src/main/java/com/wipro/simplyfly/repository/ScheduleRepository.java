@@ -12,10 +12,7 @@ import com.wipro.simplyfly.entity.Schedule;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     // Get all schedules by Flight ID
-    List<Schedule> findByFlightId(Long flightId);
-
-    // Get all schedules by Route ID
-    List<Schedule> findByRouteId(int routeId);
+    List<Schedule> findByFlightRouteId(Long flightId);
 
     // Get schedules by departure date
     List<Schedule> findByDepartureDate(LocalDate departureDate);
