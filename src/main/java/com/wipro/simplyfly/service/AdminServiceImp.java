@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
+import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.entity.Route;
@@ -36,6 +38,8 @@ public class AdminServiceImp implements IAdminService {
 
 	@Autowired
 	BookingRepository bookingRepo;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public List<UserDTO> manageUsers() {
@@ -55,28 +59,36 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public UserDTO addUser(UserDTO userDTO) {
-		User u = new User();
-		u.setName(userDTO.getName());
-		u.setEmail(userDTO.getEmail());
-		u.setPassword(userDTO.getPassword());
-		u.setPhone(userDTO.getPhone());
-		u.setRole(userDTO.getRole());
+		Account account = new Account();
+		account.setName(userDTO.getName());
+		account.setEmail(userDTO.getEmail());
+		account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+		account.setRole(userDTO.getRole());
+		account.setActive(true);
 
-		User saved = userRepo.save(u);
-		userDTO.setId(saved.getId());
-		return userDTO;
+		User user = new User(userDTO.getName(), userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()),
+				userDTO.getPhone(), userDTO.getRole(), account);
+
+		User savedUser = userRepo.save(user);
+
+		return convertToDTO(savedUser);
 	}
 
 	@Override
 	public UserDTO updateUser(Long userId, UserDTO userDTO) {
-		User u = userRepo.findById(userId).orElse(null);
-		if (u != null) {
-			u.setName(userDTO.getName());
-			u.setPhone(userDTO.getPhone());
-			userRepo.save(u);
-			return userDTO;
-		}
-		return null;
+
+		User user = userRepo.findById(userId).orElse(null);
+
+		if (user == null)
+			return null;
+
+		user.setName(userDTO.getName());
+		user.setPhone(userDTO.getPhone());
+		user.setRole(userDTO.getRole());
+
+		User updatedUser = userRepo.save(user);
+
+		return convertToDTO(updatedUser);
 	}
 
 	@Override
@@ -183,15 +195,28 @@ public class AdminServiceImp implements IAdminService {
 
 		for (Booking b : bookings) {
 			BookingResponseDTO d = new BookingResponseDTO();
+
 			d.setBookingId(b.getId());
 			d.setBookingReference(b.getBookingReference());
 			d.setBookingStatus(b.getBookingStatus());
 			d.setBookingDate(b.getBookingDate());
 			d.setNumberOfSeats(b.getNumberOfSeats());
 			d.setTotalAmount(b.getTotalAmount());
-			d.setFlightName("N/A");
-			d.setOrigin("N/A");
-			d.setDestination("N/A");
+
+			if (b.getSchedule() != null) {
+				if (b.getSchedule().getFlight() != null) {
+					d.setFlightName(b.getSchedule().getFlight().getFlightName());
+
+					if (b.getSchedule().getFlight().getRoute() != null) {
+						d.setOrigin(b.getSchedule().getFlight().getRoute().getSource());
+						d.setDestination(b.getSchedule().getFlight().getRoute().getDestination());
+					}
+				}
+			} else {
+				d.setFlightName("N/A");
+				d.setOrigin("N/A");
+				d.setDestination("N/A");
+			}
 
 			dtos.add(d);
 		}
@@ -207,5 +232,20 @@ public class AdminServiceImp implements IAdminService {
 			return true;
 		}
 		return false;
+	}
+
+	private UserDTO convertToDTO(User user) {
+
+		UserDTO dto = new UserDTO();
+
+		dto.setId(user.getId());
+		dto.setName(user.getName());
+		dto.setEmail(user.getEmail());
+		dto.setPhone(user.getPhone());
+		dto.setRole(user.getRole());
+		dto.setEnabled(user.isEnabled());
+		dto.setCreatedDate(user.getCreatedDate());
+
+		return dto;
 	}
 }
