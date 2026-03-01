@@ -1,10 +1,12 @@
 package com.wipro.simplyfly.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,19 +20,37 @@ public class Account {
 	    private String name;
 
 	    @Column(unique = true)
-	    private String email;   // Login using email
+	    private String email;   
 
 	    private String password;
 
-	    // ROLE_USER, ROLE_OWNER, ROLE_ADMIN
 	    private String role;
 
 	    private boolean active = true;
+	    
+	    
+	    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+	    private User user;
+
+	    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+	    private FlightOwner flightOwner;
 
 		public Account() {
 			super();
 			// TODO Auto-generated constructor stub
 		}
+		
+
+		public Account(Long id, String name, String email, String password, String role, boolean active) {
+			super();
+			this.id = id;
+			this.name = name;
+			this.email = email;
+			this.password = password;
+			this.role = role;
+			this.active = active;
+		}
+
 
 		public Long getId() {
 			return id;
@@ -80,6 +100,21 @@ public class Account {
 			this.active = active;
 		}
 	    
+		 public User getUser() {
+		        return user;
+		    }
+
+		    public void setUser(User user) {
+		        this.user = user;
+		    }
+
+		    public FlightOwner getFlightOwner() {
+		        return flightOwner;
+		    }
+
+		    public void setFlightOwner(FlightOwner flightOwner) {
+		        this.flightOwner = flightOwner;
+		    }
 	    
 	    
 
