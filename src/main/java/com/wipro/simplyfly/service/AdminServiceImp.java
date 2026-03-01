@@ -10,9 +10,7 @@ import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
-import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.FlightOwner;
-import com.wipro.simplyfly.entity.Route;
 import com.wipro.simplyfly.entity.User;
 import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
@@ -36,7 +34,6 @@ public class AdminServiceImp implements IAdminService {
 
 	@Autowired
 	BookingRepository bookingRepo;
-
 
 	@Override
 	public List<UserDTO> manageUsers() {
@@ -88,8 +85,16 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public List<FlightOwnerDTO> manageFlightOwners() {
-		// TODO Auto-generated method stub
-		return null;
+		List<FlightOwner> owners = ownerRepo.findAll();
+		List<FlightOwnerDTO> dtos = new ArrayList<>();
+		for (FlightOwner o : owners) {
+			FlightOwnerDTO d = new FlightOwnerDTO();
+			d.setId(o.getId());
+			d.setName(o.getName());
+			d.setEmail(o.getEmail());
+			dtos.add(d);
+		}
+		return dtos;
 	}
 
 	@Override
@@ -146,6 +151,4 @@ public class AdminServiceImp implements IAdminService {
 		return false;
 	}
 
-
-	
 }

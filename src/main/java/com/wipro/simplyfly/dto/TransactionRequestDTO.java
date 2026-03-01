@@ -11,7 +11,7 @@ public class TransactionRequestDTO {
 		this.bookingId = bookingId;
 		this.paymentMethod = paymentMethod;
 	}
-	
+
 	public long getBookingId() {
 		return bookingId;
 	}
@@ -28,6 +28,6 @@ public class TransactionRequestDTO {
 	public String toString() {
 		return "PaymentRequestDTO [bookingId=" + bookingId + ", paymentMethod=" + paymentMethod + "]";
 	}
-	
+
 
 }

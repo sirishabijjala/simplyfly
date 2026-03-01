@@ -29,7 +29,6 @@ public class Booking {
 	private int numberOfSeats;
 	private double totalAmount;
 	private String bookingStatus;
-	//PENDING,CONFIRMED,CANCELLED
 	private LocalDateTime bookingDate;
 	public Booking() {
 		super();

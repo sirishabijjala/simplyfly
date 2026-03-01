@@ -25,7 +25,7 @@ public class Route {
     private Double distance;
 
     private String estimatedDuration;
-    
+
     @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
     private List<Flight> flights;
 
@@ -33,7 +33,7 @@ public class Route {
 		super();
 	}
 
-	
+
 	public Route(int id, String source, String destination, Double distance, String estimatedDuration,
 			List<Flight> flights) {
 		super();
@@ -93,11 +93,11 @@ public class Route {
 	public void setFlights(List<Flight> flights) {
 		this.flights = flights;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Route [id=" + id + ", source=" + source + ", destination=" + destination + ", distance=" + distance
 				+ ", estimatedDuration=" + estimatedDuration + "]";
 	}
-    
+
 }

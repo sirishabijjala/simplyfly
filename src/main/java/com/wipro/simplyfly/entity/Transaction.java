@@ -89,8 +89,8 @@ public class Transaction {
 				+ amount + ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus
 				+ ", transactionDate=" + transactionDate + "]";
 	}
-	
-	
-	
+
+
+
 
 }
