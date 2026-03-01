@@ -9,7 +9,7 @@ public class ScheduleDTO {
     private LocalDateTime arrivalTime;
     private int totalSeats;
     private int availableSeats;
-    private Long flightId;  // FK reference
+    private Long flightId;
 
     public ScheduleDTO() {}
 
@@ -23,7 +23,10 @@ public class ScheduleDTO {
         this.flightId = flightId;
     }
 
-    // Getters and Setters
+   
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
