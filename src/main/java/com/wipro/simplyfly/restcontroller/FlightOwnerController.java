@@ -1,3 +1,4 @@
+
 package com.wipro.simplyfly.restcontroller;
 
 import java.util.List;
@@ -28,7 +29,8 @@ public class FlightOwnerController {
 	@Autowired
 	private FlightOwnerService flightOwnerService;
 
-	// FLIGHT
+
+
 
 	@GetMapping("/{ownerId}/flights")
 	public List<FlightDTO> getFlightsByOwner(@PathVariable Long ownerId) {
