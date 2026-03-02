@@ -1,6 +1,7 @@
 package com.wipro.simplyfly.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -35,7 +36,11 @@ public class SecurityConfig {
                 .requestMatchers("/auth/register", "/auth/login")
                 .permitAll()
                 .requestMatchers("/api/admin/**")
-                .hasRole("ADMIN")
+                .hasAuthority("ADMIN")
+                .requestMatchers("/api/user/**")
+                .hasAuthority("USER")
+                .requestMatchers("/api/owner/**")
+                .hasAuthority("OWNER")
                 .anyRequest()
                 .authenticated()
             )
