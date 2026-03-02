@@ -55,7 +55,10 @@ public class AccountServiceImp implements AccountService{
 	        }
 
 	        // generate token
-	        String token = jwtService.generateToken(account.getEmail());
+	        String token = jwtService.generateToken(
+	                account.getEmail(),   // ✅ use account
+	                account.getRole()     // ✅ use account
+	        );
 
 	        return new AuthResponse(
 	                token,
