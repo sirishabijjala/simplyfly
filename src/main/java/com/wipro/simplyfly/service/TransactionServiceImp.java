@@ -40,8 +40,8 @@ public class TransactionServiceImp implements ITransactionService{
 	}
 
 	@Override
-	public TransactionResponseDTO getTransaction(Long id) {
-		Transaction transaction=transactionRepository.findById(id).orElseThrow(()-> new RuntimeException("Transaction Not Found"));
+	public TransactionResponseDTO getTransaction(Long bookingId) {
+		Transaction transaction=transactionRepository.findByBookingId(bookingId).orElseThrow(()-> new RuntimeException("Transaction Not Found"));
 		
 		return mapToResponse(transaction);
 	}

@@ -12,6 +12,7 @@ import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.Flight;
 import com.wipro.simplyfly.entity.FlightOwner;
+import com.wipro.simplyfly.entity.Route;
 import com.wipro.simplyfly.entity.Schedule;
 import com.wipro.simplyfly.exceptions.BookingNotFoundException;
 import com.wipro.simplyfly.exceptions.FlightNotFoundException;
@@ -19,6 +20,7 @@ import com.wipro.simplyfly.exceptions.ScheduleNotFoundException;
 import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.FlightRepository;
+import com.wipro.simplyfly.repository.RouteRepository;
 import com.wipro.simplyfly.repository.ScheduleRepository;
 
 @Service
@@ -35,6 +37,8 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private RouteRepository routeRepository;
 
     //FLIGHT
 
@@ -44,6 +48,7 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
         FlightOwner owner = flightOwnerRepository.findById(ownerId)
                 .orElseThrow(() -> new FlightNotFoundException(
                         "Owner not found with id: " + ownerId));
+        Route route=routeRepository.findById(flightDTO.getRouteId()).orElseThrow(()-> new RuntimeException("Routes Not Found"));
 
         Flight flight = new Flight();
         flight.setFlightName(flightDTO.getFlightName());
@@ -51,12 +56,23 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
         flight.setCheckInBaggage(flightDTO.getCheckInBaggage());
         flight.setCabinBaggage(flightDTO.getCabinBaggage());
         flight.setFlightOwner(owner);
+        flight.setRoute(route);
+      
 
         Flight saved = flightRepository.save(flight);
 
         flightDTO.setId(saved.getId());
 
-        return flightDTO;
+    //    return flightDTO;
+        return new FlightDTO(
+                saved.getId(),
+                saved.getFlightNumber(),
+                saved.getFlightName(),
+                saved.getFlightOwner().getId(),   // ⭐ set owner id
+                saved.getCheckInBaggage(),
+                saved.getCabinBaggage(),
+                saved.getRoute().getId()
+        );
     }
 
     @Override
