@@ -2,13 +2,12 @@ package com.wipro.simplyfly.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
 public class BookingRequestDTO {
-@Null(message="UserID cannot be null")
+@NotNull(message="UserID cannot be null")
 private Long userId;
-@Null(message="ScheduleId cannot be null")
-private Long ScheduleId;
+@NotNull(message="ScheduleId cannot be null")
+private Long scheduleId;
 @Min(value=1,message="Atleast one seat has to select for booking")
 private int numberOfSeats;
 @NotNull(message="Payment method is required")
@@ -19,7 +18,7 @@ public BookingRequestDTO() {
 public BookingRequestDTO(Long userId, Long scheduleId, int numberOfSeats) {
 	super();
 	this.userId = userId;
-	ScheduleId = scheduleId;
+	scheduleId = scheduleId;
 	this.numberOfSeats = numberOfSeats;
 }
 public Long getUserId() {
@@ -29,10 +28,10 @@ public void setUserId(Long userId) {
 	this.userId = userId;
 }
 public Long getScheduleId() {
-	return ScheduleId;
+	return scheduleId;
 }
 public void setScheduleId(Long scheduleId) {
-	ScheduleId = scheduleId;
+	scheduleId = scheduleId;
 }
 public int getNumberOfSeats() {
 	return numberOfSeats;
@@ -49,7 +48,7 @@ public void setPaymentMethod(String paymentMethod) {
 }
 @Override
 public String toString() {
-	return "BookingRequestDTO [userId=" + userId + ", ScheduleId=" + ScheduleId + ", numberOfSeats=" + numberOfSeats
+	return "BookingRequestDTO [userId=" + userId + ", ScheduleId=" + scheduleId + ", numberOfSeats=" + numberOfSeats
 			+ "]";
 }
 
