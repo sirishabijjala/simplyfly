@@ -18,10 +18,14 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    // Registration and login are public, no authorization required
+    // =============================
+    // PUBLIC APIs (No Authorization Required)
+    // =============================
+
     @PostMapping("/register")
     public UserDTO registerUser(@Valid @RequestBody UserDTO userDTO) {
-        return userService.registerUser(userDTO);
+    	return userService.registerUser(userDTO);
+        
     }
 
     @PostMapping("/login")
@@ -30,7 +34,10 @@ public class UserController {
         return userService.loginUser(email, password);
     }
 
-    // All other endpoints require USER authority
+    // =============================
+    // PROTECTED APIs (USER Role Required)
+    // =============================
+
     @PreAuthorize("hasAuthority('USER')")
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable Long id) {
