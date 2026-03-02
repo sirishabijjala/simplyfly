@@ -23,6 +23,7 @@ public class Booking {
 	@Column(unique = true)
 	private String bookingReference;
 
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
@@ -31,10 +32,27 @@ public class Booking {
 	@JoinColumn(name = "schedule_id", nullable = false)
 	private Schedule schedule;
 
+
 	private int numberOfSeats;
 	private double totalAmount;
 	private String bookingStatus;
 	private LocalDateTime bookingDate;
+
+	public Booking() {
+		super();
+	}
+	public Booking(Long id, String bookingReference, User user, Schedule schedule, int numberOfSeats,
+			double totalAmount, String bookingStatus, LocalDateTime bookingDate) {
+		super();
+		this.id = id;
+		this.bookingReference = bookingReference;
+		this.user = user;
+		this.schedule = schedule;
+		this.numberOfSeats = numberOfSeats;
+		this.totalAmount = totalAmount;
+		this.bookingStatus = bookingStatus;
+		this.bookingDate = bookingDate;
+	}
 
 	public Long getId() {
 		return id;
@@ -60,12 +78,14 @@ public class Booking {
 		this.user = user;
 	}
 
+
 	public Schedule getSchedule() {
 		return schedule;
 	}
 
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
+
 	}
 
 	public int getNumberOfSeats() {
