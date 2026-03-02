@@ -21,7 +21,7 @@ import com.wipro.simplyfly.service.IAdminService;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasRole('Admin')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class AdminController {
 
 	@Autowired
