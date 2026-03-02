@@ -115,13 +115,22 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public FlightOwnerDTO addFlightOwner(FlightOwnerDTO ownerDTO) {
-		FlightOwner o = new FlightOwner();
-		o.setName(ownerDTO.getName());
-		o.setEmail(ownerDTO.getEmail());
+	    Account account = new Account();
+	    account.setName(ownerDTO.getName());
+	    account.setEmail(ownerDTO.getEmail());
+	    account.setPassword(passwordEncoder.encode("owner123"));
+	    account.setRole("OWNER");
+	    account.setActive(true);
+	    
 
-		FlightOwner saved = ownerRepo.save(o);
-		ownerDTO.setId(saved.getId());
-		return ownerDTO;
+	    FlightOwner o = new FlightOwner();
+	    o.setName(ownerDTO.getName());
+	    o.setEmail(ownerDTO.getEmail());
+	    o.setAccount(account); 
+	    FlightOwner saved = ownerRepo.save(o); 
+	    
+	    ownerDTO.setId(saved.getId());
+	    return ownerDTO;
 	}
 
 	@Override
