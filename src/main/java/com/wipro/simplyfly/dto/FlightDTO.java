@@ -9,26 +9,40 @@ public class FlightDTO {
 
 	private String flightName;
 
-	private FlightOwnerDTO flightownerdto;
+	private Long flightOwnerId;
 
 	 private String checkInBaggage;
 
 	 private String cabinBaggage;
+	 private int routeId;
 
 	 public FlightDTO() {
 		super();
 	 }
 
-	 public FlightDTO(Long id, String flightNumber, String flightName, FlightOwnerDTO flightownerdto,
+	 public FlightDTO(Long id, String flightNumber, String flightName, Long flightownerId,
 			String checkInBaggage, String cabinBaggage) {
 		super();
 		this.id = id;
 		this.flightNumber = flightNumber;
 		this.flightName = flightName;
-		this.flightownerdto = flightownerdto;
+		this.flightOwnerId = flightownerId;
 		this.checkInBaggage = checkInBaggage;
 		this.cabinBaggage = cabinBaggage;
 	 }
+	 
+
+	 public FlightDTO(Long id, String flightNumber, String flightName, Long flightOwnerId, String checkInBaggage,
+			String cabinBaggage, int routeId) {
+		super();
+		this.id = id;
+		this.flightNumber = flightNumber;
+		this.flightName = flightName;
+		this.flightOwnerId = flightOwnerId;
+		this.checkInBaggage = checkInBaggage;
+		this.cabinBaggage = cabinBaggage;
+		this.routeId = routeId;
+	}
 
 	 public Long getId() {
 		 return id;
@@ -54,12 +68,12 @@ public class FlightDTO {
 		 this.flightName = flightName;
 	 }
 
-	 public FlightOwnerDTO getFlightownerdto() {
-		 return flightownerdto;
+	 public Long getFlightOwnerIdo() {
+		 return flightOwnerId;
 	 }
 
-	 public void setFlightownerdto(FlightOwnerDTO flightownerdto) {
-		 this.flightownerdto = flightownerdto;
+	 public void setFlightownerdto(Long flightOwnerId) {
+		 this.flightOwnerId= flightOwnerId;
 	 }
 
 	 public String getCheckInBaggage() {
@@ -78,10 +92,18 @@ public class FlightDTO {
 		 this.cabinBaggage = cabinBaggage;
 	 }
 
+	 public int getRouteId() {
+		return routeId;
+	}
+
+	 public void setRouteId(int routeId) {
+		 this.routeId = routeId;
+	 }
+
 	 @Override
 	 public String toString() {
 		return "FlightDTO [id=" + id + ", flightNumber=" + flightNumber + ", flightName=" + flightName
-				+ ", flightownerdto=" + flightownerdto + ", checkInBaggage=" + checkInBaggage + ", cabinBaggage="
+				+ ", flightOwnerId=" + flightOwnerId + ", checkInBaggage=" + checkInBaggage + ", cabinBaggage="
 				+ cabinBaggage + "]";
 	 }
 

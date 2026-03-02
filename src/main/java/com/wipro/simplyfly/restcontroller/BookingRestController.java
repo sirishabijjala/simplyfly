@@ -3,6 +3,7 @@ package com.wipro.simplyfly.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import com.wipro.simplyfly.service.IBookingService;
 
 @RestController
 @RequestMapping("/simplyfly/")
+@PreAuthorize("hasAuthority('USER')")
 public class BookingRestController {
 	@Autowired
 	IBookingService bookingService;
@@ -41,7 +43,7 @@ public class BookingRestController {
     @PutMapping("CancelBookingById/{bookingId}")
     public String cancelBookingById(@PathVariable Long bookingId) {
     	bookingService.cancelBooking(bookingId);
-    	return "Booking cancelled successfully and refund will be intiated in 7 working days";
+    	return "Booking cancelled successfully for ID "+bookingId+" and refund will be intiated in 7 working days";
     }
     		
 }
