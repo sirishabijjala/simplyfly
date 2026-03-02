@@ -38,7 +38,7 @@ public class BookingRestController {
 		
 	}
 	//cancel booking
-    @PutMapping("CancelBookingById/{id}")
+    @PutMapping("CancelBookingById/{bookingId}")
     public String cancelBookingById(@PathVariable Long bookingId) {
     	bookingService.cancelBooking(bookingId);
     	return "Booking cancelled successfully and refund will be intiated in 7 working days";
