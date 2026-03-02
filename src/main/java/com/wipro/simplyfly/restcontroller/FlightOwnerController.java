@@ -28,7 +28,8 @@ public class FlightOwnerController {
 	@Autowired
 	private FlightOwnerService flightOwnerService;
 
-	// FLIGHT
+
+
 
 	@GetMapping("/{ownerId}/flights")
 	public List<FlightDTO> getFlightsByOwner(@PathVariable Long ownerId) {
