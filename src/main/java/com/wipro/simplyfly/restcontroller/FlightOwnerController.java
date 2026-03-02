@@ -1,7 +1,7 @@
 package com.wipro.simplyfly.restcontroller;
 
 import java.util.List;
-
+import com.wipro.simplyfly.service.FlightOwnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
-import com.wipro.simplyfly.service.FlightOwnerService;
+
 
 @RestController
 @RequestMapping("/api/owner")
