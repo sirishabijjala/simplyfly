@@ -24,8 +24,8 @@ public class Booking {
 	@JoinColumn(name="user_id",nullable=false)
 	private User user;//fk
 	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="schedule_id",nullable=false)
-	private Schedule schedule; //fk
+	@JoinColumn(name="flight_id",nullable=false)
+	private Flight flight; //fk
 	private int numberOfSeats;
 	private double totalAmount;
 	private String bookingStatus;
@@ -34,13 +34,13 @@ public class Booking {
 	public Booking() {
 		super();
 	}
-	public Booking(Long id, String bookingReference, User user, Schedule schedule, int numberOfSeats,
+	public Booking(Long id, String bookingReference, User user, Flight flight, int numberOfSeats,
 			double totalAmount, String bookingStatus, LocalDateTime bookingDate) {
 		super();
 		this.id = id;
 		this.bookingReference = bookingReference;
 		this.user = user;
-		this.schedule = schedule;
+		this.flight = flight;
 		this.numberOfSeats = numberOfSeats;
 		this.totalAmount = totalAmount;
 		this.bookingStatus = bookingStatus;
@@ -64,11 +64,11 @@ public class Booking {
 	public void setUser(User user) {
 		this.user = user;
 	}
-	public Schedule getSchedule() {
-		return schedule;
+	public Flight getFlight() {
+		return flight;
 	}
-	public void setSchedule(Schedule schedule) {
-		this.schedule = schedule;
+	public void setFlight(Flight flight) {
+		this.flight = flight;
 	}
 	public int getNumberOfSeats() {
 		return numberOfSeats;
@@ -96,8 +96,8 @@ public class Booking {
 	}
 	@Override
 	public String toString() {
-		return "Booking [id=" + id + ", bookingReference=" + bookingReference + ", user=" + user + ", schedule="
-				+ schedule + ", numberOfSeats=" + numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus="
+		return "Booking [id=" + id + ", bookingReference=" + bookingReference + ", user=" + user + ", flight="
+				+ flight + ", numberOfSeats=" + numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus="
 				+ bookingStatus + ", bookingDate=" + bookingDate + "]";
 	}
 	

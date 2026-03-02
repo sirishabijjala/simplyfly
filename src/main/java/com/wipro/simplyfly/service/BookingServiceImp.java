@@ -43,7 +43,7 @@ public class BookingServiceImp implements IBookingService{
 		    //Adds Booking
 		Booking booking=new Booking();
 		booking.setUser(user);
-		booking.setSchedule(schedule);
+		booking.setFlight(schedule.getFlight());;
 		booking.setNumberOfSeats(request.getNumberOfSeats());
 		booking.setBookingStatus("PENDING");
 		booking.setBookingDate(LocalDateTime.now());
@@ -82,7 +82,7 @@ public class BookingServiceImp implements IBookingService{
 	    bookingRepository.save(booking);
 
 	    // 2. Add seats back to the schedule
-	    Schedule schedule = booking.getSchedule();
+	    Schedule schedule = booking.getFlight().get;
 	    schedule.setAvailableSeats(schedule.getAvailableSeats() + booking.getNumberOfSeats());
 	    scheduleRepository.save(schedule);
 
@@ -99,9 +99,9 @@ public class BookingServiceImp implements IBookingService{
 		response.setBookingReference(booking.getBookingReference());
 		response.setBookingDate(booking.getBookingDate());
 		response.setTotalAmount(booking.getTotalAmount());
-		response.setFlightName(booking.getSchedule().getFlight().getFlightName());
-		response.setOrigin(booking.getSchedule().getRoute().getSource());
-		response.setDestination(booking.getSchedule().getRoute().getDestination());
+		response.setFlightName(booking.getFlight().getFlightName());
+		response.setOrigin(booking.getFlight().getRoute().getSource());
+		response.setDestination(booking.getFlight().getRoute().getDestination());
 		
 		return response;
 	}
