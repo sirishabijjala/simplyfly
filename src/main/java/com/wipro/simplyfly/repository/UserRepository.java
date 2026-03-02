@@ -1,11 +1,12 @@
 package com.wipro.simplyfly.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import com.wipro.simplyfly.entity.User;
 
-import java.util.Optional;
-import java.util.List;
+import com.wipro.simplyfly.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {

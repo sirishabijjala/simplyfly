@@ -48,7 +48,7 @@ public class BookingServiceImp implements IBookingService{
 		booking.setBookingStatus("PENDING");
 		booking.setBookingDate(LocalDateTime.now());
 		booking.setBookingReference(UUID.randomUUID().toString());
-		booking.setTotalAmount(schedule.getFare()*request.getNumberOfSeats());
+//		booking.setTotalAmount(schedule.getFare()*request.getNumberOfSeats());
 		Booking saved=bookingRepository.save(booking);
 		//Redirect to payment transaction
 		TransactionRequestDTO transaction=new TransactionRequestDTO();
@@ -83,7 +83,7 @@ public class BookingServiceImp implements IBookingService{
 
 	    // 2. Add seats back to the schedule
 	    Schedule schedule = booking.getSchedule();
-	    schedule.setAvailableSeats(schedule.getAvailableSeats() + booking.getNumberOfSeats());
+	    	schedule.setAvailableSeats(schedule.getAvailableSeats() + booking.getNumberOfSeats());
 	    scheduleRepository.save(schedule);
 
 	    // 3. Refund the payment
@@ -99,9 +99,11 @@ public class BookingServiceImp implements IBookingService{
 		response.setBookingReference(booking.getBookingReference());
 		response.setBookingDate(booking.getBookingDate());
 		response.setTotalAmount(booking.getTotalAmount());
+
 		response.setFlightName(booking.getSchedule().getFlight().getFlightName());
-		response.setOrigin(booking.getSchedule().getRoute().getSource());
-		response.setDestination(booking.getSchedule().getRoute().getDestination());
+		//response.setOrigin(booking.getSchedule().getRoute().getSource());
+		//response.setDestination(booking.getSchedule().getRoute().getDestination());
+
 		
 		return response;
 	}

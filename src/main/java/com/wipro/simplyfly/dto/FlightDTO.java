@@ -4,20 +4,19 @@ package com.wipro.simplyfly.dto;
 
 public class FlightDTO {
 	private Long id;
-	
+
 	private String flightNumber;
-	
+
 	private String flightName;
-	
+
 	private FlightOwnerDTO flightownerdto;
-	
+
 	 private String checkInBaggage;
-	 
+
 	 private String cabinBaggage;
 
 	 public FlightDTO() {
 		super();
-		// TODO Auto-generated constructor stub
 	 }
 
 	 public FlightDTO(Long id, String flightNumber, String flightName, FlightOwnerDTO flightownerdto,
@@ -85,7 +84,7 @@ public class FlightDTO {
 				+ ", flightownerdto=" + flightownerdto + ", checkInBaggage=" + checkInBaggage + ", cabinBaggage="
 				+ cabinBaggage + "]";
 	 }
-	 
-	 
+
+
 
 }
