@@ -39,12 +39,13 @@ public class JwtService {
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	public String generateToken(String username) {
+	public String generateToken(String username, String role) {
 
-		Map<String, Object> claims = new HashMap<>();
+	    Map<String, Object> claims = new HashMap<>();
 
-		return createToken(claims, username);
+	    claims.put("role", role);   // ✅ ADD ROLE TO TOKEN
 
+	    return createToken(claims, username);
 	}
 
 
