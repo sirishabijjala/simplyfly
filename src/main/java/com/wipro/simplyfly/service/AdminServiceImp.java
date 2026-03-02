@@ -52,6 +52,7 @@ public class AdminServiceImp implements IAdminService {
 			d.setEmail(u.getEmail());
 			d.setPhone(u.getPhone());
 			d.setRole(u.getRole());
+			d.setCreatedDate(u.getCreatedDate());
 			dtos.add(d);
 		}
 		return dtos;
