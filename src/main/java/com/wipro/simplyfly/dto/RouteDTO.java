@@ -1,7 +1,7 @@
 package com.wipro.simplyfly.dto;
 
 public class RouteDTO {
-	
+
 	    private int id;
 
 	    private String source;

@@ -98,7 +98,7 @@ public class BookingResponseDTO {
 				+ numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus=" + bookingStatus + ", bookingDate="
 				+ bookingDate + "]";
 	}
-	
-	
+
+
 
 }

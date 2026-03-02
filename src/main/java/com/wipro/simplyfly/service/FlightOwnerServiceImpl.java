@@ -37,34 +37,34 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
     // ================= FLIGHT =================
 
-    @Override
-    public List<FlightDTO> getFlightsByOwner(Long ownerId) {
+//    @Override
+//    public List<FlightDTO> getFlightsByOwner(Long ownerId) {
 
-        return flightRepository.findByFlightOwnerId(ownerId)
-                .stream()
-                .map(flight -> {
-
-                    FlightDTO dto = new FlightDTO();
-                    dto.setId(flight.getId());
-                    dto.setFlightName(flight.getFlightName());
-                    dto.setFlightNumber(flight.getFlightNumber());
-                    dto.setCheckInBaggage(flight.getCheckInBaggage());
-                    dto.setCabinBaggage(flight.getCabinBaggage());
-
-                    FlightOwner owner = flight.getFlightOwner();
-
-                    FlightOwnerDTO ownerDTO = new FlightOwnerDTO(
-                            owner.getId(),
-                            owner.getName(),
-                            owner.getEmail()
-                    );
-
-                    dto.setFlightownerdto(ownerDTO);
-
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
+//        return flightRepository.findByFlightOwnerId(ownerId)
+//                .stream()
+//                .map(flight -> {
+//
+//                    FlightDTO dto = new FlightDTO();
+//                    dto.setId(flight.getId());
+//                    dto.setFlightName(flight.getFlightName());
+//                    dto.setFlightNumber(flight.getFlightNumber());
+//                    dto.setCheckInBaggage(flight.getCheckInBaggage());
+//                    dto.setCabinBaggage(flight.getCabinBaggage());
+//
+//                    FlightOwner owner = flight.getFlightOwner();
+//
+//                    FlightOwnerDTO ownerDTO = new FlightOwnerDTO(
+//                            owner.getId(),
+//                            owner.getName(),
+//                            owner.getEmail()
+//                    );
+//
+//                    dto.setFlightownerdto(ownerDTO);
+//
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
+//    }
 
     @Override
     public FlightDTO addFlight(Long ownerId, FlightDTO flightDTO) {
@@ -110,7 +110,7 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     @Override
     public List<ScheduleDTO> getSchedulesByFlight(Long flightId) {
 
-        return scheduleRepository.findByFlightId(flightId)
+        return scheduleRepository.findByFlightRouteId(flightId)
                 .stream()
                 .map(schedule -> {
 
@@ -179,9 +179,9 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
                     BookingResponseDTO dto = new BookingResponseDTO();
                     dto.setBookingId(booking.getId());
                     dto.setBookingReference(booking.getBookingReference());
-                    dto.setFlightName(booking.getFlight().getFlightName());
-                    dto.setOrigin(booking.getFlight().getRoute().getSource());
-                    dto.setDestination(booking.getFlight().getRoute().getDestination());
+//                    dto.setFlightName(booking.getFlight().getFlightName());
+//                    dto.setOrigin(booking.getFlight().getRoute().getSource());
+//                    dto.setDestination(booking.getFlight().getRoute().getDestination());
                     dto.setNumberOfSeats(booking.getNumberOfSeats());
                     dto.setTotalAmount(booking.getTotalAmount());
                     dto.setBookingStatus(booking.getBookingStatus());

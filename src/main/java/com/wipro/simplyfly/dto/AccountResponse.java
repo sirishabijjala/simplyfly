@@ -1,7 +1,7 @@
 package com.wipro.simplyfly.dto;
 
 public class AccountResponse {
-	
+
 	private Long id;
     private String name;
     private String email;
