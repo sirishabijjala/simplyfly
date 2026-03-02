@@ -53,7 +53,7 @@ public class User {
 		this.account = account;
 	}
 
-	// ================= GETTERS & SETTERS =================
+	
 
 	public Long getId() {
 		return id;

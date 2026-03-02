@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.entity.User;
+import com.wipro.simplyfly.exceptions.InvalidCredentialsException;
+import com.wipro.simplyfly.exceptions.UserAlreadyExistsException;
+import com.wipro.simplyfly.exceptions.UserNotFoundException;
 import com.wipro.simplyfly.repository.UserRepository;
 
 @Service
@@ -23,6 +26,11 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
+
+        // Check if user already exists
+        if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException(userDTO.getEmail());
+        }
 
         Account account = new Account();
         account.setName(userDTO.getName());
@@ -47,17 +55,13 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDTO getUserById(Long userId) {
-
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user == null) return null;
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
         return convertToDTO(user);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
-
         return userRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
@@ -66,42 +70,40 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDTO updateUser(Long userId, UserDTO userDTO) {
-
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user == null) return null;
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         user.setName(userDTO.getName());
         user.setPhone(userDTO.getPhone());
         user.setRole(userDTO.getRole());
 
         User updatedUser = userRepository.save(user);
-
         return convertToDTO(updatedUser);
     }
 
     @Override
     public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
+        }
         userRepository.deleteById(userId);
     }
 
     @Override
     public UserDTO loginUser(String email, String password) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(InvalidCredentialsException::new);
 
-        User user = userRepository.findByEmail(email).orElse(null);
-
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return convertToDTO(user);
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new InvalidCredentialsException();
         }
 
-        return null;
+        return convertToDTO(user);
     }
 
     // ===== Mapping Method =====
     private UserDTO convertToDTO(User user) {
-
         UserDTO dto = new UserDTO();
-
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
@@ -109,7 +111,6 @@ public class UserServiceImpl implements IUserService {
         dto.setRole(user.getRole());
         dto.setEnabled(user.isEnabled());
         dto.setCreatedDate(user.getCreatedDate());
-
         return dto;
     }
 }
