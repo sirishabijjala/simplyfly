@@ -52,6 +52,7 @@ public class AdminServiceImp implements IAdminService {
 			d.setEmail(u.getEmail());
 			d.setPhone(u.getPhone());
 			d.setRole(u.getRole());
+			d.setPassword(u.getPassword());
 			d.setCreatedDate(u.getCreatedDate());
 			dtos.add(d);
 		}
@@ -173,6 +174,7 @@ public class AdminServiceImp implements IAdminService {
 	public RouteDTO updateRoute(int routeId, RouteDTO routeDTO) {
 		Route r = routeRepo.findById(routeId).orElse(null);
 		if (r != null) {
+			r.setId(routeDTO.getId());
 			r.setSource(routeDTO.getSource());
 			r.setDestination(routeDTO.getDestination());
 			r.setDistance(routeDTO.getDistance());
