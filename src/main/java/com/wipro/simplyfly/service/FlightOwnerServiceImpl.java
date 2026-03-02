@@ -8,17 +8,18 @@ import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
-import com.wipro.simplyfly.dto.FlightOwnerDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.Flight;
 import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.entity.Schedule;
+import com.wipro.simplyfly.exceptions.BookingNotFoundException;
+import com.wipro.simplyfly.exceptions.FlightNotFoundException;
+import com.wipro.simplyfly.exceptions.ScheduleNotFoundException;
 import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.FlightRepository;
 import com.wipro.simplyfly.repository.ScheduleRepository;
-import com.wipro.simplyfly.service.FlightOwnerService;
 
 @Service
 public class FlightOwnerServiceImpl implements FlightOwnerService {
@@ -35,41 +36,14 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     @Autowired
     private BookingRepository bookingRepository;
 
-    // ================= FLIGHT =================
-
-//    @Override
-//    public List<FlightDTO> getFlightsByOwner(Long ownerId) {
-
-//        return flightRepository.findByFlightOwnerId(ownerId)
-//                .stream()
-//                .map(flight -> {
-//
-//                    FlightDTO dto = new FlightDTO();
-//                    dto.setId(flight.getId());
-//                    dto.setFlightName(flight.getFlightName());
-//                    dto.setFlightNumber(flight.getFlightNumber());
-//                    dto.setCheckInBaggage(flight.getCheckInBaggage());
-//                    dto.setCabinBaggage(flight.getCabinBaggage());
-//
-//                    FlightOwner owner = flight.getFlightOwner();
-//
-//                    FlightOwnerDTO ownerDTO = new FlightOwnerDTO(
-//                            owner.getId(),
-//                            owner.getName(),
-//                            owner.getEmail()
-//                    );
-//
-//                    dto.setFlightownerdto(ownerDTO);
-//
-//                    return dto;
-//                })
-//                .collect(Collectors.toList());
-//    }
+    //FLIGHT
 
     @Override
     public FlightDTO addFlight(Long ownerId, FlightDTO flightDTO) {
 
-        FlightOwner owner = flightOwnerRepository.findById(ownerId).orElseThrow();
+        FlightOwner owner = flightOwnerRepository.findById(ownerId)
+                .orElseThrow(() -> new FlightNotFoundException(
+                        "Owner not found with id: " + ownerId));
 
         Flight flight = new Flight();
         flight.setFlightName(flightDTO.getFlightName());
@@ -88,7 +62,9 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     @Override
     public FlightDTO updateFlight(Long flightId, FlightDTO flightDTO) {
 
-        Flight flight = flightRepository.findById(flightId).orElseThrow();
+        Flight flight = flightRepository.findById(flightId)
+                .orElseThrow(() -> new FlightNotFoundException(
+                        "Flight not found with id: " + flightId));
 
         flight.setFlightName(flightDTO.getFlightName());
         flight.setFlightNumber(flightDTO.getFlightNumber());
@@ -102,10 +78,16 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
     @Override
     public void deleteFlight(Long flightId) {
+
+        if (!flightRepository.existsById(flightId)) {
+            throw new FlightNotFoundException(
+                    "Flight not found with id: " + flightId);
+        }
+
         flightRepository.deleteById(flightId);
     }
 
-    // ================= SCHEDULE =================
+    //SCHEDULE
 
     @Override
     public List<ScheduleDTO> getSchedulesByFlight(Long flightId) {
@@ -130,7 +112,9 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     @Override
     public ScheduleDTO addSchedule(Long flightId, ScheduleDTO scheduleDTO) {
 
-        Flight flight = flightRepository.findById(flightId).orElseThrow();
+        Flight flight = flightRepository.findById(flightId)
+                .orElseThrow(() -> new FlightNotFoundException(
+                        "Flight not found with id: " + flightId));
 
         Schedule schedule = new Schedule();
         schedule.setDepartureTime(scheduleDTO.getDepartureTime());
@@ -150,7 +134,9 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     @Override
     public ScheduleDTO updateSchedule(Long scheduleId, ScheduleDTO scheduleDTO) {
 
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow();
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ScheduleNotFoundException(
+                        "Schedule not found with id: " + scheduleId));
 
         schedule.setDepartureTime(scheduleDTO.getDepartureTime());
         schedule.setArrivalTime(scheduleDTO.getArrivalTime());
@@ -164,10 +150,16 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
     @Override
     public void deleteSchedule(Long scheduleId) {
+
+        if (!scheduleRepository.existsById(scheduleId)) {
+            throw new ScheduleNotFoundException(
+                    "Schedule not found with id: " + scheduleId);
+        }
+
         scheduleRepository.deleteById(scheduleId);
     }
 
-    // ================= BOOKING =================
+    //BOOKING
 
     @Override
     public List<BookingResponseDTO> getBookingsByOwner(Long ownerId) {
@@ -179,9 +171,6 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
                     BookingResponseDTO dto = new BookingResponseDTO();
                     dto.setBookingId(booking.getId());
                     dto.setBookingReference(booking.getBookingReference());
-//                    dto.setFlightName(booking.getFlight().getFlightName());
-//                    dto.setOrigin(booking.getFlight().getRoute().getSource());
-//                    dto.setDestination(booking.getFlight().getRoute().getDestination());
                     dto.setNumberOfSeats(booking.getNumberOfSeats());
                     dto.setTotalAmount(booking.getTotalAmount());
                     dto.setBookingStatus(booking.getBookingStatus());
@@ -195,10 +184,18 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     @Override
     public void refundBooking(Long bookingId) {
 
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException(
+                        "Booking not found with id: " + bookingId));
 
         booking.setBookingStatus("CANCELLED");
 
         bookingRepository.save(booking);
     }
+
+	@Override
+	public List<FlightDTO> getFlightsByOwner(Long ownerId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
