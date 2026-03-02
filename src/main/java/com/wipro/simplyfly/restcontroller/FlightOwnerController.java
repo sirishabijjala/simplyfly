@@ -21,10 +21,10 @@ package com.wipro.simplyfly.restcontroller;
 	    //FLIGHT
 	    
 
-	    @GetMapping("/{ownerId}/flights")
-	    public List<FlightDTO> getFlightsByOwner(@PathVariable Long ownerId) {
-	        return flightOwnerService.getFlightsByOwner(ownerId);
-	    }
+//	    @GetMapping("/{ownerId}/flights")
+////	    public List<FlightDTO> getFlightsByOwner(@PathVariable Long ownerId) {
+////	        return flightOwnerService.getFlightsByOwner(ownerId);
+//	    }
 
 	    @PostMapping("/{ownerId}/flights")
 	    public FlightDTO addFlight(@PathVariable Long ownerId,
