@@ -1,5 +1,6 @@
 package com.wipro.simplyfly.dto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Email;
@@ -20,6 +21,10 @@ public class RegisterRequest {
 	private String phone;
 	@NotBlank(message = "Role is required")
     private String role;   // "ROLE_USER" or "ROLE_ADMIN"
+	
+	 private String address;
+	    private String gender;
+	    private LocalDate dateOfBirth;
     
   
     
@@ -73,6 +78,32 @@ public class RegisterRequest {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public LocalDate getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(LocalDate dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+	
+	
     
 
 }
