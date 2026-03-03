@@ -79,7 +79,7 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/owners/{ownerId}")
-	public boolean deleteFlightOwner(@PathVariable Long ownerId) {
+	public String deleteFlightOwner(@PathVariable Long ownerId) {
 		return service.deleteFlightOwner(ownerId);
 	}
 
@@ -99,7 +99,7 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/routes/{routeId}")
-	public boolean deleteRoute(@PathVariable int routeId) {
+	public String  deleteRoute(@PathVariable int routeId) {
 		return service.deleteRoute(routeId);
 	}
 

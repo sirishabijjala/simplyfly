@@ -17,12 +17,12 @@ public interface IAdminService {
 	List<FlightOwnerDTO> manageFlightOwners();
 	String addFlightOwner(RegisterRequest request);
 	String updateFlightOwner(Long ownerId, RegisterRequest request);
-	boolean deleteFlightOwner(Long ownerId);
+	String deleteFlightOwner(Long ownerId);
 
 	List<RouteDTO> manageRoutes();
 	RouteDTO addRoute(RouteDTO routeDTO);
 	RouteDTO updateRoute(int routeId, RouteDTO routeDTO);
-	boolean deleteRoute(int routeId);
+	String deleteRoute(int routeId);
 
 	List<BookingResponseDTO> manageBookings();
 	boolean cancelBooking(Long bookingId);
