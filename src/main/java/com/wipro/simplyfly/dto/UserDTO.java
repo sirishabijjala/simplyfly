@@ -22,17 +22,14 @@ public class UserDTO {
     private String phone;
 
     private String address;
-
     private String gender;
-
     private LocalDate dateOfBirth;
 
     public UserDTO() {
     }
 
     public UserDTO(Long id, String name, String email, String password,
-                   String phone, String address, String gender,
-                   LocalDate dateOfBirth) {
+                   String phone, String address, String gender, LocalDate dateOfBirth) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -70,8 +67,9 @@ public class UserDTO {
 
     @Override
     public String toString() {
-        return "UserDTO [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password
-                + ", phone=" + phone + ", address=" + address + ", gender=" + gender
-                + ", dateOfBirth=" + dateOfBirth + "]";
+        return "UserDTO [id=" + id + ", name=" + name + ", email=" + email +
+               ", password=" + password + ", phone=" + phone +
+               ", address=" + address + ", gender=" + gender +
+               ", dateOfBirth=" + dateOfBirth + "]";
     }
 }
