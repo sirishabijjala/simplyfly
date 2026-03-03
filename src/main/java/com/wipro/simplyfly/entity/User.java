@@ -28,6 +28,10 @@ public class User {
     private String gender;
 
     private LocalDate dateOfBirth;
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id", nullable = false, unique = true)
+    private Account account;
 
     public User() {
     }
@@ -67,6 +71,14 @@ public class User {
     public LocalDate getDateOfBirth() { return dateOfBirth; }
     public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 
+    
+    public Account getAccount() {
+        return account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
+    }
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", phone=" + phone
