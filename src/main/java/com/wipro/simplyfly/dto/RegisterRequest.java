@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class RegisterRequest {
 	
@@ -11,9 +13,12 @@ public class RegisterRequest {
 	private String name;
 	@Email(message = "Invalid email format")
     private String email;
+	@Size(min = 6, max = 10,  message = "Password must be minimum 6 characters")
 	@NotBlank(message = "Password is required")
     private String password;
+	@Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
 	private String phone;
+	@NotBlank(message = "Role is required")
     private String role;   // "ROLE_USER" or "ROLE_ADMIN"
     
   

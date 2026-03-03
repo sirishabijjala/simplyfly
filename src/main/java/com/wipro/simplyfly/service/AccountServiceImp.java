@@ -12,6 +12,7 @@ import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.entity.User;
+import com.wipro.simplyfly.exceptions.EmailAlreadyExistsException;
 import com.wipro.simplyfly.repository.AccountRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.UserRepository;
@@ -38,7 +39,7 @@ public class AccountServiceImp implements AccountService{
 
 	        // check if email already exists
 	        if (repository.findByEmail(request.getEmail()).isPresent()) {
-	            return "Email already exists";
+	        	throw new EmailAlreadyExistsException("Email already registered");
 	        }
 
 	        Account account = new Account();
@@ -50,7 +51,7 @@ public class AccountServiceImp implements AccountService{
 
 	        repository.save(account);
 	        
-	     // 2. Decide which Profile to create
+	     //  Decide which Profile to create
 	        if (request.getRole().equalsIgnoreCase("USER")) {
 	            User user = new User();
 	            user.setName(request.getName());
@@ -60,14 +61,14 @@ public class AccountServiceImp implements AccountService{
 	            user.setEnabled(true);
 	            user.setCreatedDate(LocalDateTime.now());
 	            user.setRole(request.getRole());
-	            user.setAccount(account); // Link!
+	            user.setAccount(account); 
 	            userRepo.save(user);
 	        } 
 	        else if (request.getRole().equalsIgnoreCase("OWNER")) {
 	            FlightOwner owner = new FlightOwner();
 	            owner.setName(request.getName());
 	            owner.setEmail(request.getEmail());
-	            owner.setAccount(account); // Link!
+	            owner.setAccount(account); 
 	            ownerRepo.save(owner);
 	        }
 	        
@@ -90,8 +91,8 @@ public class AccountServiceImp implements AccountService{
 
 	        // generate token
 	        String token = jwtService.generateToken(
-	                account.getEmail(),   // ✅ use account
-	                account.getRole()     // ✅ use account
+	                account.getEmail(),   
+	                account.getRole()     
 	        );
 
 	        return new AuthResponse(
