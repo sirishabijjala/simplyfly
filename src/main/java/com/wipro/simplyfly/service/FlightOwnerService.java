@@ -5,9 +5,10 @@ import java.util.List;
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
+import com.wipro.simplyfly.entity.FlightOwner;
 
 public interface FlightOwnerService {
-
+	 FlightOwner getOwnerById(Long ownerId);
     //FLIGHT
 
     List<FlightDTO> getFlightsByOwner(Long ownerId);
