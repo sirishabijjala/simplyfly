@@ -43,7 +43,7 @@ public class JwtService {
 
 	    Map<String, Object> claims = new HashMap<>();
 
-	    claims.put("role", role);   // ✅ ADD ROLE TO TOKEN
+	    claims.put("role", role);   
 
 	    return createToken(claims, username);
 	}

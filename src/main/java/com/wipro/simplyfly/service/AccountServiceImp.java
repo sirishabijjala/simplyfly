@@ -62,6 +62,7 @@ public class AccountServiceImp implements AccountService{
 	            user.setAddress(request.getAddress());	
 	            user.setGender(request.getGender());
 	            user.setDateOfBirth(request.getDateOfBirth());
+	            user.setAccount(account);
 	            
 	            userRepo.save(user);
 	        } 
