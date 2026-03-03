@@ -4,18 +4,19 @@ import java.util.List;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
+import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
 
 public interface IAdminService {
 	List<UserDTO> manageUsers();
-	UserDTO addUser(UserDTO userDTO);
-	UserDTO updateUser(Long userId, UserDTO userDTO);
+	String addUser(RegisterRequest request);
+	String updateUser(Long userId, RegisterRequest request);
 	boolean deleteUser(Long userId);
 
 	List<FlightOwnerDTO> manageFlightOwners();
-	FlightOwnerDTO addFlightOwner(FlightOwnerDTO ownerDTO);
-	FlightOwnerDTO updateFlightOwner(Long ownerId, FlightOwnerDTO ownerDTO);
+	String addFlightOwner(RegisterRequest request);
+	String updateFlightOwner(Long ownerId, RegisterRequest request);
 	boolean deleteFlightOwner(Long ownerId);
 
 	List<RouteDTO> manageRoutes();

@@ -1,5 +1,6 @@
 package com.wipro.simplyfly.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
+import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.entity.Account;
@@ -16,6 +18,7 @@ import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.entity.Route;
 import com.wipro.simplyfly.entity.User;
+import com.wipro.simplyfly.repository.AccountRepository;
 import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.RouteRepository;
@@ -38,6 +41,9 @@ public class AdminServiceImp implements IAdminService {
 
 	@Autowired
 	BookingRepository bookingRepo;
+	
+	@Autowired
+	AccountRepository accountRepo;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
@@ -59,39 +65,61 @@ public class AdminServiceImp implements IAdminService {
 		return dtos;
 	}
 
-	@Override
-	public UserDTO addUser(UserDTO userDTO) {
-		Account account = new Account();
-		account.setName(userDTO.getName());
-		account.setEmail(userDTO.getEmail());
-		account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-		account.setRole(userDTO.getRole());
-		account.setActive(true);
+    public String addUser(RegisterRequest request) {
+        if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+            return "Email already exists";
+        }
 
-		User user = new User(userDTO.getName(), userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()),
-				userDTO.getPhone(), userDTO.getRole(), account);
+        Account account = new Account();
+        account.setName(request.getName());
+        account.setEmail(request.getEmail());
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setRole("USER");
+        account.setActive(true);
+        accountRepo.save(account);
 
-		User savedUser = userRepo.save(user);
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setRole("USER");
+        user.setEnabled(true);
+        user.setCreatedDate(LocalDateTime.now());
+        user.setAccount(account); 
+        userRepo.save(user);
 
-		return convertToDTO(savedUser);
-	}
+        return "User added successfully";
+    }
 
-	@Override
-	public UserDTO updateUser(Long userId, UserDTO userDTO) {
+    public String updateUser(Long userId, RegisterRequest request) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-		User user = userRepo.findById(userId).orElse(null);
+        // Update User fields
+        user.setName(request.getName() != null ? request.getName() : user.getName());
+        user.setPhone(request.getPhone() != null ? request.getPhone() : user.getPhone());
+        user.setRole(request.getRole() != null ? request.getRole() : user.getRole());
 
-		if (user == null)
-			return null;
+        // Update linked Account if needed
+        Account account = user.getAccount();
+        if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
+            if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+                return "Email already exists";
+            }
+            account.setEmail(request.getEmail());
+        }
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            account.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getName() != null) {
+            account.setName(request.getName());
+        }
 
-		user.setName(userDTO.getName());
-		user.setPhone(userDTO.getPhone());
-		user.setRole(userDTO.getRole());
+        accountRepo.save(account);
+        userRepo.save(user);
 
-		User updatedUser = userRepo.save(user);
-
-		return convertToDTO(updatedUser);
-	}
+        return "User updated successfully";
+    }
 
 	@Override
 	public boolean deleteUser(Long userId) {
@@ -113,41 +141,69 @@ public class AdminServiceImp implements IAdminService {
 		return dtos;
 	}
 
-	@Override
-	public FlightOwnerDTO addFlightOwner(FlightOwnerDTO ownerDTO) {
-	    Account account = new Account();
-	    account.setName(ownerDTO.getName());
-	    account.setEmail(ownerDTO.getEmail());
-	    account.setPassword(passwordEncoder.encode("owner123"));
-	    account.setRole("OWNER");
-	    account.setActive(true);
-	    
+	public String addFlightOwner(RegisterRequest request) {
+        if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+            return "Email already exists";
+        }
 
-	    FlightOwner o = new FlightOwner();
-	    o.setName(ownerDTO.getName());
-	    o.setEmail(ownerDTO.getEmail());
-	    o.setAccount(account); 
-	    FlightOwner saved = ownerRepo.save(o); 
-	    
-	    ownerDTO.setId(saved.getId());
-	    return ownerDTO;
+        // Create Account
+        Account account = new Account();
+        account.setName(request.getName());
+        account.setEmail(request.getEmail());
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setRole("OWNER");
+        account.setActive(true);
+        accountRepo.save(account);
+
+        // Create FlightOwner
+        FlightOwner owner = new FlightOwner();
+        owner.setName(request.getName());
+        owner.setEmail(request.getEmail());
+        owner.setAccount(account); // Link
+        ownerRepo.save(owner);
+
+        return "FlightOwner added successfully";
+    }
+
+	public String updateFlightOwner(Long ownerId, RegisterRequest request) {
+	    FlightOwner owner = ownerRepo.findById(ownerId)
+	            .orElseThrow(() -> new RuntimeException("FlightOwner not found"));
+
+	    // Update FlightOwner fields
+	    owner.setName(request.getName() != null ? request.getName() : owner.getName());
+	    owner.setEmail(request.getEmail() != null ? request.getEmail() : owner.getEmail()); // update FlightOwner email too
+
+	    // Update linked Account
+	    Account account = owner.getAccount();
+	    if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
+	        if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+	            return "Email already exists";
+	        }
+	        account.setEmail(request.getEmail());
+	    }
+	    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+	        account.setPassword(passwordEncoder.encode(request.getPassword()));
+	    }
+	    if (request.getName() != null) {
+	        account.setName(request.getName());
+	    }
+
+	    accountRepo.save(account);
+	    ownerRepo.save(owner);
+
+	    return "FlightOwner updated successfully";
 	}
 
-	@Override
-	public FlightOwnerDTO updateFlightOwner(Long ownerId, FlightOwnerDTO ownerDTO) {
-		FlightOwner o = ownerRepo.findById(ownerId).orElse(null);
-		if (o != null) {
-			o.setName(ownerDTO.getName());
-			ownerRepo.save(o);
-			return ownerDTO;
-		}
-		return null;
-	}
-
-	@Override
 	public boolean deleteFlightOwner(Long ownerId) {
-		ownerRepo.deleteById(ownerId);
-		return true;
+	    FlightOwner owner = ownerRepo.findById(ownerId)
+	            .orElseThrow(() -> new RuntimeException("FlightOwner not found"));
+
+	    Account account = owner.getAccount();
+	    if (account != null) {
+	        accountRepo.delete(account);
+	    }
+
+	    return true;
 	}
 
 	@Override
@@ -244,20 +300,5 @@ public class AdminServiceImp implements IAdminService {
 			return true;
 		}
 		return false;
-	}
-
-	private UserDTO convertToDTO(User user) {
-
-		UserDTO dto = new UserDTO();
-
-		dto.setId(user.getId());
-		dto.setName(user.getName());
-		dto.setEmail(user.getEmail());
-		dto.setPhone(user.getPhone());
-		dto.setRole(user.getRole());
-		dto.setEnabled(user.isEnabled());
-		dto.setCreatedDate(user.getCreatedDate());
-
-		return dto;
 	}
 }
