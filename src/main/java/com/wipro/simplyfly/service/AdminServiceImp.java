@@ -81,7 +81,7 @@ public class AdminServiceImp implements IAdminService {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
         user.setGender(request.getGender());
@@ -98,6 +98,8 @@ public class AdminServiceImp implements IAdminService {
 	            .orElseThrow(() -> new RuntimeException("User not found"));
 
 	    user.setName(request.getName() != null ? request.getName() : user.getName());
+	    user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
+        user.setPassword(request.getPassword() != null ? passwordEncoder.encode(request.getPassword()) : passwordEncoder.encode(request.getPassword()));
 	    user.setPhone(request.getPhone() != null ? request.getPhone() : user.getPhone());
 	    user.setAddress(request.getAddress() != null ? request.getAddress() : user.getAddress());
 	    user.setGender(request.getGender() != null ? request.getGender() : user.getGender());
@@ -153,6 +155,7 @@ public class AdminServiceImp implements IAdminService {
 		return dtos;
 	}
 
+	@Override
 	public String addFlightOwner(RegisterRequest request) {
         if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
             return "Email already exists";
@@ -176,12 +179,14 @@ public class AdminServiceImp implements IAdminService {
         return "FlightOwner added successfully";
     }
 
+	@Override
 	public String updateFlightOwner(Long ownerId, RegisterRequest request) {
 	    FlightOwner owner = ownerRepo.findById(ownerId)
 	            .orElseThrow(() -> new RuntimeException("FlightOwner not found"));
 
 	    owner.setName(request.getName() != null ? request.getName() : owner.getName());
-	    owner.setEmail(request.getEmail() != null ? request.getEmail() : owner.getEmail()); // update FlightOwner email too
+	    owner.setEmail(request.getEmail() != null ? request.getEmail() : owner.getEmail()); 
+	  
 
 	    Account account = owner.getAccount();
 	    if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
@@ -203,6 +208,7 @@ public class AdminServiceImp implements IAdminService {
 	    return "FlightOwner updated successfully";
 	}
 
+	@Override
 	public boolean deleteFlightOwner(Long ownerId) {
 	    FlightOwner owner = ownerRepo.findById(ownerId)
 	            .orElseThrow(() -> new RuntimeException("FlightOwner not found"));
@@ -246,17 +252,25 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public RouteDTO updateRoute(int routeId, RouteDTO routeDTO) {
-		Route r = routeRepo.findById(routeId).orElse(null);
-		if (r != null) {
-			r.setId(routeDTO.getId());
-			r.setSource(routeDTO.getSource());
-			r.setDestination(routeDTO.getDestination());
-			r.setDistance(routeDTO.getDistance());
-			r.setEstimatedDuration(routeDTO.getEstimatedDuration());
-			routeRepo.save(r);
-			return routeDTO;
-		}
-		return null;
+
+	    Route r = routeRepo.findById(routeId)
+	            .orElseThrow(() -> new RuntimeException("Route not found"));
+
+	    r.setSource(routeDTO.getSource());
+	    r.setDestination(routeDTO.getDestination());
+	    r.setDistance(routeDTO.getDistance());
+	    r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+
+	    Route updatedRoute = routeRepo.save(r);
+
+	    RouteDTO dto = new RouteDTO();
+	    dto.setId(updatedRoute.getId());
+	    dto.setSource(updatedRoute.getSource());
+	    dto.setDestination(updatedRoute.getDestination());
+	    dto.setDistance(updatedRoute.getDistance());
+	    dto.setEstimatedDuration(updatedRoute.getEstimatedDuration());
+
+	    return dto;
 	}
 
 	@Override
@@ -267,37 +281,46 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public List<BookingResponseDTO> manageBookings() {
-		List<Booking> bookings = bookingRepo.findAll();
-		List<BookingResponseDTO> dtos = new ArrayList<>();
 
-		for (Booking b : bookings) {
-			BookingResponseDTO d = new BookingResponseDTO();
+	    List<Booking> bookings = bookingRepo.findAll();
+	    List<BookingResponseDTO> dtos = new ArrayList<>();
 
-			d.setBookingId(b.getId());
-			d.setBookingReference(b.getBookingReference());
-			d.setBookingStatus(b.getBookingStatus());
-			d.setBookingDate(b.getBookingDate());
-			d.setNumberOfSeats(b.getNumberOfSeats());
-			d.setTotalAmount(b.getTotalAmount());
+	    for (Booking b : bookings) {
 
-			if (b.getSchedule() != null) {
-				if (b.getSchedule().getFlight() != null) {
-					d.setFlightName(b.getSchedule().getFlight().getFlightName());
+	        BookingResponseDTO d = new BookingResponseDTO();
 
-					if (b.getSchedule().getFlight().getRoute() != null) {
-						d.setOrigin(b.getSchedule().getFlight().getRoute().getSource());
-						d.setDestination(b.getSchedule().getFlight().getRoute().getDestination());
-					}
-				}
-			} else {
-				d.setFlightName("N/A");
-				d.setOrigin("N/A");
-				d.setDestination("N/A");
-			}
+	        d.setBookingId(b.getId());
+	        d.setBookingReference(b.getBookingReference());
+	        d.setBookingStatus(b.getBookingStatus());
+	        d.setBookingDate(b.getBookingDate());
+	        d.setNumberOfSeats(b.getNumberOfSeats());
+	        d.setTotalAmount(b.getTotalAmount());
 
-			dtos.add(d);
-		}
-		return dtos;
+	        if (b.getUser() != null) {
+	            d.setUserName(b.getUser().getName());
+	        } else {
+	            d.setUserName("N/A");
+	        }
+
+	        if (b.getSchedule() != null && 
+	            b.getSchedule().getFlight() != null) {
+
+	            d.setFlightName(b.getSchedule().getFlight().getFlightName());
+
+	            if (b.getSchedule().getFlight().getRoute() != null) {
+	                d.setOrigin(b.getSchedule().getFlight().getRoute().getSource());
+	                d.setDestination(b.getSchedule().getFlight().getRoute().getDestination());
+	            }
+	        } else {
+	            d.setFlightName("N/A");
+	            d.setOrigin("N/A");
+	            d.setDestination("N/A");
+	        }
+
+	        dtos.add(d);
+	    }
+
+	    return dtos;
 	}
 
 	@Override
