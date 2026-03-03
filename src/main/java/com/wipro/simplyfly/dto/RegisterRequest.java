@@ -20,7 +20,7 @@ public class RegisterRequest {
 	@Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
 	private String phone;
 	@NotBlank(message = "Role is required")
-    private String role;   // "ROLE_USER" or "ROLE_ADMIN"
+    private String role;  
 	
 	 private String address;
 	    private String gender;
