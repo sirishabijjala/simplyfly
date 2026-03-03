@@ -1,8 +1,8 @@
 package com.wipro.simplyfly.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,27 +49,26 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public List<UserDTO> manageUsers() {
-		List<User> users = userRepo.findAll();
-		List<UserDTO> dtos = new ArrayList<>();
-		for (User u : users) {
-			UserDTO d = new UserDTO();
-			d.setId(u.getId());
-			d.setName(u.getName());
-			d.setEmail(u.getEmail());
-			d.setPhone(u.getPhone());
-			d.setRole(u.getRole());
-			d.setPassword(u.getPassword());
-			d.setCreatedDate(u.getCreatedDate());
-			dtos.add(d);
-		}
-		return dtos;
+	    return userRepo.findAll().stream().map(u -> {
+	        UserDTO dto = new UserDTO();
+	        dto.setId(u.getId());
+	        dto.setName(u.getName());
+	        dto.setEmail(u.getEmail());
+	        dto.setPhone(u.getPhone());
+	        dto.setAddress(u.getAddress());
+	        dto.setGender(u.getGender());
+	        dto.setDateOfBirth(u.getDateOfBirth());
+	        return dto;
+	    }).collect(Collectors.toList());
 	}
 
-    public String addUser(RegisterRequest request) {
+	@Override
+	public String addUser(RegisterRequest request) {
         if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
             return "Email already exists";
         }
 
+        // Create Account
         Account account = new Account();
         account.setName(request.getName());
         account.setEmail(request.getEmail());
@@ -78,53 +77,66 @@ public class AdminServiceImp implements IAdminService {
         account.setActive(true);
         accountRepo.save(account);
 
+        // Create User
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setPassword(request.getPassword());
         user.setPhone(request.getPhone());
-        user.setRole("USER");
-        user.setEnabled(true);
-        user.setCreatedDate(LocalDateTime.now());
-        user.setAccount(account); 
+        user.setAddress(request.getAddress());
+        user.setGender(request.getGender());
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setAccount(account);
         userRepo.save(user);
 
         return "User added successfully";
     }
 
-    public String updateUser(Long userId, RegisterRequest request) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+	@Override
+	public String updateUser(Long userId, RegisterRequest request) {
+	    User user = userRepo.findById(userId)
+	            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Update User fields
-        user.setName(request.getName() != null ? request.getName() : user.getName());
-        user.setPhone(request.getPhone() != null ? request.getPhone() : user.getPhone());
-        user.setRole(request.getRole() != null ? request.getRole() : user.getRole());
+	    user.setName(request.getName() != null ? request.getName() : user.getName());
+	    user.setPhone(request.getPhone() != null ? request.getPhone() : user.getPhone());
+	    user.setAddress(request.getAddress() != null ? request.getAddress() : user.getAddress());
+	    user.setGender(request.getGender() != null ? request.getGender() : user.getGender());
+	    user.setDateOfBirth(request.getDateOfBirth() != null ? request.getDateOfBirth() : user.getDateOfBirth());
 
-        // Update linked Account if needed
-        Account account = user.getAccount();
-        if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
-            if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
-                return "Email already exists";
-            }
-            account.setEmail(request.getEmail());
-        }
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-        if (request.getName() != null) {
-            account.setName(request.getName());
-        }
+	    Account account = user.getAccount();
+	    if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
+	        if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+	            return "Email already exists";
+	        }
+	        account.setEmail(request.getEmail());
+	    }
+	    if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+	        account.setPassword(passwordEncoder.encode(request.getPassword()));
+	    }
+	    if (request.getName() != null) {
+	        account.setName(request.getName());
+	    }
 
-        accountRepo.save(account);
-        userRepo.save(user);
+	    accountRepo.save(account);
+	    userRepo.save(user);
 
-        return "User updated successfully";
-    }
+	    return "User updated successfully";
+	}
 
 	@Override
 	public boolean deleteUser(Long userId) {
-		userRepo.deleteById(userId);
-		return true;
+	    User user = userRepo.findById(userId)
+	            .orElseThrow(() -> new RuntimeException("User not found"));
+
+	    Account account = user.getAccount();
+
+	    if (account != null) {
+	        accountRepo.delete(account);
+	    }
+
+	    userRepo.delete(user);
+
+	    return true; 
 	}
 
 	@Override
@@ -155,11 +167,10 @@ public class AdminServiceImp implements IAdminService {
         account.setActive(true);
         accountRepo.save(account);
 
-        // Create FlightOwner
         FlightOwner owner = new FlightOwner();
         owner.setName(request.getName());
         owner.setEmail(request.getEmail());
-        owner.setAccount(account); // Link
+        owner.setAccount(account);
         ownerRepo.save(owner);
 
         return "FlightOwner added successfully";
@@ -169,11 +180,9 @@ public class AdminServiceImp implements IAdminService {
 	    FlightOwner owner = ownerRepo.findById(ownerId)
 	            .orElseThrow(() -> new RuntimeException("FlightOwner not found"));
 
-	    // Update FlightOwner fields
 	    owner.setName(request.getName() != null ? request.getName() : owner.getName());
 	    owner.setEmail(request.getEmail() != null ? request.getEmail() : owner.getEmail()); // update FlightOwner email too
 
-	    // Update linked Account
 	    Account account = owner.getAccount();
 	    if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
 	        if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
