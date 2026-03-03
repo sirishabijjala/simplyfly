@@ -25,7 +25,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
-        // Check if user already exists
+        
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException(userDTO.getEmail());
         }
@@ -37,7 +37,7 @@ public class UserServiceImpl implements IUserService {
                 userDTO.getPhone(),
                 userDTO.getAddress(),
                 userDTO.getGender(),
-                userDTO.getDateOfBirth() // you may need to change DTO to LocalDate
+                userDTO.getDateOfBirth() 
         );
 
         User savedUser = userRepository.save(user);
@@ -101,7 +101,7 @@ public class UserServiceImpl implements IUserService {
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
-        dto.setPassword(user.getPassword()); // consider not returning password
+        dto.setPassword(user.getPassword()); 
         dto.setPhone(user.getPhone());
         dto.setAddress(user.getAddress());
         dto.setGender(user.getGender());
