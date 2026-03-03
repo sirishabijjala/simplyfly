@@ -1,145 +1,75 @@
 package com.wipro.simplyfly.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
 public class User {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@Column(nullable = false)
-	private String name;
+    @Column(nullable = false)
+    private String name;
 
-	@Column(nullable = false, unique = true)
-	private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-	@Column(nullable = false)
-	private String password;
+    @Column(nullable = false)
+    private String password;
 
-	@Column(nullable = false)
-	private String phone;
+    @Column(nullable = false)
+    private String phone;
 
-	@Column(nullable = false)
-	private String role;
+    private String address;
 
-	private boolean enabled = true;
+    private String gender;
 
-	private LocalDateTime createdDate;
+    private LocalDate dateOfBirth;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "account_id", nullable = false, unique = true)
-	private Account account;
+    public User() {
+    }
 
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<Booking> bookings;
+    public User(String name, String email, String password, String phone, String address, String gender, LocalDate dateOfBirth) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.address = address;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+    }
 
-	public User() {
-		this.createdDate = LocalDateTime.now();
-	}
+    // -------- Getters and Setters --------
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-	public User(String name, String email, String password, String phone, String role, Account account) {
-		this.name = name;
-		this.email = email;
-		this.password = password;
-		this.phone = phone;
-		this.role = role;
-		this.enabled = true;
-		this.createdDate = LocalDateTime.now();
-		this.account = account;
-	}
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-	
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-	public Long getId() {
-		return id;
-	}
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-	public String getName() {
-		return name;
-	}
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
 
-	public String getEmail() {
-		return email;
-	}
+    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	public LocalDateTime getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(LocalDateTime createdDate) {
-		this.createdDate = createdDate;
-	}
-
-	public Account getAccount() {
-		return account;
-	}
-
-	public void setAccount(Account account) {
-		this.account = account;
-	}
-
-	public List<Booking> getBookings() {
-		return bookings;
-	}
-
-	public void setBookings(List<Booking> bookings) {
-		this.bookings = bookings;
-	}
-
-	@Override
-	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", phone=" + phone
-				+ ", role=" + role + ", enabled=" + enabled + ", createdDate=" + createdDate + ", account=" + account
-				+ ", bookings=" + bookings + "]";
-	}
-
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", phone=" + phone
+                + ", address=" + address + ", gender=" + gender + ", dateOfBirth=" + dateOfBirth + "]";
+    }
 }
