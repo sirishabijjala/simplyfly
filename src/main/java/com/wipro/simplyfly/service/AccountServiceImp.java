@@ -2,6 +2,7 @@ package com.wipro.simplyfly.service;
 
 import java.time.LocalDateTime;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,10 +59,10 @@ public class AccountServiceImp implements AccountService{
 	            user.setEmail(request.getEmail());
 	            user.setPassword(request.getPassword());
 	            user.setPhone(request.getPhone());
-	            user.setEnabled(true);
-	            user.setCreatedDate(LocalDateTime.now());
-	            user.setRole(request.getRole());
-	            user.setAccount(account); 
+	            user.setAddress(request.getAddress());	
+	            user.setGender(request.getGender());
+	            user.setDateOfBirth(request.getDateOfBirth());
+	            
 	            userRepo.save(user);
 	        } 
 	        else if (request.getRole().equalsIgnoreCase("OWNER")) {
