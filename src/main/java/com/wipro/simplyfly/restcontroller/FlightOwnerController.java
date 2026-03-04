@@ -20,6 +20,9 @@ import com.wipro.simplyfly.dto.FlightDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.service.FlightOwnerService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/owner")
 @CrossOrigin(origins = "*")
