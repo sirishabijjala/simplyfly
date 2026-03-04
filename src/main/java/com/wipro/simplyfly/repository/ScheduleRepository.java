@@ -14,10 +14,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     // Get all schedules by Flight ID
     List<Schedule> findByFlightRouteId(Long flightId);
 
-    // Get schedules by departure date
-    List<Schedule> findByDepartureDate(LocalDate departureDate);
 
     // Get schedules by Flight and Date
-    List<Schedule> findByFlightIdAndDepartureDate(Long flightId, LocalDate departureDate);
+    List<Schedule> findByFlightIdAndDepartureTime(Long flightId, LocalDate departureTime);
 
 }
