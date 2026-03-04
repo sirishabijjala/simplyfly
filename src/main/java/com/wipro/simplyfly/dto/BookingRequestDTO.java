@@ -21,6 +21,18 @@ public BookingRequestDTO(Long userId, Long scheduleId, int numberOfSeats) {
 	this.scheduleId = scheduleId;
 	this.numberOfSeats = numberOfSeats;
 }
+
+
+public BookingRequestDTO(@NotNull(message = "UserID cannot be null") Long userId,
+		@NotNull(message = "ScheduleId cannot be null") Long scheduleId,
+		@Min(value = 1, message = "Atleast one seat has to select for booking") int numberOfSeats,
+		@NotNull(message = "Payment method is required") String paymentMethod) {
+	super();
+	this.userId = userId;
+	this.scheduleId = scheduleId;
+	this.numberOfSeats = numberOfSeats;
+	this.paymentMethod = paymentMethod;
+}
 public Long getUserId() {
 	return userId;
 }

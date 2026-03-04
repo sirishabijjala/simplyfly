@@ -103,8 +103,8 @@ public class AdminServiceImp implements IAdminService {
 
 		user.setName(request.getName() != null ? request.getName() : user.getName());
 		user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
-		user.setPassword(request.getPassword() != null ? passwordEncoder.encode(request.getPassword())
-				: passwordEncoder.encode(request.getPassword()));
+		user.setPassword(
+				request.getPassword() != null ? passwordEncoder.encode(request.getPassword()) : user.getPassword());
 		user.setPhone(request.getPhone() != null ? request.getPhone() : user.getPhone());
 		user.setAddress(request.getAddress() != null ? request.getAddress() : user.getAddress());
 		user.setGender(request.getGender() != null ? request.getGender() : user.getGender());
@@ -184,8 +184,7 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public String updateFlightOwner(Long ownerId, RegisterRequest request) {
-		FlightOwner owner = ownerRepo.findById(ownerId)
-				.orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
+		FlightOwner owner = ownerRepo.findById(ownerId).orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
 		owner.setName(request.getName() != null ? request.getName() : owner.getName());
 		owner.setEmail(request.getEmail() != null ? request.getEmail() : owner.getEmail());
 
@@ -212,19 +211,18 @@ public class AdminServiceImp implements IAdminService {
 	@Override
 	public String deleteFlightOwner(Long ownerId) {
 
-	    FlightOwner owner = ownerRepo.findById(ownerId)
-	            .orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
+		FlightOwner owner = ownerRepo.findById(ownerId).orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
 
-	    boolean hasBookings = bookingRepo.existsBySchedule_Flight_FlightOwner_Id(ownerId);
+		boolean hasBookings = bookingRepo.existsBySchedule_Flight_FlightOwner_Id(ownerId);
 
-	    if (hasBookings) {
-	        return "Flight owner cannot be deleted because flights under this owner have existing bookings.";
-	    }
+		if (hasBookings) {
+			return "Flight owner cannot be deleted because flights under this owner have existing bookings.";
+		}
 
-	    ownerRepo.delete(owner);
-	    accountRepo.delete(owner.getAccount());
+		ownerRepo.delete(owner);
+		accountRepo.delete(owner.getAccount());
 
-	    return "Flight owner deleted successfully "; 
+		return "Flight owner deleted successfully ";
 	}
 
 	@Override
@@ -280,11 +278,10 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public String deleteRoute(int routeId) {
-		Route route = routeRepo.findById(routeId)
-		        .orElseThrow(() -> new RouteNotFoundException(routeId));
+		Route route = routeRepo.findById(routeId).orElseThrow(() -> new RouteNotFoundException(routeId));
 
 		routeRepo.delete(route);
-		return "Rute delted successfully";
+		return "Route deleted successfully";
 	}
 
 	@Override
@@ -332,7 +329,9 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public boolean cancelBooking(Long bookingId) {
-		Booking b = bookingRepo.findById(bookingId).orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));;
+		Booking b = bookingRepo.findById(bookingId)
+				.orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));
+		;
 		if (b != null) {
 			b.setBookingStatus("CANCELLED");
 			bookingRepo.save(b);
