@@ -1,9 +1,19 @@
 package com.wipro.simplyfly.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class PassengerDTO {
+	@NotBlank(message="Passenger name cannot be null")
 	private String name;
+	@Min(value = 0, message="Age must be greater than or equal to 0")
+	@Max(value = 120, message="Age seems invalid")
 	private int age;
+	@NotBlank(message="Gender is required")
 	private String gender;
+	@NotNull(message="SeatId is required")
 	private Long seatId;
 
 	public PassengerDTO() {
