@@ -19,7 +19,6 @@ public class Schedule {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private LocalDateTime departureDate;
 	private LocalDateTime departureTime;
 	private LocalDateTime arrivalTime;
 
@@ -40,13 +39,6 @@ public class Schedule {
 		this.id = id;
 	}
 
-	public LocalDateTime getDepartureDate() {
-		return departureDate;
-	}
-
-	public void setDepartureDate(LocalDateTime departureDate) {
-		this.departureDate = departureDate;
-	}
 
 	public LocalDateTime getDepartureTime() {
 		return departureTime;
@@ -98,7 +90,7 @@ public class Schedule {
 
 	@Override
 	public String toString() {
-		return "Schedule [id=" + id + ", departureDate=" + departureDate + ", departureTime=" + departureTime
+		return "Schedule [id=" + id  + ", departureTime=" + departureTime
 				+ ", arrivalTime=" + arrivalTime + ", totalSeats=" + totalSeats + ", availableSeats=" + availableSeats
 				+ ", fare=" + fare + ", flight=" + flight + "]";
 	}
