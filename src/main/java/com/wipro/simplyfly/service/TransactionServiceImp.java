@@ -23,20 +23,27 @@ public class TransactionServiceImp implements ITransactionService{
 
 	@Override
 	@Transactional
-	public TransactionResponseDTO makePayment(Long bookingId, TransactionRequestDTO request) {
-		Booking booking=bookingRepository.findById(bookingId).orElseThrow(()->new RuntimeException("Booking Not Found"));
-		Transaction transaction=new Transaction();
-		transaction.setTransactionId(UUID.randomUUID().toString());
-		transaction.setBooking(booking);
-		transaction.setAmount(booking.getTotalAmount());
-		transaction.setPaymentMethod(request.getPaymentMethod());
-		transaction.setPaymentStatus("CONFIRMED");
-		transaction.setTransactionDate(LocalDateTime.now());
-		Transaction saved=transactionRepository.save(transaction);
-		booking.setBookingStatus("CONFIRMED");
-		bookingRepository.save(booking);
+	    public TransactionResponseDTO makePayment(Long bookingId,
+                                              TransactionRequestDTO request) {
+
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(UUID.randomUUID().toString());
+        transaction.setBooking(booking);
+        transaction.setAmount(booking.getTotalAmount());
+        transaction.setPaymentMethod(request.getPaymentMethod());
+        transaction.setPaymentStatus("SUCCESS");
+        transaction.setTransactionDate(LocalDateTime.now());
+
+        transactionRepository.save(transaction);
+
+        // 🔥 CONFIRM BOOKING AFTER PAYMENT
+        booking.setBookingStatus("CONFIRMED");
+
 		
-		return  mapToResponse(saved);
+   return  mapToResponse(transaction);
 	}
 
 	@Override

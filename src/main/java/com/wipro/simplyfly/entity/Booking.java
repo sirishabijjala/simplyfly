@@ -58,7 +58,15 @@ public class Booking {
 		this.bookingStatus = bookingStatus;
 		this.bookingDate = bookingDate;
 	}
+	
+	
 
+	public List<Passenger> getPassengers() {
+		return passengers;
+	}
+	public void setPassengers(List<Passenger> passengers) {
+		this.passengers = passengers;
+	}
 	public Long getId() {
 		return id;
 	}
