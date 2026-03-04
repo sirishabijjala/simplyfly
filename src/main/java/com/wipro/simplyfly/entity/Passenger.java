@@ -90,8 +90,10 @@ public class Passenger {
 
 	@Override
 	public String toString() {
-		return "Passenger [id=" + id + ", name=" + name + ", age=" + age + ", gender=" + gender + ", booking=" + booking
-				+ ", seat=" + seat + "]";
+	    return "Passenger [id=" + id +
+	            ", name=" + name +
+	            ", age=" + age +
+	            ", gender=" + gender + "]";
 	}
     
     
