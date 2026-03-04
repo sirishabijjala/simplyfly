@@ -4,6 +4,8 @@ package com.wipro.simplyfly.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
+import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.service.FlightOwnerService;
 
@@ -88,4 +91,11 @@ public class FlightOwnerController {
 	public void refundBooking(@PathVariable Long bookingId) {
 		flightOwnerService.refundBooking(bookingId);
 	}
+	
+	@PostMapping("/addRoute")
+    public RouteDTO addRoute(@RequestBody RouteDTO routeDTO) {
+
+        RouteDTO savedRoute = flightOwnerService.addRoute(routeDTO);
+        return savedRoute;
+    }
 }
