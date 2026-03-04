@@ -17,6 +17,9 @@ import com.wipro.simplyfly.dto.BookingRequestDTO;
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.service.IBookingService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/simplyfly/")
 @PreAuthorize("hasAuthority('USER')")
