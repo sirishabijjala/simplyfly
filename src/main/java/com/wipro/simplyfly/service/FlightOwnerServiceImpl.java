@@ -114,6 +114,7 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
                     dto.setArrivalTime(schedule.getArrivalTime());
                     dto.setTotalSeats(schedule.getTotalSeats());
                     dto.setAvailableSeats(schedule.getAvailableSeats());
+                    dto.setFare(schedule.getFare());
                     dto.setFlightId(schedule.getFlight().getId());
                     return dto;
                 })
@@ -132,6 +133,7 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
         schedule.setArrivalTime(scheduleDTO.getArrivalTime());
         schedule.setTotalSeats(scheduleDTO.getTotalSeats());
         schedule.setAvailableSeats(scheduleDTO.getAvailableSeats());
+        schedule.setFare(scheduleDTO.getFare());
         schedule.setFlight(flight);
 
         Schedule saved = scheduleRepository.save(schedule);
@@ -153,6 +155,7 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
         schedule.setArrivalTime(scheduleDTO.getArrivalTime());
         schedule.setTotalSeats(scheduleDTO.getTotalSeats());
         schedule.setAvailableSeats(scheduleDTO.getAvailableSeats());
+        schedule.setFare(scheduleDTO.getFare());
 
         scheduleRepository.save(schedule);
 

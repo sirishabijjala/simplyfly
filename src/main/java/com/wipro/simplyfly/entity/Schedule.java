@@ -19,7 +19,7 @@ public class Schedule {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	private LocalDateTime departureDate;
+	
 	private LocalDateTime departureTime;
 	private LocalDateTime arrivalTime;
 
@@ -38,14 +38,6 @@ public class Schedule {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public LocalDateTime getDepartureDate() {
-		return departureDate;
-	}
-
-	public void setDepartureDate(LocalDateTime departureDate) {
-		this.departureDate = departureDate;
 	}
 
 	public LocalDateTime getDepartureTime() {
