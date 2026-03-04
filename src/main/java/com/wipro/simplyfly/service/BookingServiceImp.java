@@ -60,6 +60,7 @@ public class BookingServiceImp implements IBookingService{
 	}
 
 	@Override
+	@Transactional
 	public BookingResponseDTO getBooking(Long bookingId) {
 		Booking response=bookingRepository.findById(bookingId).orElseThrow(()->new RuntimeException("Booking Not Found"));
 		return mapToResponse(response);
