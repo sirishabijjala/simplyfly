@@ -1,7 +1,9 @@
 package com.wipro.simplyfly.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -31,6 +34,8 @@ public class Booking {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_id", nullable = false)
 	private Schedule schedule;
+	@OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+	private List<Passenger> passengers;
 
 
 	private int numberOfSeats;
@@ -53,7 +58,15 @@ public class Booking {
 		this.bookingStatus = bookingStatus;
 		this.bookingDate = bookingDate;
 	}
+	
+	
 
+	public List<Passenger> getPassengers() {
+		return passengers;
+	}
+	public void setPassengers(List<Passenger> passengers) {
+		this.passengers = passengers;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -122,9 +135,12 @@ public class Booking {
 
 	@Override
 	public String toString() {
-		return "Booking [id=" + id + ", bookingReference=" + bookingReference + ", user=" + user + ", schedule="
-				+ schedule + ", numberOfSeats=" + numberOfSeats + ", totalAmount=" + totalAmount + ", bookingStatus="
-				+ bookingStatus + ", bookingDate=" + bookingDate + "]";
+	    return "Booking [id=" + id +
+	            ", bookingReference=" + bookingReference +
+	            ", numberOfSeats=" + numberOfSeats +
+	            ", totalAmount=" + totalAmount +
+	            ", bookingStatus=" + bookingStatus +
+	            ", bookingDate=" + bookingDate + "]";
 	}
 	
 	

@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.wipro.simplyfly.dto.TransactionResponseDTO;
 import com.wipro.simplyfly.service.ITransactionService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/simpyfly/")
 public class TransactionRestController {

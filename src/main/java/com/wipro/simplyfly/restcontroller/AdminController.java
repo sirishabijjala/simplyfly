@@ -21,6 +21,9 @@ import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.service.IAdminService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasAuthority('ADMIN')")

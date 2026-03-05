@@ -90,9 +90,12 @@ public class Transaction {
 
 	@Override
 	public String toString() {
-		return "Transaction [id=" + id + ", transactionId=" + transactionId + ", booking=" + booking + ", amount="
-				+ amount + ", paymentMethod=" + paymentMethod + ", paymentStatus=" + paymentStatus
-				+ ", transactionDate=" + transactionDate + "]";
+	    return "Transaction [id=" + id +
+	            ", transactionId=" + transactionId +
+	            ", amount=" + amount +
+	            ", paymentMethod=" + paymentMethod +
+	            ", paymentStatus=" + paymentStatus +
+	            ", transactionDate=" + transactionDate + "]";
 	}
 
 }

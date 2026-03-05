@@ -9,7 +9,8 @@ public interface IBookingService {
 	public BookingResponseDTO createBooking(BookingRequestDTO request);
 	public BookingResponseDTO getBooking(Long bookingId);
 	public List<BookingResponseDTO> getAllBookings();
-	public boolean cancelBooking(Long bookingId);
+	public void cancelBooking(Long bookingId);
 
 
+	  
 }

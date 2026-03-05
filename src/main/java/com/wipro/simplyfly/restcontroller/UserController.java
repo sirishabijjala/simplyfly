@@ -9,30 +9,12 @@ import org.springframework.web.bind.annotation.*;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.service.IUserService;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private IUserService userService;
-
-    // =============================
-    // PUBLIC APIs (No Authorization Required)
-    // =============================
-
-    @PostMapping("/register")
-    public UserDTO registerUser(@Valid @RequestBody UserDTO userDTO) {
-    	return userService.registerUser(userDTO);
-        
-    }
-
-    @PostMapping("/login")
-    public UserDTO login(@RequestParam String email,
-                         @RequestParam String password) {
-        return userService.loginUser(email, password);
-    }
 
     // =============================
     // PROTECTED APIs (USER Role Required)

@@ -14,6 +14,7 @@ import com.wipro.simplyfly.repository.*;
 =======
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
+import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.Flight;
@@ -248,4 +249,30 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
         bookingRepository.save(booking);
     }
+<<<<<<< HEAD
+=======
+
+	@Override
+	public List<FlightDTO> getFlightsByOwner(Long ownerId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public RouteDTO addRoute(RouteDTO routeDTO) {
+
+	   
+	    Route route = new Route();
+	    route.setSource(routeDTO.getSource());
+	    route.setDestination(routeDTO.getDestination());
+	    route.setDistance(routeDTO.getDistance());
+	    route.setEstimatedDuration(routeDTO.getEstimatedDuration());
+
+	  
+	    routeRepository.save(route);
+
+	  
+	    return routeDTO;
+	}
+>>>>>>> 7fe4232195589fa4ee1b1d297802f8e1ec93f68a
 }

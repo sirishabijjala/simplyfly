@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
+import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.entity.FlightOwner;
 
@@ -36,4 +37,6 @@ public interface FlightOwnerService {
     List<BookingResponseDTO> getBookingsByOwner(Long ownerId);
 
     void refundBooking(Long bookingId);
+    
+    RouteDTO addRoute(RouteDTO routeDTO);
 }
