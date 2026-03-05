@@ -7,26 +7,83 @@
 <link rel="stylesheet"
 href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
+<style>
+
+body{
+background: linear-gradient(120deg,#74ebd5,#9face6);
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.register-card{
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+max-width:900px;
+}
+
+.form-control{
+border-radius:8px;
+font-size:14px;
+}
+
+.btn-primary{
+border-radius:8px;
+padding:8px;
+font-weight:600;
+}
+
+.card-body{
+max-height:520px;
+overflow-y:auto;
+padding:30px;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="container mt-5">
+<div class="container">
 
-<h2>Register</h2>
+<div class="row justify-content-center">
+
+<div class="col-lg-9">
+
+<div class="card register-card">
+
+<div class="row g-0">
+
+<div class="col-md-5 d-none d-md-block">
+
+<img src="https://img.freepik.com/free-vector/sign-up-concept-illustration_114360-7865.jpg"
+class="img-fluid h-100"
+style="object-fit:cover;border-top-left-radius:15px;border-bottom-left-radius:15px;">
+
+</div>
+
+
+
+<div class="col-md-7">
+
+<div class="card-body">
+
+<h4 class="mb-3 text-center">Create Account</h4>
 
 <form id="registerForm">
 
 <input class="form-control mb-2"
 type="text"
 id="name"
-placeholder="Name"
+placeholder="Full Name"
 required>
 
 <input class="form-control mb-2"
 type="email"
 id="email"
-placeholder="Email"
+placeholder="Email Address"
 required>
 
 <input class="form-control mb-2"
@@ -35,7 +92,7 @@ id="password"
 placeholder="Password"
 required>
 
-<select class="form-control mb-3" id="role" onchange="toggleFields()">
+<select class="form-control mb-2" id="role" onchange="toggleFields()">
 
 <option value="">Select Role</option>
 <option value="USER">User</option>
@@ -44,39 +101,65 @@ required>
 
 </select>
 
-<!-- USER EXTRA FIELDS -->
 
 <div id="userFields" style="display:none">
 
+<div class="row">
+
+<div class="col-md-6">
 <input class="form-control mb-2"
 type="text"
 id="phone"
 placeholder="Phone">
+</div>
 
+<div class="col-md-6">
+<select class="form-control mb-2" id="gender">
+<option value="">Gender</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+</select>
+</div>
+
+<div class="col-md-6">
+<input class="form-control mb-2"
+type="date"
+id="dateOfBirth">
+</div>
+
+<div class="col-md-6">
 <input class="form-control mb-2"
 type="text"
 id="address"
 placeholder="Address">
-
-<select class="form-control mb-2" id="gender">
-
-<option value="">Gender</option>
-<option value="Male">Male</option>
-<option value="Female">Female</option>
-
-</select>
-
-<input class="form-control mb-3"
-type="date"
-id="dateOfBirth">
+</div>
 
 </div>
 
-<button class="btn btn-primary">
+</div>
+
+<button class="btn btn-primary w-100 mt-2">
 Register
 </button>
 
+<p class="text-center mt-2">
+If you have an account 
+<a href="login.html">Login</a>
+</p>
+
 </form>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </div>
 
