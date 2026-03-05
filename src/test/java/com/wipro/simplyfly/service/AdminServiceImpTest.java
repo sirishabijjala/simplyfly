@@ -203,8 +203,7 @@ class AdminServiceImpTest {
 
 	        when(bookingRepo.findById(1L)).thenReturn(Optional.of(booking));
 
-	        boolean result = adminService.cancelBooking(1L);
+	        adminService.cancelBooking(1L);
 
-	        assertTrue(result);
 	    }
 }

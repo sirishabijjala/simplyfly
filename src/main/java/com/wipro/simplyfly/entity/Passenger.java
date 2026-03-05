@@ -23,7 +23,7 @@ public class Passenger {
     private Booking booking;
 
     @OneToOne
-    @JoinColumn(name = "seat_id")
+    @JoinColumn(name = "seat_id",referencedColumnName = "id")
     private Seat seat; // Links the person to their specific 1A or 1B
 
 	public Passenger() {

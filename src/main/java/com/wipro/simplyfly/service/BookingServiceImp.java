@@ -200,6 +200,17 @@ public class BookingServiceImp implements IBookingService{
 		response.setFlightName(booking.getSchedule().getFlight().getFlightName());
 		response.setOrigin(booking.getSchedule().getFlight().getRoute().getSource());
 		response.setDestination(booking.getSchedule().getFlight().getRoute().getDestination());
+		
+		if (booking.getSchedule() != null && booking.getSchedule().getFlight() != null) {
+	        String airline = booking.getSchedule().getFlight().getFlightOwner().getName();
+	        String flightNo = booking.getSchedule().getFlight().getFlightNumber();
+	        String model = booking.getSchedule().getFlight().getFlightName();
+
+	        response.setFlightName(airline + " | " + flightNo + " (" + model + ")");
+	        
+	        response.setOrigin(booking.getSchedule().getFlight().getRoute().getSource());
+	        response.setDestination(booking.getSchedule().getFlight().getRoute().getDestination());
+	    }
 	    List<PassengerResponseDTO> passengerResponses = booking.getPassengers()
 	            .stream()
 	            .map(passenger -> {

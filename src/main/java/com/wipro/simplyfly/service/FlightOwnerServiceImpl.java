@@ -2,7 +2,7 @@ package com.wipro.simplyfly.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import com.wipro.simplyfly.repository.SeatRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -277,20 +277,21 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     }
 
     
-    // ROUTE
-    
     @Override
     public RouteDTO addRoute(RouteDTO routeDTO) {
+        if (routeRepository.existsBySourceAndDestination(routeDTO.getSource(), routeDTO.getDestination())) {
+            throw new RuntimeException("Route from " + routeDTO.getSource() + 
+                                       " to " + routeDTO.getDestination() + " already exists!");
+        }
 
-        Route route = new Route();
+        Route r = new Route();
+        r.setSource(routeDTO.getSource());
+        r.setDestination(routeDTO.getDestination());
+        r.setDistance(routeDTO.getDistance());
+        r.setEstimatedDuration(routeDTO.getEstimatedDuration());
 
-        route.setSource(routeDTO.getSource());
-        route.setDestination(routeDTO.getDestination());
-        route.setDistance(routeDTO.getDistance());
-        route.setEstimatedDuration(routeDTO.getEstimatedDuration());
-
-        routeRepository.save(route);
-
+        Route saved = routeRepository.save(r);
+        routeDTO.setId(saved.getId());
         return routeDTO;
     }
 }

@@ -34,7 +34,7 @@ localStorage.setItem("role",res.role);
 alert("Login Successful");
 
 if(res.role === "ADMIN"){
-window.location.href="/admin/dashboard.html";
+window.location.href="/admin/admin-dashboard.html";
 }
 else if(res.role === "OWNER"){
 window.location.href="/owner/dashboard.html";
