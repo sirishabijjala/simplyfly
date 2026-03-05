@@ -13,4 +13,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	List<Booking> findBookingsByOwnerId(@Param("ownerId") Long ownerId);
 
 	boolean existsBySchedule_Flight_FlightOwner_Id(Long ownerId);
+	
+	boolean existsByUser_Id(long userId);
+	
+	boolean existsByScheduleId(long scheduleId);
 }
