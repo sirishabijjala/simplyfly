@@ -6,14 +6,15 @@ import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
+import com.wipro.simplyfly.entity.FlightOwner;
 
 public interface FlightOwnerService {
-
+	 FlightOwner getOwnerById(Long ownerId);
     //FLIGHT
 
     List<FlightDTO> getFlightsByOwner(Long ownerId);
 
-    FlightDTO addFlight(Long ownerId, FlightDTO flightDTO);
+    FlightDTO addFlight(int routeId, Long ownerId, FlightDTO flightDTO);
 
     FlightDTO updateFlight(Long flightId, FlightDTO flightDTO);
 
