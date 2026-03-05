@@ -1,28 +1,16 @@
 package com.wipro.simplyfly.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.wipro.simplyfly.filter.JwtAuthFilter;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
-
+    // ✅ ADD THIS PASSWORD ENCODER BEAN
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -30,32 +18,42 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
+            // Disable CSRF for development
             .csrf(csrf -> csrf.disable())
+
+            // Authorize requests
             .authorizeHttpRequests(auth -> auth
-            		
-            		// Public frontend pages
-                    .requestMatchers(
-                        "/auth/**",
+
+                // Allow access to static files
+                .requestMatchers(
+                        "/",
+                        "/login",
+                        "/register",
+                        "/user/**",
                         "/css/**",
                         "/js/**",
-                        "/images/**",
-                        "/user/**"
-                    ).permitAll()
-                .requestMatchers("/auth/register", "/auth/login","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","api/flights/**")
-                .permitAll()
-                .requestMatchers("/api/admin/**")
-                .hasAuthority("ADMIN")
-                .requestMatchers("/api/user/**")
-                .hasAuthority("USER")
-                .requestMatchers("/api/owner/**")
-                .hasAuthority("OWNER")
-                .anyRequest()
-                .authenticated()
+                        "/images/**"
+                ).permitAll()
+
+                // Any other request requires authentication
+                .anyRequest().authenticated()
             )
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+            // Custom login configuration
+            .formLogin(form -> form
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/user/dashboard.html", true)
+                    .permitAll()
+            )
+
+            // Logout configuration
+            .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout")
+                    .permitAll()
+            );
 
         return http.build();
     }
