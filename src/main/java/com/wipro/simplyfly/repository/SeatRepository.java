@@ -9,7 +9,7 @@ import com.wipro.simplyfly.entity.Seat;
 
 public interface SeatRepository extends JpaRepository<Seat,Long>{
 	List<Seat> findByScheduleId(Long scheduleId);
-	List<Seat> findByScheduleIdAndAvailableTrue(Long scheduleId);
+	List<Seat> findByScheduleIdAndIsAvailableTrue(Long scheduleId);
 	Optional<Seat> findByIdAndScheduleId(Long seatId, Long scheduleId);
 
 }

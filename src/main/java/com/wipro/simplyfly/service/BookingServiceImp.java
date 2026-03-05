@@ -48,7 +48,7 @@ public class BookingServiceImp implements IBookingService{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByName(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 2️⃣ Get Schedule
