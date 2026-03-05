@@ -12,13 +12,13 @@ public class BookingRequestDTO {
    private Long scheduleId;
    @NotEmpty(message = "Passenger list cannot be empty")
    @Valid   // Important to validate PassengerDTO
-   private List<PassengerDTO> passengers;
+   private List<PassengerRequestDTO> passengers;
    @NotBlank(message = "Payment method is required")
    private String paymentMethod;
    public BookingRequestDTO() {
 	super();
    }
-   public BookingRequestDTO(Long scheduleId, List<PassengerDTO> passengers,
+   public BookingRequestDTO(Long scheduleId, List<PassengerRequestDTO> passengers,
 		String paymentMethod) {
 	super();
 	this.scheduleId = scheduleId;
@@ -32,10 +32,10 @@ public class BookingRequestDTO {
 	this.scheduleId = scheduleId;
    }
   
-   public List<PassengerDTO> getPassengers() {
+   public List<PassengerRequestDTO> getPassengers() {
 	return passengers;
    }
-   public void setPassengers(List<PassengerDTO> passengers) {
+   public void setPassengers(List<PassengerRequestDTO> passengers) {
 	this.passengers = passengers;
    }
    public String getPaymentMethod() {

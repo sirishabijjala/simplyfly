@@ -1,6 +1,7 @@
 package com.wipro.simplyfly.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class BookingResponseDTO {
 	private Long bookingId;
@@ -13,6 +14,7 @@ public class BookingResponseDTO {
 	private String bookingStatus;
 	private LocalDateTime bookingDate;
 	private String userName;
+    private List<PassengerResponseDTO> passengers;
 	public BookingResponseDTO() {
 		super();
 	}
@@ -30,6 +32,7 @@ public class BookingResponseDTO {
 		this.bookingStatus = bookingStatus;
 		this.bookingDate = bookingDate;
 	}
+	
 	public Long getBookingId() {
 		return bookingId;
 	}
@@ -90,6 +93,13 @@ public class BookingResponseDTO {
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
+		
+	}
+	public List<PassengerResponseDTO> getPassengers() {
+		return passengers;
+	}
+	public void setPassengers(List<PassengerResponseDTO> passengers) {
+		this.passengers = passengers;
 	}
 	@Override
 	public String toString() {
