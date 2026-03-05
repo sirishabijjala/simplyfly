@@ -129,9 +129,9 @@ function setupRouteFormListener() {
         
         const id = document.getElementById('routeId').value;
         const routeData = {
-            source: document.getElementById('source').value,
-            destination: document.getElementById('destination').value,
-            distance: parseInt(document.getElementById('distance').value),
+            source: document.getElementById('source').value.trim(),
+            destination: document.getElementById('destination').value.trim(),
+            distance: parseInt(document.getElementById('distance').value) || 0,
             estimatedDuration: document.getElementById('duration').value
         };
 
@@ -139,41 +139,36 @@ function setupRouteFormListener() {
         const url = isUpdate ? `/api/admin/routes/${id}` : '/api/admin/routes';
         const method = isUpdate ? 'PUT' : 'POST';
 
-        try {
-            const response = await fetch(url, {
-                method: method,
-                headers: getHeaders(), // Function inside admin.js
-                body: JSON.stringify(routeData)
-            });
+		try {
+		            const response = await fetch(url, {
+		                method: method,
+		                headers: getHeaders(),
+		                body: JSON.stringify(routeData)
+		            });
 
-			if (response.ok) {
-			                alert(isUpdate ? "Route updated successfully!" : "New route added!");
-			                
-			                // 1. Properly Close the Modal
-			                const modalElement = document.getElementById('adminModal');
-			                let modalInstance = bootstrap.Modal.getInstance(modalElement);
-			                
-			                // If the instance doesn't exist yet, create one to hide it
-			                if (!modalInstance) {
-			                    modalInstance = new bootstrap.Modal(modalElement);
-			                }
-			                modalInstance.hide();
-
-			                // 2. Refresh the UI
-			                // We pass null for the event so admin.js doesn't crash
-			                showSection('routes', null); 
-			                
-			            
-            } else {
-                alert("Failed to save route. Check if data is valid.");
-            }
-        } catch (error) {
-            console.error("Save error:", error);
-            alert("Connection error!");
-        }
+		            // 1. If the server responded with ANY status (200, 400, 500...)
+		            if (response.ok) {
+		                alert(isUpdate ? "Route updated successfully!" : "New route added!");
+		                const modalElement = document.getElementById('adminModal');
+		                let modalInstance = bootstrap.Modal.getInstance(modalElement);
+		                if (modalInstance) modalInstance.hide();
+		                showSection('routes', null); 
+		            } else {
+		                // 2. This handles your 400 Bad Request (Duplicate Route)
+		                const errorMessage = await response.text();
+		                // We use alert here to show the "Route already exists!" message
+		                alert(errorMessage); 
+		                return; // Exit here so it doesn't hit the catch block
+		            }
+		        } catch (error) {
+		            // 3. This ONLY runs if the server is literally offline (Connection Refused)
+		            console.error("Actual Network Error:", error);
+		            if (error.name !== 'TypeError') { 
+		                alert("Network error: Is the Spring Boot server running?");
+		            }
+		        }
     };
 }
-
 // 6. DELETE LOGIC
 window.deleteRoute = async function(id) {
     if (!confirm("Are you sure you want to remove this route?")) return;

@@ -7,6 +7,9 @@ public class FlightOwnerDTO {
 	private String name;
 	private String email;
 
+	private int flightCount;
+	private int scheduleCount;
+
 	public FlightOwnerDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -41,6 +44,22 @@ public class FlightOwnerDTO {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public int getFlightCount() {
+		return flightCount;
+	}
+
+	public void setFlightCount(int flightCount) {
+		this.flightCount = flightCount;
+	}
+
+	public int getScheduleCount() {
+		return scheduleCount;
+	}
+
+	public void setScheduleCount(int scheduleCount) {
+		this.scheduleCount = scheduleCount;
 	}
 
 	@Override

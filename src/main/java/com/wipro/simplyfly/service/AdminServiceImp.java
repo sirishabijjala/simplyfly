@@ -1,24 +1,32 @@
 package com.wipro.simplyfly.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
+import com.wipro.simplyfly.dto.PassengerResponseDTO;
 import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.entity.Booking;
+import com.wipro.simplyfly.entity.Flight;
 import com.wipro.simplyfly.entity.FlightOwner;
+import com.wipro.simplyfly.entity.Passenger;
 import com.wipro.simplyfly.entity.Route;
+import com.wipro.simplyfly.entity.Schedule;
+import com.wipro.simplyfly.entity.Seat;
 import com.wipro.simplyfly.entity.User;
-import com.wipro.simplyfly.exceptions.BookingNotFoundException;
 import com.wipro.simplyfly.exceptions.EmailAlreadyExistsException;
 import com.wipro.simplyfly.exceptions.FlightOwnerNotFoundException;
 import com.wipro.simplyfly.exceptions.RouteNotFoundException;
@@ -28,6 +36,8 @@ import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.FlightRepository;
 import com.wipro.simplyfly.repository.RouteRepository;
+import com.wipro.simplyfly.repository.ScheduleRepository;
+import com.wipro.simplyfly.repository.SeatRepository;
 import com.wipro.simplyfly.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -53,8 +63,17 @@ public class AdminServiceImp implements IAdminService {
 
 	@Autowired
 	AccountRepository accountRepo;
+	
 	@Autowired
+    ScheduleRepository scheduleRepo;
+	
+    @Autowired
+    SeatRepository seatRepo;
+	@Autowired
+	
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private ITransactionService transactionService;;
 
 	@Override
 	public List<UserDTO> manageUsers() {
@@ -158,16 +177,28 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public List<FlightOwnerDTO> manageFlightOwners() {
-		List<FlightOwner> owners = ownerRepo.findAll();
-		List<FlightOwnerDTO> dtos = new ArrayList<>();
-		for (FlightOwner o : owners) {
-			FlightOwnerDTO d = new FlightOwnerDTO();
-			d.setId(o.getId());
-			d.setName(o.getName());
-			d.setEmail(o.getEmail());
-			dtos.add(d);
-		}
-		return dtos;
+	    List<FlightOwner> owners = ownerRepo.findAll();
+	    List<FlightOwnerDTO> dtos = new ArrayList<>();
+	    for (FlightOwner o : owners) {
+	        FlightOwnerDTO d = new FlightOwnerDTO();
+	        d.setId(o.getId());
+	        d.setName(o.getName());
+	        d.setEmail(o.getEmail());
+	        
+	        // Populate counts
+	        d.setFlightCount(o.getFlights() != null ? o.getFlights().size() : 0);
+	        
+	        int totalSchedules = 0;
+	        if (o.getFlights() != null) {
+	            for (Flight f : o.getFlights()) {
+	                totalSchedules += (f.getSchedules() != null ? f.getSchedules().size() : 0);
+	            }
+	        }
+	        d.setScheduleCount(totalSchedules);
+	        
+	        dtos.add(d);
+	    }
+	    return dtos;
 	}
 
 	@Override
@@ -191,6 +222,34 @@ public class AdminServiceImp implements IAdminService {
 		ownerRepo.save(owner);
 
 		return "FlightOwner added successfully";
+	}
+	
+	@Override
+	public List<Map<String, Object>> getOwnerInventory(Long ownerId) {
+	    FlightOwner owner = ownerRepo.findById(ownerId)
+	        .orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
+
+	    List<Map<String, Object>> inventory = new ArrayList<>();
+
+	    for (Flight f : owner.getFlights()) {
+	        Map<String, Object> flightMap = new HashMap<>();
+	        flightMap.put("flightNumber", f.getFlightNumber());
+	        flightMap.put("model", f.getFlightName());
+	        flightMap.put("route", f.getRoute().getSource() + " to " + f.getRoute().getDestination());
+	        
+	        // Get schedule details for this specific flight
+	        List<Map<String, String>> schedules = f.getSchedules().stream().map(s -> {
+	            Map<String, String> sMap = new HashMap<>();
+	            sMap.put("departure", s.getDepartureTime().toString());
+	            sMap.put("arrival", s.getArrivalTime().toString());
+	            sMap.put("status", s.getAvailableSeats() > 0 ? "Open" : "Full");
+	            return sMap;
+	        }).toList();
+
+	        flightMap.put("schedules", schedules);
+	        inventory.add(flightMap);
+	    }
+	    return inventory;
 	}
 
 	@Override
@@ -254,15 +313,20 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public RouteDTO addRoute(RouteDTO routeDTO) {
-		Route r = new Route();
-		r.setSource(routeDTO.getSource());
-		r.setDestination(routeDTO.getDestination());
-		r.setDistance(routeDTO.getDistance());
-		r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+	    if (routeRepo.existsBySourceAndDestination(routeDTO.getSource(), routeDTO.getDestination())) {
+	        throw new RuntimeException("Route from " + routeDTO.getSource() + 
+	                                   " to " + routeDTO.getDestination() + " already exists!");
+	    }
 
-		Route saved = routeRepo.save(r);
-		routeDTO.setId(saved.getId());
-		return routeDTO;
+	    Route r = new Route();
+	    r.setSource(routeDTO.getSource());
+	    r.setDestination(routeDTO.getDestination());
+	    r.setDistance(routeDTO.getDistance());
+	    r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+
+	    Route saved = routeRepo.save(r);
+	    routeDTO.setId(saved.getId());
+	    return routeDTO;
 	}
 
 	@Override
@@ -302,62 +366,92 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public List<BookingResponseDTO> manageBookings() {
+	    List<Booking> bookings = bookingRepo.findAll();
+	    List<BookingResponseDTO> dtos = new ArrayList<>();
 
-		List<Booking> bookings = bookingRepo.findAll();
-		List<BookingResponseDTO> dtos = new ArrayList<>();
-
-		for (Booking b : bookings) {
-
-			BookingResponseDTO d = new BookingResponseDTO();
-
-			d.setBookingId(b.getId());
-			d.setBookingReference(b.getBookingReference());
-			d.setBookingStatus(b.getBookingStatus());
-			d.setBookingDate(b.getBookingDate());
-			d.setNumberOfSeats(b.getNumberOfSeats());
-			d.setTotalAmount(b.getTotalAmount());
-
-			if (b.getUser() != null) {
-				d.setUserName(b.getUser().getName());
-			} else {
-				d.setUserName("N/A");
-			}
-
-			if (b.getSchedule() != null && b.getSchedule().getFlight() != null) {
-
-				d.setFlightName(b.getSchedule().getFlight().getFlightName());
-
-				if (b.getSchedule().getFlight().getRoute() != null) {
-					d.setOrigin(b.getSchedule().getFlight().getRoute().getSource());
-					d.setDestination(b.getSchedule().getFlight().getRoute().getDestination());
-				}
-			} else {
-				d.setFlightName("N/A");
-				d.setOrigin("N/A");
-				d.setDestination("N/A");
-			}
-
-			dtos.add(d);
-		}
-
-		return dtos;
-	}
-
-	@Override
-	public boolean cancelBooking(Long bookingId) {
-	    Booking b = bookingRepo.findById(bookingId)
-	            .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));
-	    
-	    if (!b.getBookingStatus().equals("CANCELLED")) {
-	        b.setBookingStatus("CANCELLED");
+	    for (Booking b : bookings) {
+	        BookingResponseDTO d = new BookingResponseDTO();
 	        
-	        // Return seats to the flight
-	        int currentSeats = b.getSchedule().getAvailableSeats();
-	        b.getSchedule().setAvailableSeats(currentSeats + b.getNumberOfSeats());
-	        
-	        bookingRepo.save(b);
-	        return true;
+	        d.setBookingId(b.getId());
+	        d.setBookingReference(b.getBookingReference());
+	        d.setBookingStatus(b.getBookingStatus());
+	        d.setBookingDate(b.getBookingDate());
+	        d.setNumberOfSeats(b.getNumberOfSeats());
+	        d.setTotalAmount(b.getTotalAmount());
+	        d.setUserName(b.getUser() != null ? b.getUser().getName() : "N/A");
+
+	        if (b.getSchedule() != null && b.getSchedule().getFlight() != null) {
+	            var flight = b.getSchedule().getFlight();
+	            var owner = flight.getFlightOwner();
+	            
+	            d.setFlightName("[" + owner.getName() + "] " + flight.getFlightNumber() + " (" + flight.getFlightName() + ")");
+	            
+	            if (flight.getRoute() != null) {
+	                d.setOrigin(flight.getRoute().getSource());
+	                d.setDestination(flight.getRoute().getDestination());
+	            }
+	        }
+
+	        if (b.getPassengers() != null) {
+	            List<PassengerResponseDTO> pDtos = b.getPassengers().stream().map(p -> {
+	                PassengerResponseDTO pr = new PassengerResponseDTO();
+	                pr.setName(p.getName());
+	                pr.setAge(p.getAge());
+	                pr.setGender(p.getGender());
+	                pr.setSeatId(p.getSeat().getSeatNumber()); 
+	                return pr;
+	            }).toList();
+	            d.setPassengers(pDtos);
+	        }
+
+	        dtos.add(d);
 	    }
-	    return false;
+	    return dtos;
 	}
+	
+	@Override
+	@Transactional // Ensure this is present
+	public void cancelBooking(Long bookingId) {
+		    Booking booking = bookingRepo.findById(bookingId)
+		            .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+		    if ("CANCELLED".equals(booking.getBookingStatus())) {
+		        throw new RuntimeException("Booking already cancelled");
+		    }
+
+		    // 🔐 UPDATED SECURITY CHECK
+		    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		    String username = authentication.getName();
+		    
+		    // Check if the current user is an Admin
+		    boolean isAdmin = authentication.getAuthorities().stream()
+		                        .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+
+		    // Logic: If you are NOT the owner AND you are NOT an admin, then block it.
+		    if (!booking.getUser().getEmail().equals(username) && !isAdmin) {
+		        throw new RuntimeException("Not authorized to cancel this booking");
+		    }
+
+		    // --- Rest of your logic remains the same ---
+		    
+		    // Release seats
+		    for (Passenger passenger : booking.getPassengers()) {
+		        Seat seat = passenger.getSeat();
+		        seat.setAvailable(true);
+		        seatRepo.save(seat);
+		    }
+
+		    // Increase available seats count
+		    Schedule schedule = booking.getSchedule();
+		    schedule.setAvailableSeats(
+		            schedule.getAvailableSeats() + booking.getPassengers().size()
+		    );
+		    scheduleRepo.save(schedule);
+
+		    booking.setBookingStatus("CANCELLED");
+		    bookingRepo.save(booking);
+
+		    // Refund
+		    transactionService.refundPayment(bookingId);
+		}
 }
