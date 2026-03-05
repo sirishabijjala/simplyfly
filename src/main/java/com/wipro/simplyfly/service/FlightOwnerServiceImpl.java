@@ -2,7 +2,7 @@ package com.wipro.simplyfly.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+import com.wipro.simplyfly.repository.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +27,8 @@ import com.wipro.simplyfly.repository.ScheduleRepository;
 @Service
 public class FlightOwnerServiceImpl implements FlightOwnerService {
 
+    
+
     @Autowired
     private FlightRepository flightRepository;
 
@@ -40,6 +42,9 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     private BookingRepository bookingRepository;
     @Autowired
     private RouteRepository routeRepository;
+    @Autowired
+    private ISeatService seatService;
+   
 
     //FLIGHT
 
@@ -141,6 +146,8 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
         schedule.setFlight(flight);
 
         Schedule saved = scheduleRepository.save(schedule);
+
+        seatService.createSeatsForSchedule(schedule); 
 
         scheduleDTO.setId(saved.getId());
         scheduleDTO.setFlightId(flightId);
