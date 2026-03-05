@@ -12,7 +12,7 @@ public interface IAdminService {
 	List<UserDTO> manageUsers();
 	String addUser(RegisterRequest request);
 	String updateUser(Long userId, RegisterRequest request);
-	boolean deleteUser(Long userId);
+	String deleteUser(Long userId);
 
 	List<FlightOwnerDTO> manageFlightOwners();
 	String addFlightOwner(RegisterRequest request);

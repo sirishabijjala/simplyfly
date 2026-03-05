@@ -135,19 +135,26 @@ public class AdminServiceImp implements IAdminService {
 	}
 
 	@Override
-	public boolean deleteUser(Long userId) {
-		User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+	public String deleteUser(Long userId) {
+        User user = userRepo.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException(userId));
 
-		Account account = user.getAccount();
+        // 1. Check if the user is linked to any bookings
+        // This works even without a List<Booking> in the User class
+        if (bookingRepo.existsByUser_Id(userId)) {
+            return "HAS_ACTIVE_BOOKINGS";
+        }
 
-		if (account != null) {
-			accountRepo.delete(account);
-		}
+        // 2. Delete the Account (Security/Credentials)
+        Account account = user.getAccount();
+        if (account != null) {
+            accountRepo.delete(account);
+        }
 
-		userRepo.delete(user);
-
-		return true;
-	}
+        // 3. Delete the User
+        userRepo.delete(user);
+        return "SUCCESS";
+    }
 
 	@Override
 	public List<FlightOwnerDTO> manageFlightOwners() {
