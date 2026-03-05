@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class PassengerDTO {
+public class PassengerRequestDTO {
 	@NotBlank(message="Passenger name cannot be null")
 	private String name;
 	@Min(value = 0, message="Age must be greater than or equal to 0")
@@ -13,19 +13,19 @@ public class PassengerDTO {
 	private int age;
 	@NotBlank(message="Gender is required")
 	private String gender;
-	@NotNull(message="SeatId is required")
-	private Long seatId;
+	@NotBlank(message="SeatNumber cannot be null")
+	private String seatNumber;
 
-	public PassengerDTO() {
+	public PassengerRequestDTO() {
 		super();
 	}
 
-	public PassengerDTO(String name, int age, String gender, Long seatId) {
+	public PassengerRequestDTO(String name, int age, String gender, String seatNumber) {
 		super();
 		this.name = name;
 		this.age = age;
 		this.gender = gender;
-		this.seatId = seatId;
+		this.seatNumber = seatNumber;
 	}
 
 	public String getName() {
@@ -52,17 +52,17 @@ public class PassengerDTO {
 		this.gender = gender;
 	}
 
-	public Long getSeatId() {
-		return seatId;
+	public String getSeatNumber() {
+		return seatNumber;
 	}
 
-	public void setSeatId(Long seatId) {
-		this.seatId = seatId;
+	public void setSeatNumber(String seatNumber) {
+		this.seatNumber = seatNumber;
 	}
 
 	@Override
 	public String toString() {
-		return "PassengerDTO [name=" + name + ", age=" + age + ", gender=" + gender + ", seatId=" + seatId + "]";
+		return "PassengerDTO [name=" + name + ", age=" + age + ", gender=" + gender + ", seatNumber=" + seatNumber + "]";
 	}
 
 }

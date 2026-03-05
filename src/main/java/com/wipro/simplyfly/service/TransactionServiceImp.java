@@ -72,7 +72,7 @@ public class TransactionServiceImp implements ITransactionService{
 		            .orElseThrow(() -> new RuntimeException("Transaction not found for this booking"));
 
 		    // Only refund if payment was successful
-		    if (!"CONFIRMED".equals(transaction.getPaymentStatus())) {
+		    if (!"SUCCESS".equals(transaction.getPaymentStatus())) {
 		        throw new RuntimeException("Payment not eligible for refund");
 		    }
 
