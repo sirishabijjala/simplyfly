@@ -1,208 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SimplyFly Admin | Dashboard</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-
-:root{
---primary:#1E88E5;
---secondary:#42A5F5;
---accent:#90CAF9;
---bg:#f5f9fd;
-}
-
-body{
-background:var(--bg);
-font-family:'Segoe UI',sans-serif;
-overflow-x:hidden;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-background:linear-gradient(180deg,#42A5F5,#1E88E5);
-min-height:100vh;
-color:white;
-padding-top:10px;
-box-shadow:0 6px 25px rgba(0,0,0,0.1);
-}
-
-.sidebar h4{
-font-weight:700;
-padding:22px 10px;
-margin-bottom:10px;
-border-bottom:1px solid rgba(255,255,255,0.2);
-}
-
-/* MENU */
-
-.nav-link{
-color:white;
-padding:14px 25px;
-font-size:15px;
-transition:.25s;
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.nav-link:focus{
-outline:none;
-box-shadow:none;
-}
-.nav-link i{
-width:20px;
-text-align:center;
-}
-
-/* HOVER */
-
-.nav-link:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-}
-
-/* Updated Active: Light blue background with blue text */
-.nav-link.active {
-    background: #e3f2fd; /* Very light blue */
-    color: #1E88E5;      /* Your primary blue */
-    font-weight: 600;
-    border-radius: 10px; /* Rounded pill shape */
-    margin: 0 10px;      /* Gives it some space from the edge */
-}
-
-/* HEADER */
-
-.main-header{
-background:white;
-padding:18px 30px;
-border-bottom:1px solid #eaeaea;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-/* CONTENT */
-
-#content-area{
-background:white;
-border-radius:12px;
-padding:35px;
-box-shadow:0 8px 25px rgba(0,0,0,0.05);
-}
-
-/* BUTTON */
-
-.btn-primary{
-background:var(--primary);
-border:none;
-}
-
-.btn-primary:hover{
-background:#1565C0;
-}
-
-/* STAT CARDS */
-
-.stat-card{
-background:white;
-border-radius:12px;
-padding:22px;
-box-shadow:0 6px 18px rgba(0,0,0,0.06);
-transition:.3s;
-}
-
-.stat-card:hover{
-transform:translateY(-5px);
-}
-
-.stat-icon{
-font-size:30px;
-color:var(--primary);
-}
-
-/* TABLE */
-
-.table{
-margin-top:15px;
-border-radius:10px;
-overflow:hidden;
-}
-
-.table thead{
-background:var(--primary);
-color:white;
-}
-
-.table tbody tr:hover{
-background:#f3f8ff;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:768px){
-
-.sidebar{
-position:fixed;
-width:230px;
-z-index:1000;
-}
-
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplyFly - Your Gateway to the World</title>
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-plane-departure"></i>
+                <span>SimplyFly</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active">Home</a></li>
+                <li><a href="#" class="nav-link">Flights</a></li>
+                <li><a href="#" class="nav-link">Hotels</a></li>
+                <li><a href="#" class="nav-link">Deals</a></li>
+                <li><a href="#" class="nav-link">Support</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn-icon notification-btn">
+                    <i class="far fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+                <div class="user-menu">
+                    <img src="https://ui-avatars.com/api/?name=John+Doe&background=6366f1&color=fff" alt="User" class="user-avatar">
+                    <span class="user-name">John Doe</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920&h=800&fit=crop" alt="Airplane in clouds">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Discover Your Next Adventure</span>
+            </h1>
+            <p class="hero-subtitle">Book flights to over 1000+ destinations worldwide</p>
+            
+            <!-- Search Form -->
+            <div class="search-container">
+                <div class="search-tabs">
+                    <button class="tab-btn active" data-tab="flights">
+                        <i class="fas fa-plane"></i> Flights
+                    </button>
+                    <button class="tab-btn" data-tab="hotels">
+                        <i class="fas fa-hotel"></i> Hotels
+                    </button>
+                    <button class="tab-btn" data-tab="packages">
+                        <i class="fas fa-suitcase"></i> Packages
+                    </button>
+                </div>
 
-<div class="row g-0">
+                <form class="search-form" id="flight-search-form">
+                    <div class="trip-type">
+                        <label class="radio-label">
+                            <input type="radio" name="tripType" value="roundtrip" checked>
+                            <span>Round Trip</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="tripType" value="oneway">
+                            <span>One Way</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="tripType" value="multicity">
+                            <span>Multi-City</span>
+                        </label>
+                    </div>
 
-<!-- SIDEBAR -->
+                    <div class="search-inputs">
+                        <div class="input-group">
+                            <i class="fas fa-plane-departure"></i>
+                            <input type="text" placeholder="From" class="search-input" id="from-input">
+                            <button type="button" class="swap-btn">
+                                <i class="fas fa-exchange-alt"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-plane-arrival"></i>
+                            <input type="text" placeholder="To" class="search-input" id="to-input">
+                        </div>
 
-<nav class="col-md-3 col-lg-2 sidebar">
+                        <div class="input-group">
+                            <i class="fas fa-calendar"></i>
+                            <input type="date" class="search-input" id="departure-date">
+                        </div>
 
-<h4 class="text-center">
-<i class="fa-solid fa-plane-departure"></i>
-SimplyFly
-</h4>
+                        <div class="input-group">
+                            <i class="fas fa-calendar-check"></i>
+                            <input type="date" class="search-input" id="return-date">
+                        </div>
 
-<ul class="nav flex-column">
+                        <div class="input-group">
+                            <i class="fas fa-users"></i>
+                            <select class="search-input" id="passengers">
+                                <option value="1">1 Passenger</option>
+                                <option value="2">2 Passengers</option>
+                                <option value="3">3 Passengers</option>
+                                <option value="4">4+ Passengers</option>
+                            </select>
+                        </div>
 
-<li>
-<a class="nav-link" href="#" onclick="showSection('users')">
-<i class="fa-solid fa-users"></i>
-Manage Users
-</a>
-</li>
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                            Search Flights
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
 
-<li>
-<a class="nav-link" href="#" onclick="showSection('owners')">
-<i class="fa-solid fa-user-tie"></i>
-Flight Owners
-</a>
-</li>
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Safe & Secure</h3>
+                    <p>Book with confidence. Your transactions are protected with bank-level security.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <h3>Best Prices</h3>
+                    <p>Find the best deals on flights with our price match guarantee.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>24/7 Support</h3>
+                    <p>Our customer service team is here to help you anytime, anywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Instant Booking</h3>
+                    <p>Confirm your flight instantly with real-time availability.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<li>
-<a class="nav-link" href="#" onclick="showSection('routes')">
-<i class="fa-solid fa-route"></i>
-Flight Routes
-</a>
-</li>
+    <!-- Popular Destinations -->
+    <section class="destinations-section">
+        <div class="container">
+            <h2 class="section-title">Popular Destinations</h2>
+            <p class="section-subtitle">Explore our most booked destinations</p>
+            
+            <div class="destinations-grid">
+                <div class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop" alt="Paris">
+                    <div class="destination-overlay">
+                        <div class="destination-content">
+                            <h3>Paris</h3>
+                            <p>France</p>
+                            <span class="price-tag">From $299</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&h=300&fit=crop" alt="Amsterdam">
+                    <div class="destination-overlay">
+                        <div class="destination-content">
+                            <h3>Amsterdam</h3>
+                            <p>Netherlands</p>
+                            <span class="price-tag">From $249</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop" alt="Tokyo">
+                    <div class="destination-overlay">
+                        <div class="destination-content">
+                            <h3>Tokyo</h3>
+                            <p>Japan</p>
+                            <span class="price-tag">From $599</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=400&h=300&fit=crop" alt="Maldives">
+                    <div class="destination-overlay">
+                        <div class="destination-content">
+                            <h3>Maldives</h3>
+                            <p>Indian Ocean</p>
+                            <span class="price-tag">From $799</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400&h=300&fit=crop" alt="Dubai">
+                    <div class="destination-overlay">
+                        <div class="destination-content">
+                            <h3>Dubai</h3>
+                            <p>UAE</p>
+                            <span class="price-tag">From $399</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="destination-card">
+                    <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop" alt="Barcelona">
+                    <div class="destination-overlay">
+                        <div class="destination-content">
+                            <h3>Barcelona</h3>
+                            <p>Spain</p>
+                            <span class="price-tag">From $349</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<li>
-<a class="nav-link" href="#" onclick="showSection('bookings')">
-<i class="fa-solid fa-ticket"></i>
-Bookings
-</a>
-</li>
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <i class="fas fa-globe-americas"></i>
+                    <h3 class="stat-number" data-target="150">0</h3>
+                    <p>Countries</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-users"></i>
+                    <h3 class="stat-number" data-target="2500000">0</h3>
+                    <p>Happy Customers</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-plane"></i>
+                    <h3 class="stat-number" data-target="500">0</h3>
+                    <p>Airlines Partners</p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-star"></i>
+                    <h3 class="stat-number" data-target="98">0</h3>
+                    <p>% Satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
 <li class="mt-4">
 <a class="nav-link" href="#" onclick="logout()">
@@ -317,5 +377,61 @@ Use the side navigation to manage airline operations and users.
     <script src="/js/admin-user.js"></script>
     <script src="/js/admin-owner.js"></script>
     <script src="/js/admin-booking.js"></script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">
+                        <i class="fas fa-plane-departure"></i> SimplyFly
+                    </h3>
+                    <p>Your trusted travel companion for booking flights worldwide.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Flight Booking</a></li>
+                        <li><a href="#">Hotel Reservations</a></li>
+                        <li><a href="#">Car Rentals</a></li>
+                        <li><a href="#">Travel Insurance</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Subscribe for exclusive deals and offers</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email">
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 SimplyFly. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="user.js"></script>
+
 </body>
 </html>
