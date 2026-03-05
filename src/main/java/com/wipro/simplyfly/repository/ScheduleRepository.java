@@ -1,6 +1,5 @@
 package com.wipro.simplyfly.repository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,20 +12,19 @@ import com.wipro.simplyfly.entity.Schedule;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-	// Get all schedules by Flight ID
-	List<Schedule> findByFlightRouteId(Long flightId);
+    // Get schedules by Flight ID
+    List<Schedule> findByFlightId(Long flightId);
 
-<<<<<<< HEAD
-    // Get schedules by departure date
-    List<Schedule> findByDepartureTime(LocalDate departureTime);
+    // Get schedules by departure time
+    List<Schedule> findByDepartureTime(LocalDateTime departureTime);
 
-    // Get schedules by Flight and Date
-    List<Schedule> findByFlightIdAndDepartureTime(Long flightId, LocalDate departureTime);
-=======
-	// Get schedules by Flight and Date
-	List<Schedule> findByFlightIdAndDepartureTime(Long flightId, LocalDate departureTime);
+    // Get schedules by Flight and Departure Time
+    List<Schedule> findByFlightIdAndDepartureTime(Long flightId, LocalDateTime departureTime);
 
-	List<Schedule> findByFlight_RouteAndDepartureTimeBetween(Route route, LocalDateTime start, LocalDateTime end);
->>>>>>> 7fe4232195589fa4ee1b1d297802f8e1ec93f68a
-
+    // Get schedules by Route and Time Range
+    List<Schedule> findByFlight_RouteAndDepartureTimeBetween(
+            Route route,
+            LocalDateTime start,
+            LocalDateTime end
+    );
 }
