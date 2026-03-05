@@ -10,21 +10,42 @@ public class ScheduleDTO {
     private int totalSeats;
     private int availableSeats;
     private Long flightId;
-
+    private double fare;
     public ScheduleDTO() {}
 
-    public ScheduleDTO(Long id, LocalDateTime departureTime, LocalDateTime arrivalTime,
-                       int totalSeats, int availableSeats, Long flightId) {
-        this.id = id;
-        this.departureTime = departureTime;
-        this.arrivalTime = arrivalTime;
-        this.totalSeats = totalSeats;
-        this.availableSeats = availableSeats;
-        this.flightId = flightId;
-    }
+    
 
    
-    public void setId(Long id) {
+    public double getFare() {
+		return fare;
+	}
+
+
+
+
+	public void setFare(double fare) {
+		this.fare = fare;
+	}
+
+
+
+
+	public ScheduleDTO(Long id, LocalDateTime departureTime, LocalDateTime arrivalTime, int totalSeats,
+			int availableSeats, Long flightId, double fare) {
+		super();
+		this.id = id;
+		this.departureTime = departureTime;
+		this.arrivalTime = arrivalTime;
+		this.totalSeats = totalSeats;
+		this.availableSeats = availableSeats;
+		this.flightId = flightId;
+		this.fare = fare;
+	}
+
+
+
+
+	public void setId(Long id) {
         this.id = id;
     }
 

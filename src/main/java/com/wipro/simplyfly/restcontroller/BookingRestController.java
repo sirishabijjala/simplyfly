@@ -27,26 +27,38 @@ public class BookingRestController {
 	@Autowired
 	IBookingService bookingService;
 	//create booking
-	@PostMapping("BookTicket")
-	public BookingResponseDTO userBooking(@Validated @RequestBody BookingRequestDTO bookingRequestDTO) {
-		return bookingService.createBooking(bookingRequestDTO);
-	}
-	//fetch booking by id
-	@GetMapping("GetById/{id}")
-	public BookingResponseDTO getById(@PathVariable Long id ) {
-		return  bookingService.getBooking(id);
-	}
-	//fetch all booking
-	@GetMapping("GetAll")
-	public List<BookingResponseDTO> getAllBooking(){
-		return bookingService.getAllBookings();
-		
-	}
-	//cancel booking
-    @PutMapping("CancelBookingById/{bookingId}")
-    public String cancelBookingById(@PathVariable Long bookingId) {
-    	bookingService.cancelBooking(bookingId);
-    	return "Booking cancelled successfully for ID "+bookingId+" and refund will be intiated in 7 working days";
+    // 1️⃣ Create Booking
+    @PostMapping("BookTicket")
+    public BookingResponseDTO createBooking(
+            @Validated @RequestBody BookingRequestDTO bookingRequestDTO) {
+
+        return bookingService.createBooking(bookingRequestDTO);
     }
+
+    // 2️⃣ Get Booking By ID
+    @GetMapping("GetBookingById/{bookingId}")
+    public BookingResponseDTO getBookingById(@PathVariable Long bookingId) {
+
+        return bookingService.getBooking(bookingId);
+    }
+
+    // 3️⃣ Get All Bookings
+    @GetMapping("GetAll")
+    public List<BookingResponseDTO> getAllBookings() {
+
+        return bookingService.getAllBookings();
+    }
+
+    // 4️⃣ Cancel Booking
+    @PutMapping("CancelBooking/{bookingId}")
+    public String cancelBooking(@PathVariable Long bookingId) {
+
+        bookingService.cancelBooking(bookingId);
+
+        return "Booking cancelled successfully for ID "
+                + bookingId
+                + ". Refund will be initiated in 7 working days.";
+    }
+
     		
 }

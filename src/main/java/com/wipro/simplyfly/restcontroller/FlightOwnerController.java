@@ -1,26 +1,16 @@
-
 package com.wipro.simplyfly.restcontroller;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightDTO;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.ScheduleDTO;
+import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.service.FlightOwnerService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,74 +18,78 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/owner")
-@CrossOrigin(origins = "*")
 @PreAuthorize("hasAuthority('OWNER')")
 public class FlightOwnerController {
 
-	@Autowired
-	private FlightOwnerService flightOwnerService;
+    @Autowired
+    private FlightOwnerService flightOwnerService;
 
+    // OWNER
+    @GetMapping("/{ownerId}")
+    public FlightOwner getOwner(@PathVariable Long ownerId) {
+        return flightOwnerService.getOwnerById(ownerId);
+    }
 
+    // FLIGHT
+    @GetMapping("/flights/{ownerId}")
+    public List<FlightDTO> getFlights(@PathVariable Long ownerId) {
+        return flightOwnerService.getFlightsByOwner(ownerId);
+    }
 
+    @PostMapping("/flights/{routeId}/{ownerId}")
+    public FlightDTO addFlight(@PathVariable int routeId,@PathVariable Long ownerId,
+                               @RequestBody FlightDTO flightDTO) {
+        return flightOwnerService.addFlight(routeId,ownerId, flightDTO);
+    }
 
-	@GetMapping("/{ownerId}/flights")
-	public List<FlightDTO> getFlightsByOwner(@PathVariable Long ownerId) {
-		return flightOwnerService.getFlightsByOwner(ownerId);
-	}
+    @PutMapping("/flights/{flightId}")
+    public FlightDTO updateFlight(@PathVariable Long flightId,
+                                  @RequestBody FlightDTO flightDTO) {
+        return flightOwnerService.updateFlight(flightId, flightDTO);
+    }
 
-	@PostMapping("/{ownerId}/flights")
-	public FlightDTO addFlight(@PathVariable Long ownerId, @RequestBody FlightDTO flightDTO) {
-		return flightOwnerService.addFlight(ownerId, flightDTO);
-	}
+    @DeleteMapping("/flights/{flightId}")
+    public void deleteFlight(@PathVariable Long flightId) {
+        flightOwnerService.deleteFlight(flightId);
+    }
 
-	@PutMapping("/flights/{flightId}")
-	public FlightDTO updateFlight(@PathVariable Long flightId, @RequestBody FlightDTO flightDTO) {
-		return flightOwnerService.updateFlight(flightId, flightDTO);
-	}
+    // SCHEDULE
+    @GetMapping("/schedules/{flightId}")
+    public List<ScheduleDTO> getSchedules(@PathVariable Long flightId) {
+        return flightOwnerService.getSchedulesByFlight(flightId);
+    }
 
-	@DeleteMapping("/flights/{flightId}")
-	public void deleteFlight(@PathVariable Long flightId) {
-		flightOwnerService.deleteFlight(flightId);
-	}
+    @PostMapping("/schedules/{flightId}")
+    public ScheduleDTO addSchedule(@PathVariable Long flightId,
+                                   @RequestBody ScheduleDTO scheduleDTO) {
+        return flightOwnerService.addSchedule(flightId, scheduleDTO);
+    }
 
-	// SCHEDULE
+    @PutMapping("/schedules/{scheduleId}")
+    public ScheduleDTO updateSchedule(@PathVariable Long scheduleId,
+                                      @RequestBody ScheduleDTO scheduleDTO) {
+        return flightOwnerService.updateSchedule(scheduleId, scheduleDTO);
+    }
 
-	@GetMapping("/flights/{flightId}/schedules")
-	public List<ScheduleDTO> getSchedulesByFlight(@PathVariable Long flightId) {
-		return flightOwnerService.getSchedulesByFlight(flightId);
-	}
+    @DeleteMapping("/schedules/{scheduleId}")
+    public void deleteSchedule(@PathVariable Long scheduleId) {
+        flightOwnerService.deleteSchedule(scheduleId);
+    }
 
-	@PostMapping("/flights/{flightId}/schedules")
-	public ScheduleDTO addSchedule(@PathVariable Long flightId, @RequestBody ScheduleDTO scheduleDTO) {
-		return flightOwnerService.addSchedule(flightId, scheduleDTO);
-	}
+    // BOOKINGS
+    @GetMapping("/{ownerId}/bookings")
+    public List<BookingResponseDTO> getBookingsByOwner(@PathVariable Long ownerId) {
+        return flightOwnerService.getBookingsByOwner(ownerId);
+    }
 
-	@PutMapping("/schedules/{scheduleId}")
-	public ScheduleDTO updateSchedule(@PathVariable Long scheduleId, @RequestBody ScheduleDTO scheduleDTO) {
-		return flightOwnerService.updateSchedule(scheduleId, scheduleDTO);
-	}
+    @PutMapping("/bookings/{bookingId}/refund")
+    public void refundBooking(@PathVariable Long bookingId) {
+        flightOwnerService.refundBooking(bookingId);
+    }
 
-	@DeleteMapping("/schedules/{scheduleId}")
-	public void deleteSchedule(@PathVariable Long scheduleId) {
-		flightOwnerService.deleteSchedule(scheduleId);
-	}
-
-	// BOOKING
-
-	@GetMapping("/{ownerId}/bookings")
-	public List<BookingResponseDTO> getBookingsByOwner(@PathVariable Long ownerId) {
-		return flightOwnerService.getBookingsByOwner(ownerId);
-	}
-
-	@PutMapping("/bookings/{bookingId}/refund")
-	public void refundBooking(@PathVariable Long bookingId) {
-		flightOwnerService.refundBooking(bookingId);
-	}
-	
-	@PostMapping("/addRoute")
+    // ROUTE
+    @PostMapping("/addRoute")
     public RouteDTO addRoute(@RequestBody RouteDTO routeDTO) {
-
-        RouteDTO savedRoute = flightOwnerService.addRoute(routeDTO);
-        return savedRoute;
+        return flightOwnerService.addRoute(routeDTO);
     }
 }

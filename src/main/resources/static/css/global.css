@@ -1,1 +1,39 @@
-@charset "UTF-8";
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #e8f4fd;
+}
+
+.navbar-brand {
+    font-size: 24px;
+}
+
+.hero-section {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+}
+
+.hero-section h2 {
+    font-size: 32px;
+}
+
+.hero-section p {
+    font-size: 18px;
+    color: #ffffffcc;
+}
+
+.search-container {
+    margin-top: -40px;
+}
+
+.card {
+    border-radius: 20px;
+}
+
+.btn-outline-primary {
+    color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+}
