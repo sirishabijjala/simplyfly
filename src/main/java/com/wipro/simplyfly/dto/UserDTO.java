@@ -1,7 +1,7 @@
 package com.wipro.simplyfly.dto;
 
 import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class UserDTO {
 
@@ -14,67 +14,62 @@ public class UserDTO {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @Size(min = 6, max = 10,  message = "Password must be minimum 6 characters")
+    @Size(min = 6, max = 10, message = "Password must be minimum 6 characters")
     @NotBlank(message = "Password cannot be null or empty")
     private String password;
 
     @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
     private String phone;
 
-    @NotBlank(message = "Role is required")
-    private String role;
-
-    private boolean enabled;
-    private LocalDateTime createdDate;
+    private String address;
+    private String gender;
+    private LocalDate dateOfBirth;
 
     public UserDTO() {
     }
 
     public UserDTO(Long id, String name, String email, String password,
-                   String phone, String role, boolean enabled,
-                   LocalDateTime createdDate) {
-
+                   String phone, String address, String gender, LocalDate dateOfBirth) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.role = role;
-        this.enabled = enabled;
-        this.createdDate = createdDate;
+        this.address = address;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
     }
 
-    // Getters and Setters
-
+    // -------- Getters and Setters --------
     public Long getId() { return id; }
-
     public void setId(Long id) { this.id = id; }
 
     public String getName() { return name; }
-
     public void setName(String name) { this.name = name; }
 
     public String getEmail() { return email; }
-
     public void setEmail(String email) { this.email = email; }
 
     public String getPassword() { return password; }
-
     public void setPassword(String password) { this.password = password; }
 
     public String getPhone() { return phone; }
-
     public void setPhone(String phone) { this.phone = phone; }
 
-    public String getRole() { return role; }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
-    public void setRole(String role) { this.role = role; }
+    public String getGender() { return gender; }
+    public void setGender(String gender) { this.gender = gender; }
 
-    public boolean isEnabled() { return enabled; }
+    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
 
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
-
-    public LocalDateTime getCreatedDate() { return createdDate; }
-
-    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
+    @Override
+    public String toString() {
+        return "UserDTO [id=" + id + ", name=" + name + ", email=" + email +
+               ", password=" + password + ", phone=" + phone +
+               ", address=" + address + ", gender=" + gender +
+               ", dateOfBirth=" + dateOfBirth + "]";
+    }
 }

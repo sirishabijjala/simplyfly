@@ -18,7 +18,7 @@ public BookingRequestDTO() {
 public BookingRequestDTO(Long userId, Long scheduleId, int numberOfSeats) {
 	super();
 	this.userId = userId;
-	scheduleId = scheduleId;
+	this.scheduleId = scheduleId;
 	this.numberOfSeats = numberOfSeats;
 }
 public Long getUserId() {
@@ -31,7 +31,7 @@ public Long getScheduleId() {
 	return scheduleId;
 }
 public void setScheduleId(Long scheduleId) {
-	scheduleId = scheduleId;
+	 this.scheduleId = scheduleId;
 }
 public int getNumberOfSeats() {
 	return numberOfSeats;

@@ -1,5 +1,8 @@
 package com.wipro.simplyfly.service;
 
+import java.time.LocalDateTime;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,7 +11,12 @@ import com.wipro.simplyfly.dto.AuthResponse;
 import com.wipro.simplyfly.dto.LoginRequest;
 import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.entity.Account;
+import com.wipro.simplyfly.entity.FlightOwner;
+import com.wipro.simplyfly.entity.User;
+import com.wipro.simplyfly.exceptions.EmailAlreadyExistsException;
 import com.wipro.simplyfly.repository.AccountRepository;
+import com.wipro.simplyfly.repository.FlightOwnerRepository;
+import com.wipro.simplyfly.repository.UserRepository;
 @Service
 public class AccountServiceImp implements AccountService{
 
@@ -17,7 +25,12 @@ public class AccountServiceImp implements AccountService{
 
 	    @Autowired
 	    private PasswordEncoder passwordEncoder;
+	    
+	    @Autowired
+	    private UserRepository userRepo;
 
+	    @Autowired
+	    private FlightOwnerRepository ownerRepo;
 	    @Autowired
 	    private JwtService jwtService;
 
@@ -27,7 +40,7 @@ public class AccountServiceImp implements AccountService{
 
 	        // check if email already exists
 	        if (repository.findByEmail(request.getEmail()).isPresent()) {
-	            return "Email already exists";
+	        	throw new EmailAlreadyExistsException("Email already registered");
 	        }
 
 	        Account account = new Account();
@@ -38,8 +51,32 @@ public class AccountServiceImp implements AccountService{
 	        account.setActive(true);
 
 	        repository.save(account);
+	        
+	     //  Decide which Profile to create
+	        if (request.getRole().equalsIgnoreCase("USER")) {
+	            User user = new User();
+	            user.setName(request.getName());
+	            user.setEmail(request.getEmail());
+	            user.setPassword(request.getPassword());
+	            user.setPhone(request.getPhone());
+	            user.setAddress(request.getAddress());	
+	            user.setGender(request.getGender());
+	            user.setDateOfBirth(request.getDateOfBirth());
+	            user.setAccount(account);
+	            
+	            userRepo.save(user);
+	        } 
+	        else if (request.getRole().equalsIgnoreCase("OWNER")) {
+	            FlightOwner owner = new FlightOwner();
+	            owner.setName(request.getName());
+	            owner.setEmail(request.getEmail());
+	            owner.setAccount(account); 
+	            ownerRepo.save(owner);
+	        }
+	        
+	        return "Registration Successful for " + request.getRole();
 
-	        return "Account Registered Successfully";
+	      
 	    }
 
 	    //LOGIN METHOD
@@ -56,8 +93,8 @@ public class AccountServiceImp implements AccountService{
 
 	        // generate token
 	        String token = jwtService.generateToken(
-	                account.getEmail(),   // ✅ use account
-	                account.getRole()     // ✅ use account
+	                account.getEmail(),   
+	                account.getRole()     
 	        );
 
 	        return new AuthResponse(

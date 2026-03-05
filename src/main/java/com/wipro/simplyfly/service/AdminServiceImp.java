@@ -2,6 +2,7 @@ package com.wipro.simplyfly.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
+import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.entity.Account;
@@ -16,6 +18,12 @@ import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.entity.Route;
 import com.wipro.simplyfly.entity.User;
+import com.wipro.simplyfly.exceptions.BookingNotFoundException;
+import com.wipro.simplyfly.exceptions.EmailAlreadyExistsException;
+import com.wipro.simplyfly.exceptions.FlightOwnerNotFoundException;
+import com.wipro.simplyfly.exceptions.RouteNotFoundException;
+import com.wipro.simplyfly.exceptions.UserNotFoundException;
+import com.wipro.simplyfly.repository.AccountRepository;
 import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.RouteRepository;
@@ -38,64 +46,102 @@ public class AdminServiceImp implements IAdminService {
 
 	@Autowired
 	BookingRepository bookingRepo;
+
+	@Autowired
+	AccountRepository accountRepo;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Override
 	public List<UserDTO> manageUsers() {
-		List<User> users = userRepo.findAll();
-		List<UserDTO> dtos = new ArrayList<>();
-		for (User u : users) {
-			UserDTO d = new UserDTO();
-			d.setId(u.getId());
-			d.setName(u.getName());
-			d.setEmail(u.getEmail());
-			d.setPhone(u.getPhone());
-			d.setRole(u.getRole());
-			d.setPassword(u.getPassword());
-			d.setCreatedDate(u.getCreatedDate());
-			dtos.add(d);
+		return userRepo.findAll().stream().map(u -> {
+			UserDTO dto = new UserDTO();
+			dto.setId(u.getId());
+			dto.setName(u.getName());
+			dto.setEmail(u.getEmail());
+			dto.setPhone(u.getPhone());
+			dto.setAddress(u.getAddress());
+			dto.setGender(u.getGender());
+			dto.setDateOfBirth(u.getDateOfBirth());
+			return dto;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public String addUser(RegisterRequest request) {
+		if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+			throw new EmailAlreadyExistsException("Email already exists: " + request.getEmail());
 		}
-		return dtos;
-	}
 
-	@Override
-	public UserDTO addUser(UserDTO userDTO) {
+		// Create Account
 		Account account = new Account();
-		account.setName(userDTO.getName());
-		account.setEmail(userDTO.getEmail());
-		account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-		account.setRole(userDTO.getRole());
+		account.setName(request.getName());
+		account.setEmail(request.getEmail());
+		account.setPassword(passwordEncoder.encode(request.getPassword()));
+		account.setRole("USER");
 		account.setActive(true);
+		accountRepo.save(account);
 
-		User user = new User(userDTO.getName(), userDTO.getEmail(), passwordEncoder.encode(userDTO.getPassword()),
-				userDTO.getPhone(), userDTO.getRole(), account);
+		// Create User
+		User user = new User();
+		user.setName(request.getName());
+		user.setEmail(request.getEmail());
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
+		user.setPhone(request.getPhone());
+		user.setAddress(request.getAddress());
+		user.setGender(request.getGender());
+		user.setDateOfBirth(request.getDateOfBirth());
+		user.setAccount(account);
+		userRepo.save(user);
 
-		User savedUser = userRepo.save(user);
-
-		return convertToDTO(savedUser);
+		return "User added successfully";
 	}
 
 	@Override
-	public UserDTO updateUser(Long userId, UserDTO userDTO) {
+	public String updateUser(Long userId, RegisterRequest request) {
+		User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
-		User user = userRepo.findById(userId).orElse(null);
+		user.setName(request.getName() != null ? request.getName() : user.getName());
+		user.setEmail(request.getEmail() != null ? request.getEmail() : user.getEmail());
+		user.setPassword(
+				request.getPassword() != null ? passwordEncoder.encode(request.getPassword()) : user.getPassword());
+		user.setPhone(request.getPhone() != null ? request.getPhone() : user.getPhone());
+		user.setAddress(request.getAddress() != null ? request.getAddress() : user.getAddress());
+		user.setGender(request.getGender() != null ? request.getGender() : user.getGender());
+		user.setDateOfBirth(request.getDateOfBirth() != null ? request.getDateOfBirth() : user.getDateOfBirth());
 
-		if (user == null)
-			return null;
+		Account account = user.getAccount();
+		if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
+			if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+				return "Email already exists";
+			}
+			account.setEmail(request.getEmail());
+		}
+		if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+			account.setPassword(passwordEncoder.encode(request.getPassword()));
+		}
+		if (request.getName() != null) {
+			account.setName(request.getName());
+		}
 
-		user.setName(userDTO.getName());
-		user.setPhone(userDTO.getPhone());
-		user.setRole(userDTO.getRole());
+		accountRepo.save(account);
+		userRepo.save(user);
 
-		User updatedUser = userRepo.save(user);
-
-		return convertToDTO(updatedUser);
+		return "User updated successfully";
 	}
 
 	@Override
 	public boolean deleteUser(Long userId) {
-		userRepo.deleteById(userId);
+		User user = userRepo.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+		Account account = user.getAccount();
+
+		if (account != null) {
+			accountRepo.delete(account);
+		}
+
+		userRepo.delete(user);
+
 		return true;
 	}
 
@@ -114,31 +160,69 @@ public class AdminServiceImp implements IAdminService {
 	}
 
 	@Override
-	public FlightOwnerDTO addFlightOwner(FlightOwnerDTO ownerDTO) {
-		FlightOwner o = new FlightOwner();
-		o.setName(ownerDTO.getName());
-		o.setEmail(ownerDTO.getEmail());
-
-		FlightOwner saved = ownerRepo.save(o);
-		ownerDTO.setId(saved.getId());
-		return ownerDTO;
-	}
-
-	@Override
-	public FlightOwnerDTO updateFlightOwner(Long ownerId, FlightOwnerDTO ownerDTO) {
-		FlightOwner o = ownerRepo.findById(ownerId).orElse(null);
-		if (o != null) {
-			o.setName(ownerDTO.getName());
-			ownerRepo.save(o);
-			return ownerDTO;
+	public String addFlightOwner(RegisterRequest request) {
+		if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+			throw new EmailAlreadyExistsException("Email already exists: " + request.getEmail());
 		}
-		return null;
+
+		Account account = new Account();
+		account.setName(request.getName());
+		account.setEmail(request.getEmail());
+		account.setPassword(passwordEncoder.encode(request.getPassword()));
+		account.setRole("OWNER");
+		account.setActive(true);
+		accountRepo.save(account);
+
+		FlightOwner owner = new FlightOwner();
+		owner.setName(request.getName());
+		owner.setEmail(request.getEmail());
+		owner.setAccount(account);
+		ownerRepo.save(owner);
+
+		return "FlightOwner added successfully";
 	}
 
 	@Override
-	public boolean deleteFlightOwner(Long ownerId) {
-		ownerRepo.deleteById(ownerId);
-		return true;
+	public String updateFlightOwner(Long ownerId, RegisterRequest request) {
+		FlightOwner owner = ownerRepo.findById(ownerId).orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
+		owner.setName(request.getName() != null ? request.getName() : owner.getName());
+		owner.setEmail(request.getEmail() != null ? request.getEmail() : owner.getEmail());
+
+		Account account = owner.getAccount();
+		if (request.getEmail() != null && !request.getEmail().equals(account.getEmail())) {
+			if (accountRepo.findByEmail(request.getEmail()).isPresent()) {
+				return "Email already exists";
+			}
+			account.setEmail(request.getEmail());
+		}
+		if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+			account.setPassword(passwordEncoder.encode(request.getPassword()));
+		}
+		if (request.getName() != null) {
+			account.setName(request.getName());
+		}
+
+		accountRepo.save(account);
+		ownerRepo.save(owner);
+
+		return "FlightOwner updated successfully";
+	}
+
+	@Override
+	public String deleteFlightOwner(Long ownerId) {
+
+		FlightOwner owner = ownerRepo.findById(ownerId).orElseThrow(() -> new FlightOwnerNotFoundException(ownerId));
+
+		boolean hasBookings = bookingRepo.existsBySchedule_Flight_FlightOwner_Id(ownerId);
+
+		if (hasBookings) {
+			return "Flight owner cannot be deleted because flights under this owner have existing bookings.";
+		}
+
+		ownerRepo.delete(owner);
+		accountRepo.delete(owner.getAccount());
+
+		return "Flight owner deleted successfully ";
 	}
 
 	@Override
@@ -172,31 +256,42 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public RouteDTO updateRoute(int routeId, RouteDTO routeDTO) {
-		Route r = routeRepo.findById(routeId).orElse(null);
-		if (r != null) {
-			r.setId(routeDTO.getId());
-			r.setSource(routeDTO.getSource());
-			r.setDestination(routeDTO.getDestination());
-			r.setDistance(routeDTO.getDistance());
-			r.setEstimatedDuration(routeDTO.getEstimatedDuration());
-			routeRepo.save(r);
-			return routeDTO;
-		}
-		return null;
+
+		Route r = routeRepo.findById(routeId).orElseThrow(() -> new RouteNotFoundException(routeId));
+
+		r.setSource(routeDTO.getSource());
+		r.setDestination(routeDTO.getDestination());
+		r.setDistance(routeDTO.getDistance());
+		r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+
+		Route updatedRoute = routeRepo.save(r);
+
+		RouteDTO dto = new RouteDTO();
+		dto.setId(updatedRoute.getId());
+		dto.setSource(updatedRoute.getSource());
+		dto.setDestination(updatedRoute.getDestination());
+		dto.setDistance(updatedRoute.getDistance());
+		dto.setEstimatedDuration(updatedRoute.getEstimatedDuration());
+
+		return dto;
 	}
 
 	@Override
-	public boolean deleteRoute(int routeId) {
-		routeRepo.deleteById(routeId);
-		return true;
+	public String deleteRoute(int routeId) {
+		Route route = routeRepo.findById(routeId).orElseThrow(() -> new RouteNotFoundException(routeId));
+
+		routeRepo.delete(route);
+		return "Route deleted successfully";
 	}
 
 	@Override
 	public List<BookingResponseDTO> manageBookings() {
+
 		List<Booking> bookings = bookingRepo.findAll();
 		List<BookingResponseDTO> dtos = new ArrayList<>();
 
 		for (Booking b : bookings) {
+
 			BookingResponseDTO d = new BookingResponseDTO();
 
 			d.setBookingId(b.getId());
@@ -206,14 +301,19 @@ public class AdminServiceImp implements IAdminService {
 			d.setNumberOfSeats(b.getNumberOfSeats());
 			d.setTotalAmount(b.getTotalAmount());
 
-			if (b.getSchedule() != null) {
-				if (b.getSchedule().getFlight() != null) {
-					d.setFlightName(b.getSchedule().getFlight().getFlightName());
+			if (b.getUser() != null) {
+				d.setUserName(b.getUser().getName());
+			} else {
+				d.setUserName("N/A");
+			}
 
-					if (b.getSchedule().getFlight().getRoute() != null) {
-						d.setOrigin(b.getSchedule().getFlight().getRoute().getSource());
-						d.setDestination(b.getSchedule().getFlight().getRoute().getDestination());
-					}
+			if (b.getSchedule() != null && b.getSchedule().getFlight() != null) {
+
+				d.setFlightName(b.getSchedule().getFlight().getFlightName());
+
+				if (b.getSchedule().getFlight().getRoute() != null) {
+					d.setOrigin(b.getSchedule().getFlight().getRoute().getSource());
+					d.setDestination(b.getSchedule().getFlight().getRoute().getDestination());
 				}
 			} else {
 				d.setFlightName("N/A");
@@ -223,32 +323,20 @@ public class AdminServiceImp implements IAdminService {
 
 			dtos.add(d);
 		}
+
 		return dtos;
 	}
 
 	@Override
 	public boolean cancelBooking(Long bookingId) {
-		Booking b = bookingRepo.findById(bookingId).orElse(null);
+		Booking b = bookingRepo.findById(bookingId)
+				.orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));
+		;
 		if (b != null) {
 			b.setBookingStatus("CANCELLED");
 			bookingRepo.save(b);
 			return true;
 		}
 		return false;
-	}
-
-	private UserDTO convertToDTO(User user) {
-
-		UserDTO dto = new UserDTO();
-
-		dto.setId(user.getId());
-		dto.setName(user.getName());
-		dto.setEmail(user.getEmail());
-		dto.setPhone(user.getPhone());
-		dto.setRole(user.getRole());
-		dto.setEnabled(user.isEnabled());
-		dto.setCreatedDate(user.getCreatedDate());
-
-		return dto;
 	}
 }

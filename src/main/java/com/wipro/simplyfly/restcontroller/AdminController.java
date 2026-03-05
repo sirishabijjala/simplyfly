@@ -3,6 +3,7 @@ package com.wipro.simplyfly.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
+import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.service.IAdminService;
@@ -27,20 +29,26 @@ public class AdminController {
 	@Autowired
 	IAdminService service;
 
-
 	@GetMapping("/users")
 	public List<UserDTO> manageUsers() {
 		return service.manageUsers();
 	}
 
 	@PostMapping("/users")
-	public UserDTO addUser(@RequestBody UserDTO userDTO) {
-		return service.addUser(userDTO);
+	public ResponseEntity<String> addUser(@RequestBody RegisterRequest request) {
+		String result = service.addUser(request);
+		if (result.contains("exists")) {
+			return ResponseEntity.badRequest().body(result);
+		}
+		return ResponseEntity.ok(result);
 	}
 
-	@PutMapping("/users/{userId}")
-	public UserDTO updateUser(@PathVariable Long userId, @RequestBody UserDTO userDTO) {
-		return service.updateUser(userId, userDTO);
+	@PutMapping("/users/{id}")
+	public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody RegisterRequest request) {
+		String result = service.updateUser(id, request);
+		if (result.contains("exists"))
+			return ResponseEntity.badRequest().body(result);
+		return ResponseEntity.ok(result);
 	}
 
 	@DeleteMapping("/users/{userId}")
@@ -48,27 +56,32 @@ public class AdminController {
 		return service.deleteUser(userId);
 	}
 
-
 	@GetMapping("/owners")
 	public List<FlightOwnerDTO> manageFlightOwners() {
 		return service.manageFlightOwners();
 	}
 
 	@PostMapping("/owners")
-	public FlightOwnerDTO addFlightOwner(@RequestBody FlightOwnerDTO ownerDTO) {
-		return service.addFlightOwner(ownerDTO);
+	public ResponseEntity<String> addOwner(@RequestBody RegisterRequest request) {
+		String result = service.addFlightOwner(request);
+		if (result.contains("exists")) {
+			return ResponseEntity.badRequest().body(result);
+		}
+		return ResponseEntity.ok(result);
 	}
 
-	@PutMapping("/owners/{ownerId}")
-	public FlightOwnerDTO updateFlightOwner(@PathVariable Long ownerId, @RequestBody FlightOwnerDTO ownerDTO) {
-		return service.updateFlightOwner(ownerId, ownerDTO);
+	@PutMapping("/owners/{id}")
+	public ResponseEntity<String> updateOwner(@PathVariable Long id,
+	                                          @RequestBody RegisterRequest request) {
+	    String result = service.updateFlightOwner(id, request);
+	    if (result.contains("exists")) return ResponseEntity.badRequest().body(result);
+	    return ResponseEntity.ok(result);
 	}
 
 	@DeleteMapping("/owners/{ownerId}")
-	public boolean deleteFlightOwner(@PathVariable Long ownerId) {
+	public String deleteFlightOwner(@PathVariable Long ownerId) {
 		return service.deleteFlightOwner(ownerId);
 	}
-
 
 	@GetMapping("/routes")
 	public List<RouteDTO> manageRoutes() {
@@ -86,10 +99,9 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/routes/{routeId}")
-	public boolean deleteRoute(@PathVariable int routeId) {
+	public String  deleteRoute(@PathVariable int routeId) {
 		return service.deleteRoute(routeId);
 	}
-
 
 	@GetMapping("/bookings")
 	public List<BookingResponseDTO> manageBookings() {

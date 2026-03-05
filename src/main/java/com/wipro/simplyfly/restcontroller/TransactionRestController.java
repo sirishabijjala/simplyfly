@@ -2,6 +2,7 @@ package com.wipro.simplyfly.restcontroller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,9 +15,9 @@ public class TransactionRestController {
    @Autowired
    ITransactionService transactionService;
    //get transaction by id
-   @GetMapping("TransactionById")
-   public TransactionResponseDTO getTransactionByID(Long id) {
-	   return transactionService.getTransaction(id);
+   @GetMapping("TransactionById/{bookingId}")
+   public TransactionResponseDTO getTransactionByID(@PathVariable long bookingId) {
+	   return transactionService.getTransaction(bookingId);
 	   
    }
 }

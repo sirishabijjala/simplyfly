@@ -36,7 +36,7 @@ public class AccountInfoUserDetails implements UserDetails{
 
     @Override
     public String getUsername() {
-        return email;  // email is username
+        return email;  
     }
 
     @Override

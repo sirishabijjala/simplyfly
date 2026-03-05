@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.UserDTO;
-import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.entity.User;
 import com.wipro.simplyfly.exceptions.InvalidCredentialsException;
 import com.wipro.simplyfly.exceptions.UserAlreadyExistsException;
@@ -26,30 +25,22 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
-
-        // Check if user already exists
+        
         if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException(userDTO.getEmail());
         }
-
-        Account account = new Account();
-        account.setName(userDTO.getName());
-        account.setEmail(userDTO.getEmail());
-        account.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        account.setRole(userDTO.getRole());
-        account.setActive(true);
 
         User user = new User(
                 userDTO.getName(),
                 userDTO.getEmail(),
                 passwordEncoder.encode(userDTO.getPassword()),
                 userDTO.getPhone(),
-                userDTO.getRole(),
-                account
+                userDTO.getAddress(),
+                userDTO.getGender(),
+                userDTO.getDateOfBirth() 
         );
 
         User savedUser = userRepository.save(user);
-
         return convertToDTO(savedUser);
     }
 
@@ -74,8 +65,11 @@ public class UserServiceImpl implements IUserService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
         user.setName(userDTO.getName());
+        user.setEmail(userDTO.getEmail());
         user.setPhone(userDTO.getPhone());
-        user.setRole(userDTO.getRole());
+        user.setAddress(userDTO.getAddress());
+        user.setGender(userDTO.getGender());
+        user.setDateOfBirth(userDTO.getDateOfBirth());
 
         User updatedUser = userRepository.save(user);
         return convertToDTO(updatedUser);
@@ -107,10 +101,11 @@ public class UserServiceImpl implements IUserService {
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
+        dto.setPassword(user.getPassword()); 
         dto.setPhone(user.getPhone());
-        dto.setRole(user.getRole());
-        dto.setEnabled(user.isEnabled());
-        dto.setCreatedDate(user.getCreatedDate());
+        dto.setAddress(user.getAddress());
+        dto.setGender(user.getGender());
+        dto.setDateOfBirth(user.getDateOfBirth());
         return dto;
     }
 }
