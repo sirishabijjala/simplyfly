@@ -33,6 +33,14 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
+            		
+            		// Public frontend pages
+                    .requestMatchers(
+                        "/auth/**",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**"
+                    ).permitAll()
                 .requestMatchers("/auth/register", "/auth/login","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","api/flights/**")
                 .permitAll()
                 .requestMatchers("/api/admin/**")
