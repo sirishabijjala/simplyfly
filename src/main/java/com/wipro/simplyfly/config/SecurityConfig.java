@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .hasAuthority("USER")
                 .requestMatchers("/api/owner/**")
                 .hasAuthority("OWNER")
+                .requestMatchers("/simplyfly/**")
+                .hasAuthority("USER")
                 .anyRequest()
                 .authenticated()
             )
