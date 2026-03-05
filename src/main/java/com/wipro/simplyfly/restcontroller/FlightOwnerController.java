@@ -17,8 +17,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping("/owner")
-@PreAuthorize("hasRole('OWNER')")
+@RequestMapping("/api/owner")
+@PreAuthorize("hasAuthority('OWNER')")
 public class FlightOwnerController {
 
     @Autowired
@@ -36,10 +36,10 @@ public class FlightOwnerController {
         return flightOwnerService.getFlightsByOwner(ownerId);
     }
 
-    @PostMapping("/flights/{ownerId}")
-    public FlightDTO addFlight(@PathVariable Long ownerId,
+    @PostMapping("/flights/{routeId}/{ownerId}")
+    public FlightDTO addFlight(@PathVariable int routeId,@PathVariable Long ownerId,
                                @RequestBody FlightDTO flightDTO) {
-        return flightOwnerService.addFlight(ownerId, flightDTO);
+        return flightOwnerService.addFlight(routeId,ownerId, flightDTO);
     }
 
     @PutMapping("/flights/{flightId}")

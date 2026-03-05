@@ -2,7 +2,7 @@ package com.wipro.simplyfly.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+import com.wipro.simplyfly.repository.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +27,8 @@ import com.wipro.simplyfly.repository.ScheduleRepository;
 @Service
 public class FlightOwnerServiceImpl implements FlightOwnerService {
 
+    
+
     @Autowired
     private FlightOwnerRepository flightOwnerRepository;
 
@@ -41,6 +43,9 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
     @Autowired
     private RouteRepository routeRepository;
+    @Autowired
+    private ISeatService seatService;
+   
 
     // OWNER
 
@@ -72,12 +77,12 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     }
 
     @Override
-    public FlightDTO addFlight(Long ownerId, FlightDTO flightDTO) {
+    public FlightDTO addFlight(int routeId, Long ownerId, FlightDTO flightDTO) {
 
         FlightOwner owner = getOwnerById(ownerId);
 
-        Route route = routeRepository.findById(flightDTO.getRouteId())
-                .orElseThrow(() -> new RuntimeException("Route not found"));
+        Route route = routeRepository.findById(routeId)
+               .orElseThrow(() -> new RuntimeException("Route not found"));
 
         Flight flight = new Flight();
 
@@ -174,6 +179,8 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
         schedule.setFlight(flight);
 
         Schedule saved = scheduleRepository.save(schedule);
+
+        seatService.createSeatsForSchedule(schedule); 
 
         scheduleDTO.setId(saved.getId());
         scheduleDTO.setFlightId(flightId);

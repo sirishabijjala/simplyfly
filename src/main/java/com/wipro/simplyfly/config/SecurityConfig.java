@@ -40,7 +40,8 @@ public class SecurityConfig {
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/user/**"
+                        "/user/**",
+                        "/admin/**"
                     ).permitAll()
                 .requestMatchers("/auth/register", "/auth/login","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html","api/flights/**")
                 .permitAll()
@@ -50,6 +51,8 @@ public class SecurityConfig {
                 .hasAuthority("USER")
                 .requestMatchers("/api/owner/**")
                 .hasAuthority("OWNER")
+                .requestMatchers("/simplyfly/**")
+                .hasAuthority("USER")
                 .anyRequest()
                 .authenticated()
             )

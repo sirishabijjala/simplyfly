@@ -14,7 +14,7 @@ public interface FlightOwnerService {
 
     List<FlightDTO> getFlightsByOwner(Long ownerId);
 
-    FlightDTO addFlight(Long ownerId, FlightDTO flightDTO);
+    FlightDTO addFlight(int routeId, Long ownerId, FlightDTO flightDTO);
 
     FlightDTO updateFlight(Long flightId, FlightDTO flightDTO);
 

@@ -40,7 +40,7 @@ else if(res.role === "OWNER"){
 window.location.href="/owner/dashboard.html";
 }
 else {
-window.location.href="/user/dashborad.html";
+window.location.href="/user/dashboard.html";
 }
 
 })

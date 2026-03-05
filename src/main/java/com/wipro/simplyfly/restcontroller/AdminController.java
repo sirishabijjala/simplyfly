@@ -55,8 +55,10 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/users/{userId}")
-	public boolean deleteUser(@PathVariable Long userId) {
-		return service.deleteUser(userId);
+	public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+	    boolean deleted = service.deleteUser(userId);
+	    return deleted ? ResponseEntity.ok("User deleted successfully") 
+	                   : ResponseEntity.status(404).body("User not found");
 	}
 
 	@GetMapping("/owners")
