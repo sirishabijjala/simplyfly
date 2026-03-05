@@ -15,4 +15,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 	boolean existsBySchedule_Flight_FlightOwner_Id(Long ownerId);
 	
 	boolean existsByUser_Id(long userId);
+	
+	boolean existsByScheduleId(long scheduleId);
 }
