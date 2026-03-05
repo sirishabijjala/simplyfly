@@ -26,6 +26,7 @@ import com.wipro.simplyfly.exceptions.UserNotFoundException;
 import com.wipro.simplyfly.repository.AccountRepository;
 import com.wipro.simplyfly.repository.BookingRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
+import com.wipro.simplyfly.repository.FlightRepository;
 import com.wipro.simplyfly.repository.RouteRepository;
 import com.wipro.simplyfly.repository.UserRepository;
 
@@ -40,6 +41,9 @@ public class AdminServiceImp implements IAdminService {
 
 	@Autowired
 	FlightOwnerRepository ownerRepo;
+	
+	@Autowired
+	FlightRepository flightRepo;
 
 	@Autowired
 	RouteRepository routeRepo;
@@ -278,10 +282,15 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public String deleteRoute(int routeId) {
-		Route route = routeRepo.findById(routeId).orElseThrow(() -> new RouteNotFoundException(routeId));
+	    Route route = routeRepo.findById(routeId)
+	            .orElseThrow(() -> new RouteNotFoundException(routeId));
 
-		routeRepo.delete(route);
-		return "Route deleted successfully";
+	    if (flightRepo.existsByRoute(route)) {
+	        return "Cannot delete route: There are active flights assigned to this route. Delete the flights first.";
+	    }
+
+	    routeRepo.delete(route);
+	    return "Route deleted successfully";
 	}
 
 	@Override
@@ -329,14 +338,19 @@ public class AdminServiceImp implements IAdminService {
 
 	@Override
 	public boolean cancelBooking(Long bookingId) {
-		Booking b = bookingRepo.findById(bookingId)
-				.orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));
-		;
-		if (b != null) {
-			b.setBookingStatus("CANCELLED");
-			bookingRepo.save(b);
-			return true;
-		}
-		return false;
+	    Booking b = bookingRepo.findById(bookingId)
+	            .orElseThrow(() -> new BookingNotFoundException("Booking not found with id: " + bookingId));
+	    
+	    if (!b.getBookingStatus().equals("CANCELLED")) {
+	        b.setBookingStatus("CANCELLED");
+	        
+	        // Return seats to the flight
+	        int currentSeats = b.getSchedule().getAvailableSeats();
+	        b.getSchedule().setAvailableSeats(currentSeats + b.getNumberOfSeats());
+	        
+	        bookingRepo.save(b);
+	        return true;
+	    }
+	    return false;
 	}
 }
