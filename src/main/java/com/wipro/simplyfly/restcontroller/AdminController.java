@@ -3,6 +3,7 @@ package com.wipro.simplyfly.restcontroller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,9 +57,14 @@ public class AdminController {
 
 	@DeleteMapping("/users/{userId}")
 	public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
-	    boolean deleted = service.deleteUser(userId);
-	    return deleted ? ResponseEntity.ok("User deleted successfully") 
-	                   : ResponseEntity.status(404).body("User not found");
+	    String result = service.deleteUser(userId);
+	    
+	    if ("HAS_ACTIVE_BOOKINGS".equals(result)) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT)
+	            .body("Cannot delete user: This user has existing flight bookings.");
+	    }
+	    
+	    return ResponseEntity.ok("User and associated account deleted successfully.");
 	}
 
 	@GetMapping("/owners")

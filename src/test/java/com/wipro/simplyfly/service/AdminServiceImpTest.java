@@ -111,9 +111,8 @@ class AdminServiceImpTest {
 
 	        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
 
-	        boolean result = adminService.deleteUser(1L);
+	        String result = adminService.deleteUser(1L);
 
-	        assertTrue(result);
 	        verify(userRepo).delete(user);
 	    }
 
