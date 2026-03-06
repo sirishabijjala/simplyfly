@@ -28,14 +28,21 @@ async function loadOwners(container) {
                     </thead>
                     <tbody>`;
 
-        owners.forEach(o => {
-            const ownerData = JSON.stringify(o).replace(/'/g, "\\'");
-            html += `
+		owners.forEach(o => {
+		    const ownerData = JSON.stringify(o).replace(/'/g, "\\'");
+		    html += `
                 <tr>
                     <td>${o.id}</td>
-                    <td>${o.name}</td>
-                    <td>${o.email}</td>
                     <td>
+                        <strong>${o.name}</strong>
+                    </td>
+                    <td>${o.email}</td>
+                    <td><span class="badge bg-primary">${o.flightCount || 0} Flights</span></td>
+                    <td><span class="badge bg-info text-dark">${o.scheduleCount || 0} Schedules</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info text-white me-2" onclick="viewOwnerInventory(${o.id}, '${o.name}')">
+                            <i class="fa-solid fa-plane"></i> Inventory
+                        </button>
                         <button class="btn btn-sm btn-outline-primary me-2" onclick='editOwner(${ownerData})'>
                             <i class="fa-solid fa-pen"></i>
                         </button>
@@ -44,8 +51,7 @@ async function loadOwners(container) {
                         </button>
                     </td>
                 </tr>`;
-        });
-
+		});
         html += `</tbody></table></div>`;
         container.innerHTML = html;
     } catch (error) {
@@ -94,7 +100,7 @@ window.editOwner = function(owner) {
     document.getElementById('ownerId').value = owner.id;
     document.getElementById('ownerName').value = owner.name;
     document.getElementById('ownerEmail').value = owner.email;
-    
+
     // Password optional for edit
     document.getElementById('ownerPassword').required = false;
     document.getElementById('ownerPassword').placeholder = "Leave blank to keep current";
@@ -108,7 +114,7 @@ function setupOwnerFormListener() {
     form.onsubmit = async (e) => {
         e.preventDefault();
         const id = document.getElementById('ownerId').value;
-        
+
         const ownerData = {
             name: document.getElementById('ownerName').value,
             email: document.getElementById('ownerEmail').value,
@@ -128,7 +134,7 @@ function setupOwnerFormListener() {
         if (response.ok) {
             alert(isUpdate ? "Owner updated!" : "Owner registered successfully!");
             bootstrap.Modal.getInstance(document.getElementById('adminModal')).hide();
-            showSection('owners', null); 
+            showSection('owners', null);
         } else {
             const errorText = await response.text();
             alert("Error: " + errorText);
@@ -157,5 +163,70 @@ window.deleteOwner = async function(id) {
         }
     } catch (error) {
         alert("Connection error!");
+    }
+};
+
+// 7. Inventory Drill-Down Logic
+window.viewOwnerInventory = async function(ownerId, ownerName) {
+    const contentArea = document.getElementById('content-area');
+    contentArea.innerHTML = `
+        <div class="text-center mt-5">
+            <div class="spinner-border text-primary"></div>
+            <p>Fetching ${ownerName}'s Fleet...</p>
+        </div>`;
+
+    try {
+        // This matches the new endpoint we discussed for the Admin Service
+        const response = await fetch(`/api/admin/owners/${ownerId}/inventory`, { 
+            headers: getHeaders() 
+        });
+        const inventory = await response.json();
+
+        let html = `
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4><i class="fa-solid fa-building"></i> ${ownerName} - Operational Inventory</h4>
+                <button class="btn btn-secondary btn-sm" onclick="showSection('owners', null)">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Owners
+                </button>
+            </div>`;
+
+        if (inventory.length === 0) {
+            html += `<div class="alert alert-warning">This owner has no flights or schedules registered.</div>`;
+        } else {
+            html += `<div class="row">`;
+            inventory.forEach(item => {
+                html += `
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm border-left-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="text-primary fw-bold">${item.flightNumber}</h5>
+                                    <span class="badge bg-light text-dark border">${item.model}</span>
+                                </div>
+                                <p class="text-muted mb-2"><i class="fa-solid fa-route"></i> ${item.route}</p>
+                                <hr>
+                                <h6>Schedules:</h6>
+                                <ul class="list-unstyled">
+                                    ${item.schedules.map(s => `
+                                        <li class="small mb-1">
+                                            <i class="fa-regular fa-clock text-success"></i> 
+                                            ${new Date(s.departure).toLocaleString()} 
+                                            <span class="badge ${s.status === 'Open' ? 'bg-success' : 'bg-danger'} ms-2" style="font-size: 0.7rem;">
+                                                ${s.status}
+                                            </span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            html += `</div>`;
+        }
+
+        contentArea.innerHTML = html;
+    } catch (error) {
+        console.error("Inventory error:", error);
+        contentArea.innerHTML = `<div class="alert alert-danger">Could not load inventory for ${ownerName}.</div>`;
     }
 };

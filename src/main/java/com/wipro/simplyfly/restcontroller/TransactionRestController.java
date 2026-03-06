@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
-@RequestMapping("/simpyfly/")
+@RequestMapping("/simplyfly/")
 public class TransactionRestController {
    @Autowired
    ITransactionService transactionService;

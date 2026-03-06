@@ -1,5 +1,7 @@
 package com.wipro.simplyfly.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +23,7 @@ public class Seat {
 	private String seatNumber; // e.g., "1A", "12F"
 	private String seatType; // "WINDOW", "AISLE", "MIDDLE"
 	private boolean isAvailable = true;
-
+   
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "schedule_id", nullable = false)
 	private Schedule schedule;
@@ -38,7 +40,8 @@ public class Seat {
 		this.isAvailable = isAvailable;
 		this.schedule = schedule;
 	}
-
+  
+	
 	public Long getId() {
 		return id;
 	}

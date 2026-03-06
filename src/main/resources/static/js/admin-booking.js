@@ -1,9 +1,8 @@
 /**
  * admin-booking.js
- * Handles the global view of all passenger bookings.
+ * Integrated with Seat Release and Refund Logic
  */
 
-// 1. Fetch and Display Table
 async function loadBookings(container) {
     try {
         const response = await fetch('/api/admin/bookings', { headers: getHeaders() });
@@ -12,16 +11,16 @@ async function loadBookings(container) {
         let html = `
             <div class="mb-4">
                 <h3 class="text-primary"><i class="fa-solid fa-ticket"></i> Global Booking Management</h3>
-                <p class="text-muted">Monitor all ticket sales and flight statuses.</p>
+                <p class="text-muted">Manage airline inventory and process refunds.</p>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover shadow-sm bg-white">
-                    <thead>
+                <table class="table table-hover shadow-sm bg-white border">
+                    <thead class="table-light">
                         <tr>
                             <th>Ref #</th>
-                            <th>Passenger</th>
-                            <th>Flight / Route</th>
-                            <th>Date</th>
+                            <th>Primary User</th>
+                            <th>Airline / Flight</th>
+                            <th>Route</th>
                             <th>Seats</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -31,28 +30,36 @@ async function loadBookings(container) {
                     <tbody>`;
 
         bookings.forEach(b => {
-            // Status Badge Logic
-            let badgeClass = "bg-success";
-            if (b.bookingStatus === 'CANCELLED') badgeClass = "bg-danger";
-            if (b.bookingStatus === 'PENDING') badgeClass = "bg-warning text-dark";
+            let badgeClass = b.bookingStatus === 'CONFIRMED' ? "bg-success" : 
+                             b.bookingStatus === 'CANCELLED' ? "bg-danger" : "bg-warning text-dark";
+
+            // Format Seat List (e.g., "1A, 1B")
+            const seatList = b.passengers ? b.passengers.map(p => p.seatId).join(', ') : 'N/A';
 
             html += `
                 <tr>
-                    <td class="fw-bold text-secondary">${b.bookingReference}</td>
-                    <td>${b.userName}</td>
+                    <td class="small fw-bold text-secondary">${b.bookingReference.substring(0,8)}...</td>
                     <td>
-                        <small class="d-block fw-bold">${b.flightName}</small>
-                        <small class="text-muted">${b.origin} → ${b.destination}</small>
+                        <div class="fw-bold">${b.userName}</div>
+                        <button class="btn btn-link btn-sm p-0 text-decoration-none" 
+                                onclick='viewPassengers(${JSON.stringify(b.passengers)})'>
+                            View ${b.numberOfSeats} Passengers
+                        </button>
                     </td>
-                    <td>${new Date(b.bookingDate).toLocaleDateString()}</td>
-                    <td>${b.numberOfSeats}</td>
-                    <td>₹${b.totalAmount}</td>
+                    <td>
+                        <div class="text-primary fw-bold" style="font-size: 0.9rem;">${b.flightName}</div>
+                    </td>
+                    <td>
+                        <small class="fw-bold text-uppercase">${b.origin} → ${b.destination}</small>
+                    </td>
+                    <td><span class="badge border text-dark">${seatList}</span></td>
+                    <td>₹${b.totalAmount.toLocaleString()}</td>
                     <td><span class="badge ${badgeClass}">${b.bookingStatus}</span></td>
                     <td>
                         <button class="btn btn-sm btn-outline-danger" 
                                 onclick="adminCancelBooking(${b.bookingId})"
                                 ${b.bookingStatus === 'CANCELLED' ? 'disabled' : ''}>
-                            <i class="fa-solid fa-ban"></i> Cancel
+                            Cancel & Refund
                         </button>
                     </td>
                 </tr>`;
@@ -61,13 +68,38 @@ async function loadBookings(container) {
         html += `</tbody></table></div>`;
         container.innerHTML = html;
     } catch (error) {
-        container.innerHTML = `<div class="alert alert-danger">Error loading bookings.</div>`;
+        container.innerHTML = `<div class="alert alert-danger">Error loading bookings. Check if server is running.</div>`;
     }
 }
 
-// 2. Cancel Logic
+// 2. Modal to View Individual Passenger Details
+window.viewPassengers = function(passengers) {
+    document.getElementById('modalTitle').innerText = "Passenger Manifest";
+    let passengerHTML = `
+        <table class="table table-sm">
+            <thead>
+                <tr><th>Name</th><th>Age</th><th>Gender</th><th>Seat</th></tr>
+            </thead>
+            <tbody>`;
+    
+    passengers.forEach(p => {
+        passengerHTML += `
+            <tr>
+                <td>${p.name}</td>
+                <td>${p.age}</td>
+                <td>${p.gender}</td>
+                <td class="fw-bold text-primary">${p.seatId}</td>
+            </tr>`;
+    });
+
+    passengerHTML += `</tbody></table>`;
+    document.getElementById('modalBody').innerHTML = passengerHTML;
+    new bootstrap.Modal(document.getElementById('adminModal')).show();
+};
+
+// 3. Integrated Cancel Logic (Triggers Release Seats + Refund)
 window.adminCancelBooking = async function(id) {
-    if (!confirm("Are you sure you want to cancel this booking? This will return seats to the flight schedule.")) return;
+    if (!confirm("⚠️ This will: \n1. Release specific seats back to the plane \n2. Process a FULL REFUND to the user. \n\nContinue?")) return;
 
     try {
         const response = await fetch(`/api/admin/bookings/cancel/${id}`, {
@@ -76,10 +108,11 @@ window.adminCancelBooking = async function(id) {
         });
 
         if (response.ok) {
-            alert("Booking has been cancelled and seats have been released.");
-            showSection('bookings', null); // Refresh table
+            alert("✅ Success: Seats released and Refund processed!");
+            showSection('bookings', null); 
         } else {
-            alert("Failed to cancel booking. It may already be cancelled.");
+            const error = await response.text();
+            alert("Error: " + error);
         }
     } catch (error) {
         alert("Connection error occurred.");

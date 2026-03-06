@@ -2,6 +2,7 @@ package com.wipro.simplyfly.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingRequestDTO;
 import com.wipro.simplyfly.dto.BookingResponseDTO;
-import com.wipro.simplyfly.dto.PassengerDTO;
+import com.wipro.simplyfly.dto.PassengerRequestDTO;
+import com.wipro.simplyfly.dto.PassengerResponseDTO;
 import com.wipro.simplyfly.dto.TransactionRequestDTO;
 import com.wipro.simplyfly.entity.Booking;
 import com.wipro.simplyfly.entity.Passenger;
@@ -48,50 +50,54 @@ public class BookingServiceImp implements IBookingService{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        User user = userRepository.findByName(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 2️⃣ Get Schedule
         Schedule schedule = scheduleRepository.findById(requestDTO.getScheduleId())
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
-
-        double totalAmount = 0;
-
+       
+        
+          //  double totalAmount = 0
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setSchedule(schedule);
         booking.setBookingDate(LocalDateTime.now());
         booking.setBookingStatus("CONFIRMED");
+        booking.setBookingReference(UUID.randomUUID().toString());
+        booking.setNumberOfSeats(requestDTO.getPassengers().size());
+     
 
         booking = bookingRepository.save(booking);
 
+       ;
         List<Passenger> passengerList = new ArrayList<>();
+        double totalAmount = 0;
 
-        for (PassengerDTO passengerDTO : requestDTO.getPassengers()) {
+        for (PassengerRequestDTO passengerDTO : requestDTO.getPassengers()) {
 
-            // 3️⃣ Get Seat from PassengerDTO
-            Seat seat = seatRepository.findById(passengerDTO.getSeatId())
-                    .orElseThrow(() -> new RuntimeException("Seat not found"));
+        	Seat seat = seatRepository
+        	        .findSeatForUpdate(
+        	                passengerDTO.getSeatNumber(),
+        	                requestDTO.getScheduleId()
+        	        )
+        	        .orElseThrow(() -> new RuntimeException("Seat not found"));
 
-            // 4️⃣ Check Seat Availability
             if (!seat.isAvailable()) {
                 throw new RuntimeException("Seat " + seat.getSeatNumber() + " already booked");
             }
 
-            // 5️⃣ Calculate Price
             double seatPrice = schedule.getFare();
 
             if (passengerDTO.getAge() < 12) {
-                seatPrice = seatPrice * 0.5; // 50% child discount
+                seatPrice = seatPrice * 0.5;
             }
 
             totalAmount += seatPrice;
 
-            // 6️⃣ Mark Seat as Booked
             seat.setAvailable(false);
             seatRepository.save(seat);
 
-            // 7️⃣ Create Passenger
             Passenger passenger = new Passenger();
             passenger.setName(passengerDTO.getName());
             passenger.setAge(passengerDTO.getAge());
@@ -101,9 +107,13 @@ public class BookingServiceImp implements IBookingService{
 
             passengerList.add(passenger);
         }
+           
+         
 
         passengerRepository.saveAll(passengerList);
-
+  
+        booking.setPassengers(passengerList);
+     
         // 8️⃣ Reduce Available Seats
         schedule.setAvailableSeats(
                 schedule.getAvailableSeats() - requestDTO.getPassengers().size()
@@ -111,7 +121,7 @@ public class BookingServiceImp implements IBookingService{
         scheduleRepository.save(schedule);
 
         // 9️⃣ Update Total Amount
-        booking.setTotalAmount(totalAmount);
+     booking.setTotalAmount(totalAmount);
         bookingRepository.save(booking);
 
         // 🔟 Call Transaction Service
@@ -119,6 +129,7 @@ public class BookingServiceImp implements IBookingService{
         transactionDTO.setPaymentMethod(requestDTO.getPaymentMethod());
 
         transactionService.makePayment(booking.getId(), transactionDTO);
+    
 
         return mapToResponse(booking);
     }
@@ -151,7 +162,7 @@ public class BookingServiceImp implements IBookingService{
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	    String username = authentication.getName();
 
-	    if (!booking.getUser().getName().equals(username)) {
+	    if (!booking.getUser().getEmail().equals(username)) {
 	        throw new RuntimeException("Not authorized to cancel this booking");
 	    }
 
@@ -189,6 +200,32 @@ public class BookingServiceImp implements IBookingService{
 		response.setFlightName(booking.getSchedule().getFlight().getFlightName());
 		response.setOrigin(booking.getSchedule().getFlight().getRoute().getSource());
 		response.setDestination(booking.getSchedule().getFlight().getRoute().getDestination());
+		
+		if (booking.getSchedule() != null && booking.getSchedule().getFlight() != null) {
+	        String airline = booking.getSchedule().getFlight().getFlightOwner().getName();
+	        String flightNo = booking.getSchedule().getFlight().getFlightNumber();
+	        String model = booking.getSchedule().getFlight().getFlightName();
+
+	        response.setFlightName(airline + " | " + flightNo + " (" + model + ")");
+	        
+	        response.setOrigin(booking.getSchedule().getFlight().getRoute().getSource());
+	        response.setDestination(booking.getSchedule().getFlight().getRoute().getDestination());
+	    }
+	    List<PassengerResponseDTO> passengerResponses = booking.getPassengers()
+	            .stream()
+	            .map(passenger -> {
+	                PassengerResponseDTO p = new PassengerResponseDTO();
+	                p.setName(passenger.getName());
+	                p.setAge(passenger.getAge());
+	                p.setGender(passenger.getGender());
+	                p.setSeatId(passenger.getSeat().getSeatNumber());
+	                return p;
+	            })
+	            .toList();
+
+	    response.setPassengers(passengerResponses);
+
+
 
 		
 		return response;
