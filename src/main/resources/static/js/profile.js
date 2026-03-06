@@ -27,6 +27,14 @@ document.getElementById("profileRole").innerText=data.role;
 document.getElementById("profileStatus").innerText=
 data.active?"Active":"Inactive";
 
+document.getElementById("profilePhone").innerText=data.phone;
+
+document.getElementById("profileAddress").innerText=data.address;
+
+document.getElementById("profileGender").innerText=data.gender;
+
+document.getElementById("profileDob").innerText=data.dateOfBirth;
+
 })
 
 .catch(err=>console.log(err));

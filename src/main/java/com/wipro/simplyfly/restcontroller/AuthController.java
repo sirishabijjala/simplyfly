@@ -1,6 +1,7 @@
 package com.wipro.simplyfly.restcontroller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,18 +44,24 @@ public class AuthController {
     @GetMapping("/profile")
     public AccountResponse getProfile(Authentication auth) {
 
-    String email = auth.getName();
+        String email = auth.getName();
 
-    Account account = accountRepository.findByEmail(email).get();
+        Account account = accountRepository.findByEmail(email).get();
 
-    return new AccountResponse(
-    account.getId(),
-    account.getName(),
-    account.getEmail(),
-    account.getRole(),
-    account.isActive()
-    );
+        AccountResponse response = new AccountResponse();
 
+        response.setId(account.getId());
+        response.setName(account.getName());
+        response.setEmail(account.getEmail());
+        response.setRole(account.getRole());
+        response.setActive(account.isActive());
+
+        // fetch from User entity
+        response.setPhone(account.getUser().getPhone());
+        response.setAddress(account.getUser().getAddress());
+        response.setGender(account.getUser().getGender());
+        response.setDateOfBirth(account.getUser().getDateOfBirth());
+
+        return response;
     }
-   
 }
