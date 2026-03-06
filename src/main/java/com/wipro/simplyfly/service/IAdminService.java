@@ -1,6 +1,7 @@
 package com.wipro.simplyfly.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
 import com.wipro.simplyfly.dto.FlightOwnerDTO;
@@ -15,6 +16,7 @@ public interface IAdminService {
 	String deleteUser(Long userId);
 
 	List<FlightOwnerDTO> manageFlightOwners();
+	public List<Map<String, Object>> getOwnerInventory(Long ownerId);
 	String addFlightOwner(RegisterRequest request);
 	String updateFlightOwner(Long ownerId, RegisterRequest request);
 	String deleteFlightOwner(Long ownerId);
@@ -25,5 +27,5 @@ public interface IAdminService {
 	String deleteRoute(int routeId);
 
 	List<BookingResponseDTO> manageBookings();
-	boolean cancelBooking(Long bookingId);
+	void cancelBooking(Long bookingId);
 }

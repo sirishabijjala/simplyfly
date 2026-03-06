@@ -1,6 +1,8 @@
 package com.wipro.simplyfly.restcontroller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,10 @@ import com.wipro.simplyfly.dto.FlightOwnerDTO;
 import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.dto.RouteDTO;
 import com.wipro.simplyfly.dto.UserDTO;
+import com.wipro.simplyfly.repository.FlightOwnerRepository;
+import com.wipro.simplyfly.repository.RouteRepository;
+import com.wipro.simplyfly.repository.TransactionRepository;
+import com.wipro.simplyfly.repository.UserRepository;
 import com.wipro.simplyfly.service.IAdminService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -32,7 +38,18 @@ public class AdminController {
 
 	@Autowired
 	IAdminService service;
+	@Autowired
+	UserRepository userRepo;
 
+	@Autowired
+	RouteRepository routeRepo;
+
+	@Autowired
+	TransactionRepository transactionRepo;
+	
+	@Autowired
+	FlightOwnerRepository ownerRepo;
+	
 	@GetMapping("/users")
 	public List<UserDTO> manageUsers() {
 		return service.manageUsers();
@@ -71,6 +88,17 @@ public class AdminController {
 	public List<FlightOwnerDTO> manageFlightOwners() {
 		return service.manageFlightOwners();
 	}
+	
+	@GetMapping("/owners/{id}/inventory")
+	public ResponseEntity<?> getOwnerInventory(@PathVariable Long id) {
+	    try {
+	        List<Map<String, Object>> inventory = service.getOwnerInventory(id);
+	        return ResponseEntity.ok(inventory);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                             .body("Error fetching inventory: " + e.getMessage());
+	    }
+	}
 
 	@PostMapping("/owners")
 	public ResponseEntity<String> addOwner(@RequestBody RegisterRequest request) {
@@ -100,8 +128,13 @@ public class AdminController {
 	}
 
 	@PostMapping("/routes")
-	public RouteDTO addRoute(@RequestBody RouteDTO routeDTO) {
-		return service.addRoute(routeDTO);
+	public ResponseEntity<?> addRoute(@RequestBody RouteDTO routeDTO) {
+	    try {
+	        RouteDTO saved = service.addRoute(routeDTO);
+	        return ResponseEntity.ok(saved);
+	    } catch (RuntimeException e) {
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	    }
 	}
 
 	@PutMapping("/routes/{routeId}")
@@ -120,7 +153,18 @@ public class AdminController {
 	}
 
 	@PutMapping("/bookings/cancel/{bookingId}")
-	public boolean cancelBooking(@PathVariable Long bookingId) {
-		return service.cancelBooking(bookingId);
+	public void cancelBooking(@PathVariable Long bookingId) {
+		 service.cancelBooking(bookingId);
+	}
+	
+	@GetMapping("/dashboard-stats")
+	public ResponseEntity<Map<String, Object>> getDashboardStats() {
+	    Map<String, Object> stats = new HashMap<>();
+	    stats.put("totalRoutes", routeRepo.count());
+	    stats.put("totalUsers", userRepo.count());
+	    stats.put("totalOwners", ownerRepo.count());
+	    
+	    
+	    return ResponseEntity.ok(stats);
 	}
 }

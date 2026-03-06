@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.wipro.simplyfly.entity.Route;
@@ -29,4 +31,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             Route route,
             LocalDateTime start,
             LocalDateTime end);
+    
+    @Query("SELECT s FROM Schedule s WHERE s.flight.route = :route " +
+    	       "AND s.departureTime >= :start AND s.departureTime <= :end")
+    	List<Schedule> findSchedulesByRouteAndDate(
+    	    @Param("route") Route route, 
+    	    @Param("start") LocalDateTime start, 
+    	    @Param("end") LocalDateTime end
+    	);
 }
