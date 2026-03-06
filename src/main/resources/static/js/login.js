@@ -7,7 +7,6 @@ e.preventDefault();
 let data = {
 
 email: document.getElementById("email").value,
-
 password: document.getElementById("password").value
 
 };
@@ -28,8 +27,10 @@ body:JSON.stringify(data)
 
 .then(res=>{
 
+// save token
 localStorage.setItem("token",res.token);
-localStorage.setItem("role",res.role);
+
+
 
 alert("Login Successful");
 
@@ -40,7 +41,7 @@ else if(res.role === "OWNER"){
 window.location.href="/owner/dashboard.html";
 }
 else {
-window.location.href="/user/dashboard.html";
+window.location.href="/user/loginprofile.html";
 }
 
 })

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Seats - SimplyFly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .seat-container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; }
+        .plane-aisle { width: 40px; }
+        .seat { width: 35px; height: 35px; margin: 5px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; transition: 0.2s; border: 1px solid #ccc; }
+        .seat.available { background-color: #f8f9fa; color: #333; }
+        .seat.available:hover { background-color: #e3f2fd; border-color: #1E88E5; }
+        .seat.selected { background-color: #1E88E5; color: white; border-color: #1E88E5; }
+        .seat.occupied { background-color: #dee2e6; color: #adb5bd; cursor: not-allowed; }
+        .legend { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
+        
+        /* Cabin Styling */
+.plane-body {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 50px 50px 10px 10px; /* Rounded front for the nose */
+    padding: 40px 20px;
+    max-width: 450px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* The Aisle */
+.aisle {
+    width: 50px;
+    background: #f1f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #999;
+    font-weight: bold;
+}
+
+/* Seat Styling */
+.seat {
+    width: 40px;
+    height: 40px;
+    margin: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #d1d9e0;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.seat.available:hover {
+    background: #e3f2fd;
+    border-color: #1E88E5;
+    transform: scale(1.1);
+}
+
+.seat.selected {
+    background: #1E88E5 !important;
+    color: white !important;
+    border-color: #1565C0 !important;
+    box-shadow: 0 4px 8px rgba(30, 136, 229, 0.3);
+}
+
+.seat.occupied {
+    background: #e9ecef;
+    color: #dee2e6;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+/* Window seats indicator */
+.window-left { border-left: 4px solid #1E88E5; }
+.window-right { border-right: 4px solid #1E88E5; }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5">
+    <div class="seat-container shadow">
+        <h4 class="text-center mb-4">Choose Your Seats</h4>
+        
+        <div class="legend">
+            <span><div class="seat available"></div> Available</span>
+            <span><div class="seat selected"></div> Selected</span>
+            <span><div class="seat occupied"></div> Occupied</span>
+        </div>
+
+        <div id="seat-map" class="text-center">
+            <div class="spinner-border text-primary"></div>
+        </div>
+
+        <div class="mt-4 p-3 border-top">
+            <h5>Selection Summary</h5>
+            <p>Seats: <span id="selected-seats-list" class="fw-bold text-primary">None</span></p>
+            <button id="proceed-btn" class="btn btn-primary w-100 fw-bold" disabled onclick="goToPassengerDetails()">
+                Proceed to Passenger Details
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const scheduleId = params.get("scheduleId");
+let selectedSeats = [];
+
+async function loadSeats() {
+    if (!scheduleId) {
+        document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">No Schedule Selected!</div>`;
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/flights/seats/${scheduleId}`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            if(response.status === 403 || response.status === 401) {
+                throw new Error("Session expired. Please login again.");
+            }
+            throw new Error("Failed to load seats from server.");
+        }
+
+        const seats = await response.json();
+        renderSeatMap(seats);
+
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+    }
+}
+
+function renderSeatMap(seats) {
+    const seatMap = document.getElementById("seat-map");
+    seatMap.innerHTML = "";
+    
+    const planeBody = document.createElement("div");
+    planeBody.className = "plane-body shadow-sm mb-4";
+    planeBody.innerHTML = `<div class="text-center mb-4"><small class="badge bg-light text-muted">AIRCRAFT FRONT</small></div>`;
+
+    let rowDiv = document.createElement("div");
+    rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
+
+    seats.forEach((seat, index) => {
+        const seatEl = document.createElement("div");
+        
+        // Window indicators: A and D are windows in your Java code
+        let windowClass = "";
+        if (seat.seatNumber.includes("A")) windowClass = "window-left";
+        if (seat.seatNumber.includes("D")) windowClass = "window-right";
+
+        seatEl.className = `seat ${seat.available ? 'available' : 'occupied'} ${windowClass}`;
+        seatEl.innerText = seat.seatNumber;
+        
+        if (seat.available) {
+            seatEl.onclick = () => toggleSeat(seatEl, seat.seatNumber);
+        }
+
+        rowDiv.appendChild(seatEl);
+
+        // AISLE LOGIC: Add Aisle after the 2nd seat (A, B - Aisle - C, D)
+        // Since there are 4 seats total, (index + 1) % 4 === 2 is the middle
+        if ((index + 1) % 4 === 2) {
+            const aisle = document.createElement("div");
+            aisle.className = "aisle";
+            aisle.innerText = Math.floor(index / 4) + 1; // Row Number
+            rowDiv.appendChild(aisle);
+        }
+
+        // NEW ROW LOGIC: Start a new row after every 4 seats
+        if ((index + 1) % 4 === 0) {
+            planeBody.appendChild(rowDiv);
+            rowDiv = document.createElement("div");
+            rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
+        }
+    });
+
+    seatMap.appendChild(planeBody);
+}
+
+function toggleSeat(el, seatNumber) {
+    if (el.classList.contains('selected')) {
+        el.classList.remove('selected');
+        selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+    } else {
+        el.classList.add('selected');
+        selectedSeats.push(seatNumber);
+    }
+    
+    document.getElementById("selected-seats-list").innerText = 
+        selectedSeats.length > 0 ? selectedSeats.join(", ") : "None";
+    document.getElementById("proceed-btn").disabled = selectedSeats.length === 0;
+}
+
+function goToPassengerDetails() {
+    // We pass seat numbers because your backend findSeatForUpdate uses seatNumber
+    const seatsParam = selectedSeats.join(",");
+    window.location.href = `/user/passenger-details.html?scheduleId=${scheduleId}&seats=${seatsParam}`;
+}
+
+// Initialize
+loadSeats();
+</script>
+</body>
+</html>
