@@ -26,26 +26,38 @@ body:JSON.stringify(data)
 .then(res=>res.json())
 
 .then(res=>{
+	// save token
+	localStorage.setItem("token",res.token);
 
-// save token
-localStorage.setItem("token",res.token);
+	// show success message
+	let msg = document.getElementById("loginMessage");
+	msg.style.display = "block";
+	msg.innerText = "Login successful! Redirecting...";
 
+	// redirect after 2 seconds
+	setTimeout(() => {
 
+	if(res.role === "ADMIN"){
+	window.location.href="/admin/admin-dashboard.html";
+	}
+	else if(res.role === "OWNER"){
+	window.location.href="/owner/dashboard.html";
+	}
+	else{
+	window.location.href="/user/loginprofile.html";
+	}
 
-alert("Login Successful");
+	},2000);
 
-if(res.role === "ADMIN"){
-window.location.href="/admin/admin-dashboard.html";
-}
-else if(res.role === "OWNER"){
-window.location.href="/owner/dashboard.html";
-}
-else {
-window.location.href="/user/loginprofile.html";
-}
+	})
 
-})
+	.catch(err=>{
+	console.log(err);
 
-.catch(err=>console.log(err));
-
+	let msg = document.getElementById("loginMessage");
+	msg.style.display = "block";
+	msg.classList.remove("alert-success");
+	msg.classList.add("alert-danger");
+	msg.innerText = "Login failed. Please check your credentials.";
+	});
 });
