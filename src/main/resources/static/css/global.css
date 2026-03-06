@@ -37,3 +37,10 @@ body {
     background-color: #007bff;
     color: #fff;
 }
+
+
+
+a, #navbarUserName{
+	list-style-type:none;
+	text-decoration:none;
+}
