@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<title>SimplyFly | User Profile</title>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+
+/* BODY */
+
+body{
+background:#f4f8ff;
+font-family:'Segoe UI',sans-serif;
+min-height:100vh;
+}
+
+/* MAIN CONTAINER */
+
+.profile-container{
+margin-top:40px;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+background:white;
+border-radius:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+overflow:hidden;
+border:1px solid #e6f0ff;
+}
+
+/* PROFILE CARD */
+
+.profile-card{
+background:linear-gradient(135deg,#0f62fe,#4da3ff);
+color:white;
+padding:30px 20px;
+text-align:center;
+}
+
+.profile-card img{
+border:4px solid white;
+box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.profile-card h5{
+margin-top:10px;
+font-weight:600;
+}
+
+.profile-card p{
+font-size:14px;
+opacity:0.9;
+}
+
+/* SIDEBAR MENU */
+
+.sidebar .list-group-item{
+border:none;
+padding:15px 20px;
+font-weight:500;
+font-size:15px;
+display:flex;
+align-items:center;
+gap:10px;
+transition:all 0.3s ease;
+cursor:pointer;
+}
+
+.sidebar .list-group-item i{
+color:#0f62fe;
+}
+
+/* HOVER EFFECT */
+
+.sidebar .list-group-item:hover{
+background:#eef4ff;
+color:#0f62fe;
+padding-left:25px;
+}
+
+/* LOGOUT */
+
+.logout-btn{
+color:#ff4d4d;
+}
+
+.logout-btn i{
+color:#ff4d4d;
+}
+
+.logout-btn:hover{
+background:#ffecec;
+}
+
+/* CONTENT AREA */
+
+.content-area{
+background:white;
+padding:30px;
+border-radius:14px;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+border:1px solid #e6f0ff;
+}
+
+/* TITLES */
+
+.section-title{
+color:#0f62fe;
+font-weight:700;
+margin-bottom:20px;
+border-bottom:2px solid #e6f0ff;
+padding-bottom:10px;
+}
+
+/* TABLE */
+
+.table th{
+color:#0f62fe;
+font-weight:600;
+width:180px;
+}
+
+.table td{
+color:#333;
+}
+
+/* BOOKINGS TABLE */
+
+.booking-table thead{
+background:#0f62fe;
+color:white;
+}
+
+.booking-table tbody tr:hover{
+background:#f5f9ff;
+}
+
+/* BUTTON */
+
+.btn-primary{
+background:#0f62fe;
+border:none;
+}
+
+.btn-primary:hover{
+background:#0047d4;
+}
+
+/* SMALL ANIMATION */
+
+.sidebar, .content-area{
+transition:0.3s;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container profile-container">
+
+<div class="row">
+
+<!-- SIDEBAR -->
+
+<div class="col-md-3">
+
+<div class="sidebar">
+
+<div class="profile-card">
+
+<img id="profileAvatar"
+src="https://ui-avatars.com/api/?name=User&background=ffffff&color=0f62fe"
+class="rounded-circle mb-2"
+width="80">
+
+<h5 id="profileName">User</h5>
+
+<p id="profileEmail"></p>
+
+</div>
+
+<ul class="list-group list-group-flush">
+
+<li class="list-group-item" onclick="showSection('details')">
+<i class="fa-solid fa-user"></i> Profile Details
+</li>
+
+<li class="list-group-item" onclick="showSection('bookings')">
+<i class="fa-solid fa-ticket"></i> My Bookings
+</li>
+
+<li class="list-group-item" onclick="showSection('manage')">
+<i class="fa-solid fa-plane"></i> Manage Booking
+</li>
+
+<li class="list-group-item logout-btn" onclick="logout()">
+<i class="fa-solid fa-right-from-bracket"></i> Logout
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+
+<!-- CONTENT AREA -->
+
+<div class="col-md-9">
+
+<div class="content-area">
+
+<!-- PROFILE DETAILS -->
+
+<div id="detailsSection">
+
+<h3 class="section-title">
+<i class="fa-solid fa-id-card"></i>
+User Profile
+</h3>
+
+<table class="table">
+
+<tr>
+<th>User ID</th>
+<td id="profileId"></td>
+</tr>
+
+<tr>
+<th>Name</th>
+<td id="profileName2"></td>
+</tr>
+
+<tr>
+<th>Email</th>
+<td id="profileEmail2"></td>
+</tr>
+
+<tr>
+<th>Role</th>
+<td id="profileRole"></td>
+</tr>
+
+<tr>
+<th>Status</th>
+<td id="profileStatus"></td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- MY BOOKINGS -->
+
+<div id="bookingSection" style="display:none">
+
+<h3 class="section-title">
+<i class="fa-solid fa-ticket"></i>
+My Flight Bookings
+</h3>
+
+<table class="table table-bordered booking-table">
+
+<thead>
+
+<tr>
+<th>Booking ID</th>
+<th>Flight</th>
+<th>Date</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="bookingTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- MANAGE BOOKINGS -->
+
+<div id="manageSection" style="display:none">
+
+<h3 class="section-title">
+<i class="fa-solid fa-plane-departure"></i>
+Manage Flight Booking
+</h3>
+
+<p>Search and manage your flight bookings.</p>
+
+<button class="btn btn-primary"
+onclick="window.location.href='/user/manage-booking.html'">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+Go to Booking Manager
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="/js/profile.js"></script>
+
+</body>
+
+</html>
