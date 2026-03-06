@@ -60,9 +60,14 @@ body:JSON.stringify(data)
 
 .then(data=>{
 
-alert(data);
+	let messageBox = document.getElementById("messageBox");
 
-window.location.href="/auth/login.html";
+	messageBox.style.display = "block";
+	messageBox.innerText = "Account created successfully! Redirecting to login...";
+
+	setTimeout(() => {
+	window.location.href="/auth/login.html";
+	},2000);
 
 })
 

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Booking Confirmed | SimplyFly</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+background:#f4f8ff;
+}
+
+/* Success Banner */
+
+.success-banner{
+background:#1E88E5;
+color:white;
+padding:25px;
+border-radius:10px;
+margin-bottom:25px;
+}
+
+/* Ticket Card */
+
+.ticket-card{
+background:white;
+border-radius:12px;
+padding:25px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Flight route */
+
+.route{
+font-size:22px;
+font-weight:600;
+}
+
+/* Passenger table */
+
+.passenger-table th{
+background:#f2f6ff;
+}
+
+/* Buttons */
+
+.btn-home{
+background:#1E88E5;
+color:white;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="container mt-5">
+
+<!-- SUCCESS MESSAGE -->
+
+<div class="success-banner text-center">
+
+<h3>🎉 Booking Confirmed</h3>
+<p>Your flight ticket has been successfully booked.</p>
+
+</div>
+
+
+<!-- TICKET CARD -->
+
+<div class="ticket-card">
+
+<div class="row">
+
+<div class="col-md-8">
+
+<h4 id="flightName"></h4>
+
+<p class="route">
+<span id="origin"></span> ✈ <span id="destination"></span>
+</p>
+
+</div>
+
+<div class="col-md-4 text-end">
+
+<p><b>Booking Ref:</b></p>
+<h5 id="bookingRef"></h5>
+
+</div>
+
+</div>
+
+<hr>
+
+<div class="row">
+
+<div class="col-md-4">
+
+<p><b>Booking Date</b></p>
+<p id="bookingDate"></p>
+
+</div>
+
+<div class="col-md-4">
+
+<p><b>Status</b></p>
+<p class="text-success fw-bold" id="status"></p>
+
+</div>
+
+<div class="col-md-4">
+
+<p><b>Total Paid</b></p>
+<h5 id="amount"></h5>
+
+</div>
+
+</div>
+
+
+<hr>
+
+
+<h5 class="mb-3">Passenger Details</h5>
+
+<table class="table passenger-table">
+
+<thead>
+
+<tr>
+<th>Name</th>
+<th>Age</th>
+<th>Gender</th>
+<th>Seat</th>
+</tr>
+
+</thead>
+
+<tbody id="passengerTable"></tbody>
+
+</table>
+
+
+<div class="text-center mt-4">
+
+<button class="btn btn-home" onclick="goHome()">
+Go To Dashboard
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const bookingId = params.get("bookingId");
+
+
+async function loadBooking(){
+
+try{
+
+const token = localStorage.getItem("token");
+
+const response = await fetch(`/simplyfly/bookings/${bookingId}`,{
+
+headers:{
+"Authorization":"Bearer "+token
+}
+
+});
+
+if(!response.ok){
+
+throw new Error("Booking not found");
+
+}
+
+const booking = await response.json();
+
+
+/* Fill UI */
+
+document.getElementById("flightName").innerText = booking.flightName;
+
+document.getElementById("origin").innerText = booking.origin;
+document.getElementById("destination").innerText = booking.destination;
+
+document.getElementById("bookingRef").innerText = booking.bookingReference;
+
+document.getElementById("bookingDate").innerText =
+new Date(booking.bookingDate).toLocaleString();
+
+document.getElementById("status").innerText = booking.bookingStatus;
+
+document.getElementById("amount").innerText = "₹ "+booking.totalAmount;
+
+
+/* Passengers */
+
+const table = document.getElementById("passengerTable");
+
+booking.passengers.forEach(p=>{
+
+table.innerHTML += `
+<tr>
+<td>${p.name}</td>
+<td>${p.age}</td>
+<td>${p.gender}</td>
+<td>${p.seatId}</td>
+</tr>
+`;
+
+});
+
+}
+catch(err){
+
+alert(err.message);
+
+}
+
+}
+
+
+function goHome(){
+
+window.location.href="/user/dashboard.html";
+
+}
+
+
+loadBooking();
+
+</script>
+
+</body>
+</html>
