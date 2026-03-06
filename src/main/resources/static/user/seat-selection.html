@@ -106,99 +106,111 @@
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const scheduleId = params.get("scheduleId");
-    let selectedSeats = [];
+const params = new URLSearchParams(window.location.search);
+const scheduleId = params.get("scheduleId");
+let selectedSeats = [];
 
-    async function loadSeats() {
-        try {
-            const response = await fetch(`/api/flights/seats/${scheduleId}`);
-            const seats = await response.json();
-            
-            const seatMap = document.getElementById("seat-map");
-            seatMap.innerHTML = "";
-
-            let rowDiv = document.createElement("div");
-            rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
-
-            seats.forEach((seat, index) => {
-                const seatEl = document.createElement("div");
-                seatEl.className = `seat ${seat.available ? 'available' : 'occupied'}`;
-                seatEl.innerText = seat.seatNumber;
-                
-                if (seat.available) {
-                    seatEl.onclick = () => toggleSeat(seatEl, seat.id, seat.seatNumber);
-                }
-
-                rowDiv.appendChild(seatEl);
-
-                if ((index + 1) % 6 === 3) {
-                    const aisle = document.createElement("div");
-                    aisle.className = "plane-aisle";
-                    rowDiv.appendChild(aisle);
-                }
-
-                if ((index + 1) % 6 === 0) {
-                    seatMap.appendChild(rowDiv);
-                    rowDiv = document.createElement("div");
-                    rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
-                }
-            });
-        } catch (error) {
-            document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">Error loading seats.</div>`;
-        }
+async function loadSeats() {
+    if (!scheduleId) {
+        document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">No Schedule Selected!</div>`;
+        return;
     }
 
-    function toggleSeat(el, id, number) {
-        if (el.classList.contains('selected')) {
-            el.classList.remove('selected');
-            selectedSeats = selectedSeats.filter(s => s.id !== id);
-        } else {
-            el.classList.add('selected');
-            selectedSeats.push({ id, number });
-        }
-        
-        document.getElementById("selected-seats-list").innerText = 
-            selectedSeats.length > 0 ? selectedSeats.map(s => s.number).join(", ") : "None";
-        document.getElementById("proceed-btn").disabled = selectedSeats.length === 0;
-    }
-
-    function goToPassengerDetails() {
-        const seatIds = selectedSeats.map(s => s.id).join(",");
-        window.location.href = `/user/passenger-details.html?scheduleId=${scheduleId}&seats=${seatIds}`;
-    }
-
-    loadSeats();
-    async function loadSeats() {
-        const params = new URLSearchParams(window.location.search);
-        const scheduleId = params.get("scheduleId"); 
-
-        if (!scheduleId) {
-            document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">No Schedule Selected!</div>`;
-            return;
-        }
-
-        try {
-            // Log it to see what you are sending
-            console.log("Fetching seats for Schedule ID:", scheduleId);
-
-            const response = await fetch(`/api/flights/seats/${scheduleId}`, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "Failed to fetch seats");
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/flights/seats/${scheduleId}`, {
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
+        });
 
-            const seats = await response.json();
-            renderSeatMap(seats); // Separate the logic for clarity
-
-        } catch (error) {
-            console.error("Error:", error);
-            document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+        if (!response.ok) {
+            if(response.status === 403 || response.status === 401) {
+                throw new Error("Session expired. Please login again.");
+            }
+            throw new Error("Failed to load seats from server.");
         }
+
+        const seats = await response.json();
+        renderSeatMap(seats);
+
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
     }
+}
+
+function renderSeatMap(seats) {
+    const seatMap = document.getElementById("seat-map");
+    seatMap.innerHTML = "";
+    
+    const planeBody = document.createElement("div");
+    planeBody.className = "plane-body shadow-sm mb-4";
+    planeBody.innerHTML = `<div class="text-center mb-4"><small class="badge bg-light text-muted">AIRCRAFT FRONT</small></div>`;
+
+    let rowDiv = document.createElement("div");
+    rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
+
+    seats.forEach((seat, index) => {
+        const seatEl = document.createElement("div");
+        
+        // Window indicators: A and D are windows in your Java code
+        let windowClass = "";
+        if (seat.seatNumber.includes("A")) windowClass = "window-left";
+        if (seat.seatNumber.includes("D")) windowClass = "window-right";
+
+        seatEl.className = `seat ${seat.available ? 'available' : 'occupied'} ${windowClass}`;
+        seatEl.innerText = seat.seatNumber;
+        
+        if (seat.available) {
+            seatEl.onclick = () => toggleSeat(seatEl, seat.seatNumber);
+        }
+
+        rowDiv.appendChild(seatEl);
+
+        // AISLE LOGIC: Add Aisle after the 2nd seat (A, B - Aisle - C, D)
+        // Since there are 4 seats total, (index + 1) % 4 === 2 is the middle
+        if ((index + 1) % 4 === 2) {
+            const aisle = document.createElement("div");
+            aisle.className = "aisle";
+            aisle.innerText = Math.floor(index / 4) + 1; // Row Number
+            rowDiv.appendChild(aisle);
+        }
+
+        // NEW ROW LOGIC: Start a new row after every 4 seats
+        if ((index + 1) % 4 === 0) {
+            planeBody.appendChild(rowDiv);
+            rowDiv = document.createElement("div");
+            rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
+        }
+    });
+
+    seatMap.appendChild(planeBody);
+}
+
+function toggleSeat(el, seatNumber) {
+    if (el.classList.contains('selected')) {
+        el.classList.remove('selected');
+        selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+    } else {
+        el.classList.add('selected');
+        selectedSeats.push(seatNumber);
+    }
+    
+    document.getElementById("selected-seats-list").innerText = 
+        selectedSeats.length > 0 ? selectedSeats.join(", ") : "None";
+    document.getElementById("proceed-btn").disabled = selectedSeats.length === 0;
+}
+
+function goToPassengerDetails() {
+    // We pass seat numbers because your backend findSeatForUpdate uses seatNumber
+    const seatsParam = selectedSeats.join(",");
+    window.location.href = `/user/passenger-details.html?scheduleId=${scheduleId}&seats=${seatsParam}`;
+}
+
+// Initialize
+loadSeats();
 </script>
 </body>
 </html>
