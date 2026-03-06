@@ -10,11 +10,10 @@ import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.service.IUserService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-<<<<<<< HEAD
-=======
+
 import jakarta.validation.Valid;
 
->>>>>>> user-module
+
 
 @SecurityRequirement(name = "bearerAuth")
 @RestController
