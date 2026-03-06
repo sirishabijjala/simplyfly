@@ -9,9 +9,6 @@ import com.wipro.simplyfly.dto.ScheduleDTO;
 import com.wipro.simplyfly.entity.FlightOwner;
 
 public interface FlightOwnerService {
-	 FlightOwner getOwnerById(Long ownerId);
-    //FLIGHT
-
     List<FlightDTO> getFlightsByOwner(Long ownerId);
 
     FlightDTO addFlight(int routeId, Long ownerId, FlightDTO flightDTO);
@@ -39,4 +36,8 @@ public interface FlightOwnerService {
     void refundBooking(Long bookingId);
     
     RouteDTO addRoute(RouteDTO routeDTO);
+
+	Long getCurrentOwnerId();
+
+	FlightOwner getOwnerById(Long ownerId);
 }

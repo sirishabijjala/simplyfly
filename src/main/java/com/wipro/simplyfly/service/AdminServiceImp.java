@@ -419,29 +419,23 @@ public class AdminServiceImp implements IAdminService {
 		        throw new RuntimeException("Booking already cancelled");
 		    }
 
-		    // 🔐 UPDATED SECURITY CHECK
 		    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		    String username = authentication.getName();
 		    
-		    // Check if the current user is an Admin
 		    boolean isAdmin = authentication.getAuthorities().stream()
 		                        .anyMatch(a -> a.getAuthority().equals("ADMIN"));
 
-		    // Logic: If you are NOT the owner AND you are NOT an admin, then block it.
 		    if (!booking.getUser().getEmail().equals(username) && !isAdmin) {
 		        throw new RuntimeException("Not authorized to cancel this booking");
 		    }
 
-		    // --- Rest of your logic remains the same ---
-		    
-		    // Release seats
+		   
 		    for (Passenger passenger : booking.getPassengers()) {
 		        Seat seat = passenger.getSeat();
 		        seat.setAvailable(true);
 		        seatRepo.save(seat);
 		    }
 
-		    // Increase available seats count
 		    Schedule schedule = booking.getSchedule();
 		    schedule.setAvailableSeats(
 		            schedule.getAvailableSeats() + booking.getPassengers().size()
@@ -451,7 +445,6 @@ public class AdminServiceImp implements IAdminService {
 		    booking.setBookingStatus("CANCELLED");
 		    bookingRepo.save(booking);
 
-		    // Refund
 		    transactionService.refundPayment(bookingId);
 		}
 }
