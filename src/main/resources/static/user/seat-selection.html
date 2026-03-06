@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Seats - SimplyFly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .seat-container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; }
+        .plane-aisle { width: 40px; }
+        .seat { width: 35px; height: 35px; margin: 5px; border-radius: 5px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; transition: 0.2s; border: 1px solid #ccc; }
+        .seat.available { background-color: #f8f9fa; color: #333; }
+        .seat.available:hover { background-color: #e3f2fd; border-color: #1E88E5; }
+        .seat.selected { background-color: #1E88E5; color: white; border-color: #1E88E5; }
+        .seat.occupied { background-color: #dee2e6; color: #adb5bd; cursor: not-allowed; }
+        .legend { display: flex; gap: 20px; justify-content: center; margin-bottom: 20px; }
+        
+        /* Cabin Styling */
+.plane-body {
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 50px 50px 10px 10px; /* Rounded front for the nose */
+    padding: 40px 20px;
+    max-width: 450px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* The Aisle */
+.aisle {
+    width: 50px;
+    background: #f1f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #999;
+    font-weight: bold;
+}
+
+/* Seat Styling */
+.seat {
+    width: 40px;
+    height: 40px;
+    margin: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #d1d9e0;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+
+.seat.available:hover {
+    background: #e3f2fd;
+    border-color: #1E88E5;
+    transform: scale(1.1);
+}
+
+.seat.selected {
+    background: #1E88E5 !important;
+    color: white !important;
+    border-color: #1565C0 !important;
+    box-shadow: 0 4px 8px rgba(30, 136, 229, 0.3);
+}
+
+.seat.occupied {
+    background: #e9ecef;
+    color: #dee2e6;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+}
+
+/* Window seats indicator */
+.window-left { border-left: 4px solid #1E88E5; }
+.window-right { border-right: 4px solid #1E88E5; }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5 mb-5">
+    <div class="seat-container shadow">
+        <h4 class="text-center mb-4">Choose Your Seats</h4>
+        
+        <div class="legend">
+            <span><div class="seat available"></div> Available</span>
+            <span><div class="seat selected"></div> Selected</span>
+            <span><div class="seat occupied"></div> Occupied</span>
+        </div>
+
+        <div id="seat-map" class="text-center">
+            <div class="spinner-border text-primary"></div>
+        </div>
+
+        <div class="mt-4 p-3 border-top">
+            <h5>Selection Summary</h5>
+            <p>Seats: <span id="selected-seats-list" class="fw-bold text-primary">None</span></p>
+            <button id="proceed-btn" class="btn btn-primary w-100 fw-bold" disabled onclick="goToPassengerDetails()">
+                Proceed to Passenger Details
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const scheduleId = params.get("scheduleId");
+    let selectedSeats = [];
+
+    async function loadSeats() {
+        try {
+            const response = await fetch(`/api/flights/seats/${scheduleId}`);
+            const seats = await response.json();
+            
+            const seatMap = document.getElementById("seat-map");
+            seatMap.innerHTML = "";
+
+            let rowDiv = document.createElement("div");
+            rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
+
+            seats.forEach((seat, index) => {
+                const seatEl = document.createElement("div");
+                seatEl.className = `seat ${seat.available ? 'available' : 'occupied'}`;
+                seatEl.innerText = seat.seatNumber;
+                
+                if (seat.available) {
+                    seatEl.onclick = () => toggleSeat(seatEl, seat.id, seat.seatNumber);
+                }
+
+                rowDiv.appendChild(seatEl);
+
+                if ((index + 1) % 6 === 3) {
+                    const aisle = document.createElement("div");
+                    aisle.className = "plane-aisle";
+                    rowDiv.appendChild(aisle);
+                }
+
+                if ((index + 1) % 6 === 0) {
+                    seatMap.appendChild(rowDiv);
+                    rowDiv = document.createElement("div");
+                    rowDiv.className = "d-flex justify-content-center align-items-center mb-1";
+                }
+            });
+        } catch (error) {
+            document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">Error loading seats.</div>`;
+        }
+    }
+
+    function toggleSeat(el, id, number) {
+        if (el.classList.contains('selected')) {
+            el.classList.remove('selected');
+            selectedSeats = selectedSeats.filter(s => s.id !== id);
+        } else {
+            el.classList.add('selected');
+            selectedSeats.push({ id, number });
+        }
+        
+        document.getElementById("selected-seats-list").innerText = 
+            selectedSeats.length > 0 ? selectedSeats.map(s => s.number).join(", ") : "None";
+        document.getElementById("proceed-btn").disabled = selectedSeats.length === 0;
+    }
+
+    function goToPassengerDetails() {
+        const seatIds = selectedSeats.map(s => s.id).join(",");
+        window.location.href = `/user/passenger-details.html?scheduleId=${scheduleId}&seats=${seatIds}`;
+    }
+
+    loadSeats();
+    async function loadSeats() {
+        const params = new URLSearchParams(window.location.search);
+        const scheduleId = params.get("scheduleId"); 
+
+        if (!scheduleId) {
+            document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">No Schedule Selected!</div>`;
+            return;
+        }
+
+        try {
+            // Log it to see what you are sending
+            console.log("Fetching seats for Schedule ID:", scheduleId);
+
+            const response = await fetch(`/api/flights/seats/${scheduleId}`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to fetch seats");
+            }
+
+            const seats = await response.json();
+            renderSeatMap(seats); // Separate the logic for clarity
+
+        } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("seat-map").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+        }
+    }
+</script>
+</body>
+</html>

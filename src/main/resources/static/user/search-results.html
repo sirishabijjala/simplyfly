@@ -17,24 +17,87 @@
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const origin = params.get("origin");
-    const destination = params.get("destination");
-    const date = params.get("date");
+    async function loadFlightResults() {
+        const params = new URLSearchParams(window.location.search);
+        const origin = params.get("origin");
+        const destination = params.get("destination");
+        const date = params.get("journeyDate"); 
 
-    // Dummy static result (Later connect to backend)
-    document.getElementById("results").innerHTML = `
-        <div class="card p-4 shadow mt-3">
-            <h5>${origin} → ${destination}</h5>
-            <p><strong>Date:</strong> ${date}</p>
-            <p><strong>Fare:</strong> ₹4500</p>
-            <p><strong>Baggage:</strong> Check-in 15kg | Cabin 7kg</p>
-            <button class="btn btn-success"
-                onclick="window.location.href='/user/seat-selection.html'">
-                Select Seats
-            </button>
-        </div>
-    `;
+        const resultsContainer = document.getElementById("results");
+        resultsContainer.innerHTML = '<div class="text-center mt-5"><div class="spinner-border text-primary"></div><p>Searching for best flights...</p></div>';
+
+        try {
+            const response = await fetch(`/api/flights/search?source=${origin}&destination=${destination}&date=${date}`);
+            
+            if (!response.ok) throw new Error("No flights found for this route/date.");
+            
+            const flights = await response.json();
+
+            if (flights.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="alert alert-info mt-4">
+                        <h5>No Flights Available</h5>
+                        <p>We couldn't find any flights from ${origin} to ${destination} on ${date}. Try another date.</p>
+                    </div>`;
+                return;
+            }
+
+            let html = "";
+            flights.forEach(f => {
+                // Format the date/time nicely
+                const depTime = new Date(f.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const arrTime = new Date(f.arrivalTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                html += `
+                    <div class="card p-4 shadow-sm border-0 mb-3">
+                        <div class="row align-items-center text-center text-md-start">
+                            <div class="col-md-3">
+                                <h5 class="text-primary fw-bold mb-0">${f.flightName}</h5>
+                                <small class="text-muted">${f.flightNumber}</small>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-0">${depTime}</h5>
+                                        <span class="text-muted small">${f.source}</span>
+                                    </div>
+                                    <div class="flex-grow-1 border-bottom mx-3 position-relative" style="height: 1px;">
+                                        <i class="fa-solid fa-plane text-secondary position-absolute start-50 translate-middle-y" style="top: -1px;"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0">${arrTime}</h5>
+                                        <span class="text-muted small">${f.destination}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                                <h4 class="text-success fw-bold mb-1">Rs. ${f.fare.toLocaleString()}</h4>
+                                <p class="text-muted small mb-2">${f.availableSeats} seats left</p>
+                                <button class="btn btn-primary w-100 fw-bold" 
+                                    onclick="window.location.href='/user/seat-selection.html?scheduleId=${f.scheduleId}'">
+                                    Select Seats
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            resultsContainer.innerHTML = html;
+
+        } catch (error) {
+            resultsContainer.innerHTML = `<div class="alert alert-danger mt-4">${error.message}</div>`;
+        }
+    }
+
+    function selectFlight(scheduleId) {
+        // Redirect to seat selection with the chosen schedule ID
+        window.location.href = `/user/seat-selection.html?scheduleId=${scheduleId}`;
+    }
+
+    // Run on page load
+    loadFlightResults();
 </script>
 
 </body>
