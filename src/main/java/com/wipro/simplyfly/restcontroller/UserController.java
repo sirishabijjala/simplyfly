@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import com.wipro.simplyfly.dto.UserDTO;
 import com.wipro.simplyfly.service.IUserService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+
+
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
