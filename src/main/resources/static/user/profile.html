@@ -197,7 +197,7 @@ width="80">
 <i class="fa-solid fa-user"></i> Profile Details
 </li>
 
-<li class="list-group-item" onclick="showSection('bookings')">
+<li class="list-group-item" onclick="window.location.href='/user/my-bookings.html'">
 <i class="fa-solid fa-ticket"></i> My Bookings
 </li>
 
@@ -284,30 +284,9 @@ User Profile
 <!-- MY BOOKINGS -->
 
 <div id="bookingSection" style="display:none">
+<button class="btn btn-primary"
+onclick="window.location.href='/user/my-bookings.html'">
 
-<h3 class="section-title">
-<i class="fa-solid fa-ticket"></i>
-My Flight Bookings
-</h3>
-
-<table class="table table-bordered booking-table">
-
-<thead>
-
-<tr>
-<th>Booking ID</th>
-<th>Flight</th>
-<th>Date</th>
-<th>Status</th>
-</tr>
-
-</thead>
-
-<tbody id="bookingTable">
-
-</tbody>
-
-</table>
 
 </div>
 
