@@ -4,162 +4,108 @@
 <head>
 
 <meta charset="UTF-8">
-<title>SimplyFly | User Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<title>SimplyFly | User Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 
-/* BODY */
-
-body{
-background:#f4f8ff;
-font-family:'Segoe UI',sans-serif;
-min-height:100vh;
+:root{
+--primary:#1E88E5;
+--secondary:#42A5F5;
+--bg:#f5f9fd;
 }
 
-/* MAIN CONTAINER */
-
-.profile-container{
-margin-top:40px;
+body{
+background:var(--bg);
+font-family:'Segoe UI',sans-serif;
+overflow-x:hidden;
 }
 
 /* SIDEBAR */
 
 .sidebar{
+background:linear-gradient(180deg,#42A5F5,#1E88E5);
+min-height:100vh;
+color:white;
+padding-top:10px;
+box-shadow:0 6px 25px rgba(0,0,0,0.1);
+}
+
+.sidebar h4{
+font-weight:700;
+padding:22px 10px;
+border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+.nav-link{
+color:white;
+padding:14px 25px;
+font-size:15px;
+display:flex;
+align-items:center;
+gap:10px;
+transition:.3s;
+}
+
+.nav-link:hover{
+background:rgba(255,255,255,0.1);
+color:white;
+}
+
+/* HEADER */
+
+.main-header{
 background:white;
-border-radius:14px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
-overflow:hidden;
-border:1px solid #e6f0ff;
+padding:18px 30px;
+border-bottom:1px solid #eaeaea;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* CONTENT */
+
+#content-area{
+background:white;
+border-radius:12px;
+padding:35px;
+box-shadow:0 8px 25px rgba(0,0,0,0.05);
 }
 
 /* PROFILE CARD */
 
 .profile-card{
-background:linear-gradient(135deg,#0f62fe,#4da3ff);
-color:white;
-padding:30px 20px;
 text-align:center;
+margin-bottom:30px;
 }
 
 .profile-card img{
-border:4px solid white;
-box-shadow:0 4px 10px rgba(0,0,0,0.2);
-}
-
-.profile-card h5{
-margin-top:10px;
-font-weight:600;
-}
-
-.profile-card p{
-font-size:14px;
-opacity:0.9;
-}
-
-/* SIDEBAR MENU */
-
-.sidebar .list-group-item{
-border:none;
-padding:15px 20px;
-font-weight:500;
-font-size:15px;
-display:flex;
-align-items:center;
-gap:10px;
-transition:all 0.3s ease;
-cursor:pointer;
-}
-
-.sidebar .list-group-item i{
-color:#0f62fe;
-}
-
-/* HOVER EFFECT */
-
-.sidebar .list-group-item:hover{
-background:#eef4ff;
-color:#0f62fe;
-padding-left:25px;
-}
-
-/* LOGOUT */
-
-.logout-btn{
-color:#ff4d4d;
-}
-
-.logout-btn i{
-color:#ff4d4d;
-}
-
-.logout-btn:hover{
-background:#ffecec;
-}
-
-/* CONTENT AREA */
-
-.content-area{
-background:white;
-padding:30px;
-border-radius:14px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
-border:1px solid #e6f0ff;
-}
-
-/* TITLES */
-
-.section-title{
-color:#0f62fe;
-font-weight:700;
-margin-bottom:20px;
-border-bottom:2px solid #e6f0ff;
-padding-bottom:10px;
+border-radius:50%;
+border:4px solid #1E88E5;
+margin-bottom:10px;
 }
 
 /* TABLE */
 
 .table th{
-color:#0f62fe;
-font-weight:600;
 width:180px;
+color:#1E88E5;
 }
 
-.table td{
-color:#333;
+.table tbody tr:hover{
+background:#f3f8ff;
 }
 
-/* BOOKINGS TABLE */
-
-.booking-table thead{
-background:#0f62fe;
-color:white;
-}
-
-.booking-table tbody tr:hover{
-background:#f5f9ff;
-}
-
-/* BUTTON */
-
-.btn-primary{
-background:#0f62fe;
-border:none;
-}
-
-.btn-primary:hover{
-background:#0047d4;
-}
-
-/* SMALL ANIMATION */
-
-.sidebar, .content-area{
-transition:0.3s;
+.section-title{
+color:#1E88E5;
+font-weight:700;
+margin-bottom:20px;
 }
 
 </style>
@@ -168,68 +114,96 @@ transition:0.3s;
 
 <body>
 
-<div class="container profile-container">
+<div class="container-fluid p-0">
 
-<div class="row">
+<div class="row g-0">
 
 <!-- SIDEBAR -->
 
-<div class="col-md-3">
+<nav class="col-md-3 col-lg-2 sidebar">
 
-<div class="sidebar">
+<h4 class="text-center">
+<i class="fa-solid fa-plane"></i>
+SimplyFly
+</h4>
+
+<ul class="nav flex-column">
+
+<li>
+<a class="nav-link" href="#" onclick="showSection('profile')">
+<i class="fa-solid fa-user"></i>
+My Profile
+</a>
+</li>
+
+<li>
+<a class="nav-link" href="/user/my-bookings.html">
+<i class="fa-solid fa-ticket"></i>
+My Bookings
+</a>
+</li>
+
+<li>
+<a class="nav-link" href="/user/manage-booking.html">
+<i class="fa-solid fa-plane-departure"></i>
+Manage Booking
+</a>
+</li>
+
+<li class="mt-4">
+<a class="nav-link" href="#" onclick="logout()">
+<i class="fa-solid fa-right-from-bracket"></i>
+Logout
+</a>
+</li>
+
+</ul>
+
+</nav>
+
+
+<!-- MAIN -->
+
+<main class="col-md-9 col-lg-10">
+
+<header class="main-header">
+
+<h5 class="m-0 text-secondary">
+User Dashboard
+</h5>
+
+<span class="badge bg-primary p-2">
+<i class="fa-solid fa-user"></i>
+User Session
+</span>
+
+</header>
+
+
+<div class="p-4">
+
+<div id="content-area">
+
+<!-- PROFILE SECTION -->
+
+<div id="profileSection">
+
+<h2 class="section-title">
+<i class="fa-solid fa-id-card"></i>
+My Profile
+</h2>
 
 <div class="profile-card">
 
 <img id="profileAvatar"
-src="https://ui-avatars.com/api/?name=User&background=ffffff&color=0f62fe"
-class="rounded-circle mb-2"
-width="80">
+src="https://ui-avatars.com/api/?name=User&background=ffffff&color=1E88E5"
+width="90">
 
 <h5 id="profileName">User</h5>
 
 <p id="profileEmail"></p>
 
 </div>
-
-<ul class="list-group list-group-flush">
-
-<li class="list-group-item" onclick="showSection('details')">
-<i class="fa-solid fa-user"></i> Profile Details
-</li>
-
-<li class="list-group-item" onclick="window.location.href='/user/my-bookings.html'">
-<i class="fa-solid fa-ticket"></i> My Bookings
-</li>
-
-<li class="list-group-item" onclick="showSection('manage')">
-<i class="fa-solid fa-plane"></i> Manage Booking
-</li>
-
-<li class="list-group-item logout-btn" onclick="logout()">
-<i class="fa-solid fa-right-from-bracket"></i> Logout
-</li>
-
-</ul>
-
-</div>
-
-</div>
-
-
-<!-- CONTENT AREA -->
-
-<div class="col-md-9">
-
-<div class="content-area">
-
-<!-- PROFILE DETAILS -->
-
-<div id="detailsSection">
-
-<h3 class="section-title">
-<i class="fa-solid fa-id-card"></i>
-User Profile
-</h3>
 
 <table class="table">
 
@@ -257,6 +231,7 @@ User Profile
 <th>Status</th>
 <td id="profileStatus"></td>
 </tr>
+
 <tr>
 <th>Phone</th>
 <td id="profilePhone"></td>
@@ -276,45 +251,16 @@ User Profile
 <th>Date Of Birth</th>
 <td id="profileDob"></td>
 </tr>
+
 </table>
 
 </div>
 
-
-<!-- MY BOOKINGS -->
-
-<div id="bookingSection" style="display:none">
-<button class="btn btn-primary"
-onclick="window.location.href='/user/my-bookings.html'">
-
-
-</div>
-
-
-<!-- MANAGE BOOKINGS -->
-
-<div id="manageSection" style="display:none">
-
-<h3 class="section-title">
-<i class="fa-solid fa-plane-departure"></i>
-Manage Flight Booking
-</h3>
-
-<p>Search and manage your flight bookings.</p>
-
-<button class="btn btn-primary"
-onclick="window.location.href='/user/manage-booking.html'">
-
-<i class="fa-solid fa-magnifying-glass"></i>
-Go to Booking Manager
-
-</button>
-
 </div>
 
 </div>
 
-</div>
+</main>
 
 </div>
 
