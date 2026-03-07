@@ -1,71 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Flight Owner Dashboard</title>
-
-<link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-
-<link rel="stylesheet" href="/css/owner.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplyFly | Owner Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root{ --primary:#d11243; --secondary:#2c3e50; --bg:#f5f9fd; }
+        body{ background:var(--bg); font-family:'Segoe UI',sans-serif; overflow-x:hidden; }
+        .sidebar{ background:linear-gradient(180deg, var(--secondary), #1a252f); min-height:100vh; color:white; padding-top:10px; }
+        .sidebar h4{ font-weight:700; padding:22px 10px; border-bottom:1px solid rgba(255,255,255,0.1); }
+        .nav-link{ color:white; padding:14px 25px; transition:.25s; display:flex; align-items:center; gap:10px; }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+        .main-header{ background:white; padding:18px 30px; border-bottom:1px solid #eaeaea; display:flex; justify-content:space-between; align-items:center; }
+        #content-area{ background:white; border-radius:12px; padding:35px; box-shadow:0 8px 25px rgba(0,0,0,0.05); }
+        .btn-primary{ background:var(--primary); border:none; }
+    </style>
 </head>
-
 <body>
 
-<nav class="navbar navbar-dark bg-dark">
-<div class="container-fluid">
-<span class="navbar-brand">SimplyFly Owner Panel</span>
+<div class="container-fluid p-0">
+    <div class="row g-0">
+        <nav class="col-md-3 col-lg-2 sidebar">
+            <h4 class="text-center"><i class="fa-solid fa-plane-up"></i> SimplyFly</h4>
+            <ul class="nav flex-column">
+                <li><a class="nav-link" href="#" onclick="showOwnerSection('flights')"><i class="fa-solid fa-plane"></i> My Flights</a></li>
+                <li><a class="nav-link" href="#" onclick="showOwnerSection('schedules')"><i class="fa-solid fa-calendar-days"></i> Schedules</a></li>
+                <li><a class="nav-link" href="#" onclick="showOwnerSection('bookings')"><i class="fa-solid fa-clipboard-list"></i> Passenger Bookings</a></li>
+                <li class="mt-4"><a class="nav-link text-warning" href="#" onclick="logout()"><i class="fa-solid fa-power-off"></i> Logout</a></li>
+            </ul>
+        </nav>
 
-<button onclick="logout()" class="btn btn-danger">
-Logout
-</button>
+        <main class="col-md-9 col-lg-10">
+            <header class="main-header">
+                <h5 class="m-0 text-secondary" id="owner-display-name">Flight Owner Portal</h5>
+                <span class="badge bg-danger p-2"><i class="fa-solid fa-user-tie"></i> Airline Session</span>
+            </header>
 
-</div>
-</nav>
-
-<div class="container mt-4">
-
-<h2>Owner Dashboard</h2>
-
-<div class="row mt-4">
-
-<div class="col-md-3">
-<div class="card dashboard-card">
-<h5>Total Flights</h5>
-<p id="totalFlights">0</p>
-</div>
-</div>
-
-<div class="col-md-3">
-<div class="card dashboard-card">
-<h5>Total Bookings</h5>
-<p id="totalBookings">0</p>
-</div>
+            <div class="p-4">
+                <div id="content-area">
+                    <h2 class="text-primary">Welcome, <span id="welcome-name">Partner</span>!</h2>
+                    <p>Select a section from the sidebar to manage your airline operations.</p>
+                </div>
+            </div>
+        </main>
+    </div>
 </div>
 
-<div class="col-md-3">
-<div class="card dashboard-card">
-<h5>Total Revenue</h5>
-<p id="totalRevenue">0</p>
-</div>
-</div>
-
-</div>
-
-<hr>
-
-<a href="/owner/flights.html" class="btn btn-primary">
-Manage Flights
-</a>
-
-<a href="/owner/schedule.html" class="btn btn-success">
-Manage Schedule
-</a>
-
-</div>
-
-<script src="/js/owner-dashboard.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/owner.js"></script>
+<script src="/js/owner-flight.js"></script>
+<script src="/js/owner-schedule.js"></script>
 </body>
 </html>

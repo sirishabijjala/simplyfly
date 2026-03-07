@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.wipro.simplyfly.dto.BookingResponseDTO;
@@ -50,20 +52,24 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     // OWNER
 
     @Override
+    public Long getCurrentOwnerId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (principal instanceof UserDetails) ? ((UserDetails)principal).getUsername() : principal.toString();
+
+        return flightOwnerRepository.findByAccountEmail(email)
+                .orElseThrow(() -> new RuntimeException("Owner profile not found for email: " + email))
+                .getId();
+    }
+    
+    @Override
     public FlightOwner getOwnerById(Long ownerId) {
         return flightOwnerRepository.findById(ownerId)
                 .orElseThrow(() -> new RuntimeException("Owner not found"));
     }
 
-    // FLIGHT
-    
-
-    // Return flights only for that owner
     @Override
     public List<FlightDTO> getFlightsByOwner(Long ownerId) {
-
         List<Flight> flights = flightRepository.findByFlightOwnerId(ownerId);
-
         return flights.stream()
                 .map(flight -> new FlightDTO(
                         flight.getId(),
@@ -180,7 +186,7 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
 
         Schedule saved = scheduleRepository.save(schedule);
 
-        seatService.createSeatsForSchedule(schedule); 
+        seatService.createSeatsForSchedule(saved); 
 
         scheduleDTO.setId(saved.getId());
         scheduleDTO.setFlightId(flightId);
@@ -277,21 +283,23 @@ public class FlightOwnerServiceImpl implements FlightOwnerService {
     }
 
     
-    @Override
-    public RouteDTO addRoute(RouteDTO routeDTO) {
-        if (routeRepository.existsBySourceAndDestination(routeDTO.getSource(), routeDTO.getDestination())) {
-            throw new RuntimeException("Route from " + routeDTO.getSource() + 
-                                       " to " + routeDTO.getDestination() + " already exists!");
-        }
+    // ROUTE
+    
+	@Override
+	public RouteDTO addRoute(RouteDTO routeDTO) {
+	    if (routeRepository.existsBySourceAndDestination(routeDTO.getSource(), routeDTO.getDestination())) {
+	        throw new RuntimeException("Route from " + routeDTO.getSource() + 
+	                                   " to " + routeDTO.getDestination() + " already exists!");
+	    }
 
-        Route r = new Route();
-        r.setSource(routeDTO.getSource());
-        r.setDestination(routeDTO.getDestination());
-        r.setDistance(routeDTO.getDistance());
-        r.setEstimatedDuration(routeDTO.getEstimatedDuration());
+	    Route r = new Route();
+	    r.setSource(routeDTO.getSource());
+	    r.setDestination(routeDTO.getDestination());
+	    r.setDistance(routeDTO.getDistance());
+	    r.setEstimatedDuration(routeDTO.getEstimatedDuration());
 
-        Route saved = routeRepository.save(r);
-        routeDTO.setId(saved.getId());
-        return routeDTO;
-    }
+	    Route saved = routeRepository.save(r);
+	    routeDTO.setId(saved.getId());
+	    return routeDTO;
+	}
 }
