@@ -21,8 +21,6 @@ public class ScheduleDTO {
 	}
 
 
-
-
 	public void setFare(double fare) {
 		this.fare = fare;
 	}
