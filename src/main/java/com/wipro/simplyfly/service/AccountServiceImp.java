@@ -18,7 +18,7 @@ import com.wipro.simplyfly.repository.AccountRepository;
 import com.wipro.simplyfly.repository.FlightOwnerRepository;
 import com.wipro.simplyfly.repository.UserRepository;
 @Service
-public class AccountServiceImp implements AccountService{
+public class AccountServiceImp implements IAccountService{
 
 	   @Autowired
 	    private AccountRepository repository;
