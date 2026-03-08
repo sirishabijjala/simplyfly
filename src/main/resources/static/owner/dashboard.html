@@ -1,56 +1,674 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SimplyFly | Owner Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root{ --primary:#d11243; --secondary:#2c3e50; --bg:#f5f9fd; }
-        body{ background:var(--bg); font-family:'Segoe UI',sans-serif; overflow-x:hidden; }
-        .sidebar{ background:linear-gradient(180deg, var(--secondary), #1a252f); min-height:100vh; color:white; padding-top:10px; }
-        .sidebar h4{ font-weight:700; padding:22px 10px; border-bottom:1px solid rgba(255,255,255,0.1); }
-        .nav-link{ color:white; padding:14px 25px; transition:.25s; display:flex; align-items:center; gap:10px; }
-        .nav-link:hover { background: rgba(255, 255, 255, 0.1); color: white; }
-        .main-header{ background:white; padding:18px 30px; border-bottom:1px solid #eaeaea; display:flex; justify-content:space-between; align-items:center; }
-        #content-area{ background:white; border-radius:12px; padding:35px; box-shadow:0 8px 25px rgba(0,0,0,0.05); }
-        .btn-primary{ background:var(--primary); border:none; }
-    </style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SimplyFly — Owner Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Sky & Flight Palette ── */
+      --sky-deep:     #0a1628;   /* midnight sky sidebar */
+      --sky-mid:      #0e3460;   /* deep ocean blue */
+      --sky-bright:   #1565c0;   /* clear sky blue */
+      --sky-light:    #e8f4fd;   /* pale morning sky surface */
+      --sky-pale:     #f0f8ff;   /* cloud white surface */
+      --cloud:        #ffffff;   /* pure cloud white cards */
+      --horizon:      #bbdefb;   /* horizon blue border */
+      --ink:          #0d1b2a;   /* deep navy ink */
+      --ink-muted:    #4a6285;   /* muted sky blue text */
+      --accent:       #0288d1;   /* vivid sky blue accent */
+      --accent-deep:  #01579b;   /* deep accent */
+      --accent-bg:    #e1f5fe;   /* light accent bg */
+      --contrail:     #ffffff22; /* contrail white transparent */
+      --green:        #00897b;   /* teal success */
+      --warning:      #f57c00;   /* sunset orange warning */
+      --border:       #c5dff8;   /* soft blue border */
+      --shadow:       0 4px 32px rgba(13,27,42,0.10);
+      --shadow-lg:    0 12px 48px rgba(13,27,42,0.18);
+      --shadow-blue:  0 4px 20px rgba(2,136,209,0.25);
+      --sidebar-w:    268px;
+      --radius:       16px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--sky-light);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT ── */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── MAIN BACKGROUND — sky gradient with clouds ── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      background:
+        /* Floating cloud shapes via radial gradients */
+        radial-gradient(ellipse 320px 120px at 80% 8%, rgba(255,255,255,0.72) 0%, transparent 70%),
+        radial-gradient(ellipse 200px 80px at 60% 5%, rgba(255,255,255,0.5) 0%, transparent 70%),
+        radial-gradient(ellipse 260px 100px at 20% 18%, rgba(255,255,255,0.55) 0%, transparent 70%),
+        radial-gradient(ellipse 180px 70px at 92% 28%, rgba(255,255,255,0.4) 0%, transparent 70%),
+        /* Sky gradient — bright top to hazy horizon */
+        linear-gradient(175deg,
+          #daeeff 0%,
+          #e8f5ff 20%,
+          #f0f9ff 50%,
+          #e6f3ff 75%,
+          #dceeff 100%);
+      position: relative;
+    }
+
+    /* Subtle grid lines like altitude map */
+    .main::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      left: var(--sidebar-w);
+      background-image:
+        linear-gradient(rgba(2,136,209,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(2,136,209,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .main > * { position: relative; z-index: 1; }
+
+    .main::-webkit-scrollbar { width: 5px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--horizon); border-radius: 99px; }
+
+    /* ── SIDEBAR — deep midnight sky ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: linear-gradient(180deg, #0a1628 0%, #0e2244 55%, #0a1628 100%);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 20px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Stars in sidebar */
+    .sidebar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 20% 15%, rgba(255,255,255,0.8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 75% 10%, rgba(255,255,255,0.7) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 45% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 40%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 10% 55%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 60% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 30% 75%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 15% 90%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 88%, rgba(255,255,255,0.5) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Glowing horizon line at bottom of sidebar */
+    .sidebar::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 160px;
+      background: linear-gradient(0deg, rgba(2,136,209,0.22) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Animated contrail across sidebar */
+    .sidebar-contrail {
+      position: absolute;
+      top: 22%; left: -10%;
+      width: 120%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), rgba(255,255,255,0.5), rgba(255,255,255,0.15), transparent);
+      transform: rotate(-12deg);
+      animation: contrailFade 6s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .sidebar-contrail:nth-child(2) {
+      top: 38%; animation-delay: 2s;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), rgba(255,255,255,0.3), rgba(255,255,255,0.08), transparent);
+    }
+    @keyframes contrailFade {
+      0%, 100% { opacity: 0; }
+      30%, 70% { opacity: 1; }
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 11px;
+      margin-bottom: 36px;
+      position: relative; z-index: 1;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #0288d1, #01579b);
+      border-radius: 11px;
+      display: grid; place-items: center;
+      font-size: 21px;
+      box-shadow: 0 4px 16px rgba(2,136,209,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    }
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .owner-badge {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 32px;
+      position: relative; z-index: 1;
+      backdrop-filter: blur(4px);
+    }
+    .owner-badge .label {
+      font-size: 10px;
+      color: rgba(187,222,251,0.6);
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      margin-bottom: 5px;
+    }
+    .owner-badge .name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .nav-section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      color: rgba(187,222,251,0.35);
+      margin-bottom: 10px;
+      padding-left: 12px;
+      position: relative; z-index: 1;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: rgba(187,222,251,0.6);
+      font-size: 14.5px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      margin-bottom: 4px;
+      border: 1px solid transparent;
+      user-select: none;
+      position: relative; z-index: 1;
+    }
+    .nav-item:hover {
+      background: rgba(2,136,209,0.15);
+      color: #bbdefb;
+      border-color: rgba(2,136,209,0.2);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, #0288d1, #0277bd);
+      color: #fff;
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: 0 4px 20px rgba(2,136,209,0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+    .nav-item .nav-icon { font-size: 17px; line-height: 1; flex-shrink: 0; }
+
+    .nav-divider {
+      height: 1px;
+      background: rgba(187,222,251,0.1);
+      margin: 16px 0;
+      position: relative; z-index: 1;
+    }
+    .nav-logout {
+      margin-top: auto;
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: rgba(187,222,251,0.4);
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+      border: 1px solid rgba(187,222,251,0.1);
+      position: relative; z-index: 1;
+    }
+    .nav-logout:hover {
+      color: #ef5350;
+      border-color: rgba(239,83,80,0.35);
+      background: rgba(239,83,80,0.08);
+    }
+
+    /* ── TOPBAR ── */
+    .topbar { display: flex; align-items: flex-end; justify-content: space-between; }
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 30px;
+      letter-spacing: -1px;
+      color: var(--sky-mid);
+      line-height: 1;
+    }
+    .page-subtitle { font-size: 13.5px; color: var(--ink-muted); margin-top: 5px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 11px 22px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%);
+      color: #fff;
+      box-shadow: var(--shadow-blue);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #039be5 0%, #0288d1 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(2,136,209,0.4);
+    }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-sm { padding: 7px 14px; font-size: 12.5px; border-radius: 8px; }
+    .btn-ghost {
+      background: rgba(255,255,255,0.9);
+      color: var(--ink-muted);
+      border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { background: #fff; color: var(--ink); border-color: var(--accent); }
+    .btn-edit {
+      background: #e3f2fd;
+      color: #0277bd;
+      border: 1px solid #90caf9;
+    }
+    .btn-edit:hover { background: #0288d1; color: #fff; border-color: transparent; }
+    .btn-danger {
+      background: #fff3e0;
+      color: #e64a19;
+      border: 1px solid #ffccbc;
+    }
+    .btn-danger:hover { background: #e64a19; color: #fff; border-color: transparent; }
+
+    /* ── STAT CARDS ── */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .stat-card {
+      background: rgba(255,255,255,0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 40px rgba(2,136,209,0.15);
+    }
+    /* Blue accent stripe at top of each stat card */
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #0288d1, #4fc3f7);
+    }
+    .stat-card::after {
+      content: attr(data-icon);
+      position: absolute;
+      right: 16px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 46px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+    .stat-label {
+      font-size: 11px; color: var(--ink-muted);
+      text-transform: uppercase; letter-spacing: 1.1px; margin-bottom: 9px;
+    }
+    .stat-value {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: 34px; color: var(--sky-mid); line-height: 1;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red   { color: #e64a19; }
+    .stat-unit { font-size: 17px; font-weight: 400; }
+
+    /* ── TABLE CARD ── */
+    .table-card {
+      background: rgba(255,255,255,0.9);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+    .table-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 26px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, rgba(2,136,209,0.05), transparent);
+    }
+    .table-card-title {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 16px; color: var(--sky-mid);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: linear-gradient(90deg, #e3f2fd, #eff8ff);
+      padding: 12px 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sky-bright);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 15px 20px;
+      font-size: 13.5px;
+      border-bottom: 1px solid #e8f4fd;
+      color: var(--ink);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr { transition: background 0.14s; }
+    tbody tr:hover { background: rgba(2,136,209,0.04); }
+    .actions-cell { display: flex; gap: 8px; }
+
+    /* ── BADGE ── */
+    .badge {
+      display: inline-flex; align-items: center;
+      padding: 4px 11px; border-radius: 20px;
+      font-size: 11.5px; font-weight: 500;
+    }
+    .badge-open   { background: #e0f2f1; color: var(--green); }
+    .badge-closed { background: #fff3e0; color: #e64a19; }
+
+    /* ── MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(10,22,40,0.55);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.22s;
+    }
+    .modal-backdrop.open { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%; max-width: 500px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(2,136,209,0.1);
+      transform: translateY(24px) scale(0.96);
+      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1);
+      overflow: hidden;
+    }
+    .modal-backdrop.open .modal-box { transform: translateY(0) scale(1); }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, #e3f2fd, #f0f9ff);
+    }
+    .modal-title {
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      font-size: 18px; color: var(--sky-mid);
+    }
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none; background: rgba(2,136,209,0.08);
+      border-radius: 8px; cursor: pointer;
+      font-size: 16px; color: var(--ink-muted);
+      display: grid; place-items: center;
+      transition: all 0.15s; line-height: 1;
+    }
+    .modal-close:hover { background: var(--accent); color: #fff; }
+    .modal-body { padding: 24px 28px 28px; }
+
+    /* ── FORM ── */
+    .form-group { margin-bottom: 17px; }
+    .form-group label {
+      display: block;
+      font-size: 11.5px; font-weight: 600;
+      color: var(--sky-bright);
+      text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 7px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--ink);
+      background: #f5fbff;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      outline: none;
+      appearance: none;
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(2,136,209,0.12);
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-actions {
+      display: flex; gap: 10px;
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .form-actions .btn { flex: 1; justify-content: center; padding: 13px; }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align: center; padding: 56px 20px; color: var(--ink-muted); }
+    .empty-icon { font-size: 46px; margin-bottom: 14px; opacity: 0.35; }
+    .empty-state p { font-size: 14px; }
+
+    /* ── SPINNER ── */
+    .spinner-wrap { display: flex; justify-content: center; align-items: center; height: 260px; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ALERT ── */
+    .alert-error {
+      background: #fff8f5;
+      border: 1px solid #ffccbc;
+      color: #bf360c;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    /* ── DURATION SPINNERS ── */
+    .duration-row { display: flex; align-items: center; gap: 6px; }
+    .duration-field {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      flex: 1;
+    }
+    .duration-field .form-control {
+      text-align: center; padding: 11px 6px;
+      font-weight: 600; font-size: 16px;
+    }
+    .duration-field .form-control::-webkit-inner-spin-button,
+    .duration-field .form-control::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .duration-field .form-control { -moz-appearance: textfield; }
+    .duration-label {
+      font-size: 10px; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--ink-muted);
+    }
+    .duration-sep {
+      font-size: 22px; font-weight: 700;
+      color: var(--border); padding-bottom: 18px;
+    }
+    .text-center { text-align: center; }
+
+    /* ── INFO NOTICE ── */
+    .info-notice {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 13.5px;
+      color: #01579b;
+    }
+    .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── SEARCH CARD ── */
+    .search-card {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .search-inner { display: flex; align-items: flex-end; gap: 14px; }
+
+    /* ── FLIGHT DECO SVG in background ── */
+    .sky-deco {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.045;
+    }
+    .sky-deco-1 {
+      top: 6%; right: 5%;
+      width: 220px;
+      animation: floatPlane 18s ease-in-out infinite;
+    }
+    .sky-deco-2 {
+      bottom: 12%; right: 12%;
+      width: 110px;
+      transform: rotate(12deg) scaleX(-1);
+      animation: floatPlane 24s ease-in-out infinite reverse;
+      opacity: 0.03;
+    }
+    @keyframes floatPlane {
+      0%, 100% { transform: translateY(0px) rotate(-5deg); }
+      50%       { transform: translateY(-14px) rotate(-3deg); }
+    }
+
+    /* ── ANIMATIONS ── */
+    .fade-in { animation: fadeIn 0.32s ease both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container-fluid p-0">
-    <div class="row g-0">
-        <nav class="col-md-3 col-lg-2 sidebar">
-            <h4 class="text-center"><i class="fa-solid fa-plane-up"></i> SimplyFly</h4>
-            <ul class="nav flex-column">
-                <li><a class="nav-link" href="#" onclick="showOwnerSection('flights')"><i class="fa-solid fa-plane"></i> My Flights</a></li>
-                <li><a class="nav-link" href="#" onclick="showOwnerSection('schedules')"><i class="fa-solid fa-calendar-days"></i> Schedules</a></li>
-                <li><a class="nav-link" href="#" onclick="showOwnerSection('bookings')"><i class="fa-solid fa-clipboard-list"></i> Passenger Bookings</a></li>
-                <li class="mt-4"><a class="nav-link text-warning" href="#" onclick="logout()"><i class="fa-solid fa-power-off"></i> Logout</a></li>
-            </ul>
-        </nav>
+<div class="app">
 
-        <main class="col-md-9 col-lg-10">
-            <header class="main-header">
-                <h5 class="m-0 text-secondary" id="owner-display-name">Flight Owner Portal</h5>
-                <span class="badge bg-danger p-2"><i class="fa-solid fa-user-tie"></i> Airline Session</span>
-            </header>
-
-            <div class="p-4">
-                <div id="content-area">
-                    <h2 class="text-primary">Welcome, <span id="welcome-name">Partner</span>!</h2>
-                    <p>Select a section from the sidebar to manage your airline operations.</p>
-                </div>
-            </div>
-        </main>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <!-- Animated contrails -->
+    <div class="sidebar-contrail"></div>
+    <div class="sidebar-contrail"></div>
+    <div class="logo">
+      <div class="logo-icon">✈</div>
+      <div class="logo-text">SimplyFly</div>
     </div>
+
+    <div class="owner-badge">
+      <div class="label">Logged in as</div>
+      <div class="name" id="ownerName">Owner</div>
+    </div>
+
+    <div class="nav-section-label">Management</div>
+
+    <div class="nav-item active" id="nav-flights" onclick="navigate('flights')">
+      <span class="nav-icon">🛩</span> Flights
+    </div>
+    <div class="nav-item" id="nav-schedules" onclick="navigate('schedules')">
+      <span class="nav-icon">📅</span> Schedules
+    </div>
+    <div class="nav-item" id="nav-routes" onclick="navigate('routes')">
+      <span class="nav-icon">🗺</span> Routes
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-logout" onclick="logout()">
+      <span>⎋</span> Sign Out
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main-content">
+
+    <!-- Decorative floating planes (purely visual, pointer-events:none) -->
+    <svg class="sky-deco sky-deco-1" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 50 L55 20 L90 50 L55 55 Z" fill="#0288d1"/>
+      <path d="M55 55 L55 20 L90 50 Z" fill="#01579b"/>
+      <path d="M10 50 L30 58 L55 55 Z" fill="#01579b"/>
+      <path d="M55 55 L65 80 L50 78 L45 55 Z" fill="#0288d1"/>
+      <path d="M20 52 L10 50 L20 46 Z" fill="#4fc3f7"/>
+    </svg>
+
+    <svg class="sky-deco sky-deco-2" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 50 L55 20 L90 50 L55 55 Z" fill="#0288d1"/>
+      <path d="M55 55 L55 20 L90 50 Z" fill="#01579b"/>
+      <path d="M10 50 L30 58 L55 55 Z" fill="#01579b"/>
+      <path d="M55 55 L65 80 L50 78 L45 55 Z" fill="#0288d1"/>
+    </svg>
+
+    <div class="spinner-wrap"><div class="spinner"></div></div>
+  </main>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- MODAL -->
+<div class="modal-backdrop" id="modal" onclick="handleModalBackdropClick(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Modal</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
 <script src="/js/owner.js"></script>
 <script src="/js/owner-flight.js"></script>
 <script src="/js/owner-schedule.js"></script>
+<script src="/js/owner-route.js"></script>
+<script>
+  /* All scripts loaded — safe to init now */
+  initOwnerPanel();
+</script>
 </body>
 </html>
