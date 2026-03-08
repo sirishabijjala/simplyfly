@@ -398,7 +398,11 @@ public class AdminServiceImp implements IAdminService {
 	                pr.setName(p.getName());
 	                pr.setAge(p.getAge());
 	                pr.setGender(p.getGender());
-	                pr.setSeatId(p.getSeat().getSeatNumber()); 
+	                if (p.getSeat() != null) {
+	                    pr.setSeatId(p.getSeat().getSeatNumber());
+	                } else {
+	                    pr.setSeatId("Released"); // Or "N/A"
+	                }
 	                return pr;
 	            }).toList();
 	            d.setPassengers(pDtos);
@@ -432,8 +436,13 @@ public class AdminServiceImp implements IAdminService {
 		   
 		    for (Passenger passenger : booking.getPassengers()) {
 		        Seat seat = passenger.getSeat();
-		        seat.setAvailable(true);
-		        seatRepo.save(seat);
+		        if (seat != null) {
+		            seat.setAvailable(true);
+		            seatRepo.save(seat);
+		            
+		            // Break the link so the Unique Constraint in Passenger table is released
+		            passenger.setSeat(null); 
+		        }
 		    }
 
 		    Schedule schedule = booking.getSchedule();
