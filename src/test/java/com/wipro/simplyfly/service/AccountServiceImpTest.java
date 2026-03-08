@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 class AccountServiceImpTest {
 	
 	@Autowired
-    private AccountService accountService;
+    private IAccountService accountService;
 
     @Autowired
     private AccountRepository repository;
@@ -33,7 +33,7 @@ class AccountServiceImpTest {
         request.setName("Sirisha");
         request.setEmail("sirisha@gmail.com");
         request.setPassword("1234");
-        request.setRole("ROLE_USER");
+        request.setRole("USER");
 
         String response = accountService.register(request);
 
@@ -47,7 +47,7 @@ class AccountServiceImpTest {
         request.setName("Sirisha");
         request.setEmail("sirisha@gmail.com");
         request.setPassword("1234");
-        request.setRole("ROLE_USER");
+        request.setRole("USER");
 
         accountService.register(request);
 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimplyFly | Manage Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #1E88E5; --secondary: #42A5F5; --bg: #f5f9fd; }
+        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; }
+        .sidebar { background: linear-gradient(180deg, #42A5F5, #1E88E5); min-height: 100vh; color: white; padding-top: 10px; }
+        .sidebar h4 { font-weight: 700; padding: 22px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        .nav-link { color: white; padding: 14px 25px; display: flex; align-items: center; gap: 10px; }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.1); }
+        .main-header { background: white; padding: 18px 30px; border-bottom: 1px solid #eaeaea; display: flex; justify-content: space-between; align-items: center; }
+        #content-area { background: white; border-radius: 12px; padding: 35px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); }
+        .section-title { color: var(--primary); font-weight: 700; margin-bottom: 20px; }
+        .booking-details-card { border-left: 5px solid var(--primary); }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <nav class="col-md-3 col-lg-2 sidebar">
+                <h4 class="text-center"><i class="fa-solid fa-plane"></i> SimplyFly</h4>
+                <ul class="nav flex-column">
+                    <li><a class="nav-link" href="/user/profile.html"><i class="fa-solid fa-user"></i> My Profile</a></li>
+                    <li><a class="nav-link" href="/user/my-bookings.html"><i class="fa-solid fa-ticket"></i> My Bookings</a></li>
+                    <li><a class="nav-link" href="/user/manage-booking.html"><i class="fa-solid fa-plane-departure"></i> Manage Booking</a></li>
+                    <li class="mt-4"><a class="nav-link" href="#" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+                </ul>
+            </nav>
+
+            <main class="col-md-9 col-lg-10">
+                <header class="main-header">
+                    <h5 class="m-0 text-secondary">Manage Booking</h5>
+                    <span class="badge bg-primary p-2"><i class="fa-solid fa-plane"></i> Booking Manager</span>
+                </header>
+
+                <div class="p-4">
+                    <div id="content-area">
+                        <h2 class="section-title"><i class="fa-solid fa-gears"></i> Booking Details</h2>
+                        
+                        <div id="bookingResult">
+                            <div class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2 text-muted">Loading booking details...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+
+        // Automatically search if ID is passed in URL from "My Bookings" page
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                fetchAndDisplayBooking(id);
+            } else {
+                document.getElementById("bookingResult").innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-circle-info"></i> Please select a booking from your 
+                        <a href="/user/my-bookings.html" class="alert-link">My Bookings</a> list to manage it.
+                    </div>`;
+            }
+        });
+
+        async function fetchAndDisplayBooking(bookingId) {
+            try {
+                const response = await fetch(`/simplyfly/GetBookingById/${bookingId}`, {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                // SECURITY CHECK: If backend throws error (403/404/500)
+                if (!response.ok) {
+                    document.getElementById("bookingResult").innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fa-solid fa-triangle-exclamation"></i> 
+                            Access Denied or Booking Not Found. You can only manage your own bookings.
+                        </div>`;
+                    return;
+                }
+
+                const b = await response.json();
+                renderBookingCard(b);
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("bookingResult").innerHTML = `<div class="alert alert-danger">An error occurred while fetching details.</div>`;
+            }
+        }
+
+        function renderBookingCard(b) {
+            let html = `
+                <div class="card shadow-sm booking-details-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h4 class="text-primary fw-bold"><i class="fa-solid fa-plane-up"></i> ${b.flightName}</h4>
+                            <span class="badge bg-success">${b.bookingStatus || 'CONFIRMED'}</span>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Booking ID:</strong> ${b.bookingId}</p>
+                                <p class="mb-1"><strong>Route:</strong> ${b.origin} <i class="fa-solid fa-arrow-right mx-2"></i> ${b.destination}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Seats Booked:</strong> ${b.numberOfSeats}</p>
+                                <p class="mb-1"><strong>Total Paid:</strong> <span class="text-primary fw-bold">₹${b.totalAmount}</span></p>
+                            </div>
+                        </div>
+                        <div class="mt-4 border-top pt-3">
+                            <button class="btn btn-danger" onclick="cancelBooking('${b.bookingId}')">
+                                <i class="fa-solid fa-trash-can"></i> Cancel This Booking
+                            </button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="window.history.back()">Back</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById("bookingResult").innerHTML = html;
+        }
+
+        async function cancelBooking(id) {
+            if (!confirm("Are you sure you want to cancel this booking? This action cannot be undone.")) return;
+
+            const response = await fetch(`/simplyfly/cancel/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            if (response.ok) {
+                alert("Booking Cancelled Successfully!");
+                window.location.href = "/user/my-bookings.html";
+            } else {
+                alert("Failed to cancel booking. Please try again later.");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/auth/login.html";
+        }
+    </script>
+</body>
+</html>
