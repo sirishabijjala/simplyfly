@@ -146,7 +146,19 @@ public class BookingServiceImp implements IBookingService{
 		
 		return  bookingRepository.findAll().stream().map(this::mapToResponse).toList();
 	}
+	
+	@Override
+	public List<BookingResponseDTO> getBookingsByLoggedInUser() {
+	    // Get the email from the Security Context (JWT Token)
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String username = authentication.getName();
 
+	    // Find bookings belonging to this user
+	    return bookingRepository.findByUserEmail(username)
+	            .stream()
+	            .map(this::mapToResponse)
+	            .toList();
+	}
 	@Override
 	@Transactional
 	public void cancelBooking(Long bookingId) {
