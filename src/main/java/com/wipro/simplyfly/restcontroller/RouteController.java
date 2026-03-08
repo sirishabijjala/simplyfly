@@ -3,12 +3,13 @@ import java.util.List;
 	import java.util.stream.Collectors;
 
 	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 	import com.wipro.simplyfly.dto.RouteDTO;
 	import com.wipro.simplyfly.entity.Route;
 	import com.wipro.simplyfly.repository.RouteRepository;
-
+	@PreAuthorize("hasAuthority('OWNER')")
 	@RestController
 	@RequestMapping("/api/routes")
 	@CrossOrigin(origins = "*")
@@ -35,6 +36,13 @@ import java.util.List;
 	    }
 
 	    //Route
+	    @GetMapping("/api/owner/routes")
+	    public List<RouteDTO> getRoutes(){
+	        return routeRepository.findAll()
+	                .stream()
+	                .map(this::convertToDTO)
+	                .collect(Collectors.toList());
+	    }
 	    @GetMapping
 	    public List<RouteDTO> getAllRoutes() {
 

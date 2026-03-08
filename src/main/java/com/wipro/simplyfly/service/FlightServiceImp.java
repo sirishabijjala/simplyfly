@@ -10,19 +10,28 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.wipro.simplyfly.dto.FlightDTO;
 import com.wipro.simplyfly.dto.FlightSearchResponseDTO;
+import com.wipro.simplyfly.entity.Flight;
+import com.wipro.simplyfly.entity.FlightOwner;
 import com.wipro.simplyfly.entity.Route;
 import com.wipro.simplyfly.entity.Schedule;
 import com.wipro.simplyfly.entity.Seat;
 import com.wipro.simplyfly.exceptions.FlightNotFoundException;
 import com.wipro.simplyfly.exceptions.RouteNotFoundException;
+import com.wipro.simplyfly.repository.FlightOwnerRepository;
+import com.wipro.simplyfly.repository.FlightRepository;
 import com.wipro.simplyfly.repository.RouteRepository;
 import com.wipro.simplyfly.repository.ScheduleRepository;
 import com.wipro.simplyfly.repository.SeatRepository;
 
 @Service
 public class FlightServiceImp implements IFlightService {
+	@Autowired
+    private FlightRepository flightRepository;
 
+    @Autowired
+    private FlightOwnerRepository ownerRepository;
 	@Autowired
 	RouteRepository routeRepo;
 
@@ -31,7 +40,23 @@ public class FlightServiceImp implements IFlightService {
 
 	@Autowired
 	SeatRepository seatRepo;
+	public Flight addFlight(FlightDTO dto) {
 
+        Flight flight = new Flight();
+
+        flight.setFlightNumber(dto.getFlightNumber());
+        flight.setFlightName(dto.getFlightName());
+        flight.setCheckInBaggage(dto.getCheckInBaggage());
+        flight.setCabinBaggage(dto.getCabinBaggage());
+
+        FlightOwner owner = ownerRepository.findById(dto.getFlightOwnerIdo()).orElseThrow();
+        Route route = routeRepo.findById(dto.getRouteId()).orElseThrow();
+
+        flight.setFlightOwner(owner);
+        flight.setRoute(route);
+
+        return flightRepository.save(flight);
+    }
 	@Override
 	public List<FlightSearchResponseDTO> searchFlights(String source, String destination, LocalDate date) {
 		Route route = routeRepo.findBySourceAndDestination(source, destination)
