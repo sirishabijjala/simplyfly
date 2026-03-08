@@ -48,6 +48,11 @@ public class BookingRestController {
 
         return bookingService.getAllBookings();
     }
+    
+    @GetMapping("/my-bookings")
+    public List<BookingResponseDTO> getMyBookings() {
+        return bookingService.getBookingsByLoggedInUser();
+    }
 
     // 4️⃣ Cancel Booking
     @PutMapping("CancelBooking/{bookingId}")
