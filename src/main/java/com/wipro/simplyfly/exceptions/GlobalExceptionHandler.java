@@ -56,4 +56,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleRouteNotFound(RouteNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+    @ExceptionHandler(ResourcesNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFound(ResourcesNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }
