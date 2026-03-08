@@ -43,7 +43,6 @@
                 <div class="p-4">
                     <div id="content-area">
                         <h2 class="section-title"><i class="fa-solid fa-gears"></i> Booking Details</h2>
-                        
                         <div id="bookingResult">
                             <div class="text-center py-5">
                                 <div class="spinner-border text-primary" role="status"></div>
@@ -59,7 +58,6 @@
     <script>
         const token = localStorage.getItem("token");
 
-        // Automatically search if ID is passed in URL from "My Bookings" page
         document.addEventListener("DOMContentLoaded", () => {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
@@ -80,48 +78,77 @@
                     headers: { "Authorization": "Bearer " + token }
                 });
 
-                // SECURITY CHECK: If backend throws error (403/404/500)
                 if (!response.ok) {
                     document.getElementById("bookingResult").innerHTML = `
                         <div class="alert alert-danger">
-                            <i class="fa-solid fa-triangle-exclamation"></i> 
-                            Access Denied or Booking Not Found. You can only manage your own bookings.
+                            Access Denied or Booking Not Found.
                         </div>`;
                     return;
                 }
 
                 const b = await response.json();
                 renderBookingCard(b);
-
             } catch (error) {
-                console.error("Error:", error);
-                document.getElementById("bookingResult").innerHTML = `<div class="alert alert-danger">An error occurred while fetching details.</div>`;
+                document.getElementById("bookingResult").innerHTML = `<div class="alert alert-danger">Error fetching details.</div>`;
             }
         }
 
         function renderBookingCard(b) {
+            const isCancelled = b.bookingStatus === 'CANCELLED';
+            
+            // Extract seat numbers from the passengers array
+            // Join them with a comma (e.g., "1A, 1B")
+            const seatNumbers = b.passengers && b.passengers.length > 0 
+                ? b.passengers.map(p => p.seatId || "N/A").join(", ") 
+                : "No seats assigned";
+
             let html = `
                 <div class="card shadow-sm booking-details-card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
                             <h4 class="text-primary fw-bold"><i class="fa-solid fa-plane-up"></i> ${b.flightName}</h4>
-                            <span class="badge bg-success">${b.bookingStatus || 'CONFIRMED'}</span>
+                            <span class="badge ${isCancelled ? 'bg-danger' : 'bg-success'}">${b.bookingStatus}</span>
                         </div>
                         <hr>
                         <div class="row">
                             <div class="col-md-6">
-                                <p class="mb-1"><strong>Booking ID:</strong> ${b.bookingId}</p>
-                                <p class="mb-1"><strong>Route:</strong> ${b.origin} <i class="fa-solid fa-arrow-right mx-2"></i> ${b.destination}</p>
+                                <p><strong>Booking ID:</strong> ${b.bookingId}</p>
+                                <p><strong>Route:</strong> ${b.origin} → ${b.destination}</p>
+                                <p><strong>Assigned Seats:</strong> <span class="badge bg-info text-dark">${seatNumbers}</span></p>
                             </div>
                             <div class="col-md-6">
-                                <p class="mb-1"><strong>Seats Booked:</strong> ${b.numberOfSeats}</p>
-                                <p class="mb-1"><strong>Total Paid:</strong> <span class="text-primary fw-bold">₹${b.totalAmount}</span></p>
+                                <p><strong>Passenger Count:</strong> ${b.numberOfSeats}</p>
+                                <p><strong>Total Paid:</strong> ₹${b.totalAmount}</p>
                             </div>
                         </div>
+                        
+                        <h6 class="mt-4 mb-3">Passenger Details</h6>
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Seat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${b.passengers.map(p => `
+                                    <tr>
+                                        <td>${p.name}</td>
+                                        <td>${p.age}</td>
+                                        <td><i class="fa-solid fa-chair small"></i> ${p.seatId || 'Released'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+
                         <div class="mt-4 border-top pt-3">
-                            <button class="btn btn-danger" onclick="cancelBooking('${b.bookingId}')">
-                                <i class="fa-solid fa-trash-can"></i> Cancel This Booking
-                            </button>
+                            ${!isCancelled ? `
+                                <button class="btn btn-danger" onclick="cancelBooking('${b.bookingId}')">
+                                    <i class="fa-solid fa-trash-can"></i> Cancel This Booking
+                                </button>` : 
+                                `<button class="btn btn-secondary" disabled>Already Cancelled</button>`
+                            }
                             <button class="btn btn-outline-secondary ms-2" onclick="window.history.back()">Back</button>
                         </div>
                     </div>
@@ -130,18 +157,25 @@
         }
 
         async function cancelBooking(id) {
-            if (!confirm("Are you sure you want to cancel this booking? This action cannot be undone.")) return;
+            if (!confirm("Are you sure you want to cancel this booking?")) return;
 
-            const response = await fetch(`/simplyfly/cancel/${id}`, {
-                method: "DELETE",
-                headers: { "Authorization": "Bearer " + token }
-            });
+            // Updated to match your @PutMapping("CancelBooking/{bookingId}")
+            try {
+                const response = await fetch(`/simplyfly/CancelBooking/${id}`, {
+                    method: "PUT", 
+                    headers: { "Authorization": "Bearer " + token }
+                });
 
-            if (response.ok) {
-                alert("Booking Cancelled Successfully!");
-                window.location.href = "/user/my-bookings.html";
-            } else {
-                alert("Failed to cancel booking. Please try again later.");
+                const resultText = await response.text();
+
+                if (response.ok) {
+                    alert(resultText);
+                    window.location.href = "/user/my-bookings.html";
+                } else {
+                    alert("Error: " + resultText);
+                }
+            } catch (err) {
+                alert("Request failed. Check console for details.");
             }
         }
 
