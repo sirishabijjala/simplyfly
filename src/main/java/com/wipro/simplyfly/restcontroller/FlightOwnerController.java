@@ -38,7 +38,14 @@ public class FlightOwnerController {
         Long ownerId = flightOwnerService.getCurrentOwnerId();
         return flightOwnerService.getOwnerById(ownerId);
     }
+    @GetMapping("/flights")
+    public List<FlightDTO> getOwnerFlights(){
 
+        Long ownerId = flightOwnerService.getCurrentOwnerId();
+
+        return flightOwnerService.getFlightsByOwner(ownerId);
+    }
+   
     // --- FLIGHT MANAGEMENT ---
 
     @GetMapping("/my-flights")

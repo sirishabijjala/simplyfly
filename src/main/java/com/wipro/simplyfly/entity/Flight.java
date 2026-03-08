@@ -22,6 +22,7 @@ public class Flight {
 
 	@ManyToOne
 	@JoinColumn(name = "owner_id", nullable = false)
+	 @JsonIgnore 
 	private FlightOwner flightOwner;
 
 	@Column(name = "check_in_baggage")
@@ -32,6 +33,7 @@ public class Flight {
 
 	@ManyToOne
 	@JoinColumn(name = "route_id", nullable = false)
+	@JsonIgnore
 	private Route route;
 
 	@OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)

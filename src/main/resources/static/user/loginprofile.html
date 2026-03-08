@@ -5,162 +5,348 @@
     <title>SimplyFly - Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Global CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/global.css">
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4">
-    <a class="navbar-brand fw-bold text-primary" href="#">SimplyFly</a>
-    <div class="ms-auto">
-        <!--  <button class="btn btn-outline-primary me-2" onclick="goToBookings()">Manage Booking</button> <div class="user-menu">-->
-<a href="/user/profile.html" class="d-flex align-items-center gap-2">
- <img id="userAvatar"
-src="https://ui-avatars.com/api/?name=User"
-width="35"
-class="rounded-circle">
-
-<span id="navbarUserName">Profile</span>
-</a>
-</div>
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar navbar-expand-lg bg-white px-4">
+    <a class="navbar-brand" href="#">
+        <div class="brand-icon"><i class="fa-solid fa-plane-departure"></i></div>
+        SimplyFly
+    </a>
+    <button class="navbar-toggler border-0 ms-auto me-2" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center gap-2">
+            <li class="nav-item">
+                <a class="nav-link" href="#about-section">
+                    <i class="fa-solid fa-circle-info me-1"></i>About
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#services-section">
+                    <i class="fa-solid fa-gear me-1"></i>Services
+                </a>
+            </li>
+            <li class="nav-item ms-2">
+                <button class="btn-nav-login" onclick="goToBookings()">
+                    <i class="fa-solid fa-calendar-check me-1"></i>Manage Booking
+                </button>
+            </li>
+            <!-- User Avatar -->
+            <li class="nav-item ms-2">
+                <a href="/user/profile.html"
+                   style="display:flex;align-items:center;gap:9px;text-decoration:none;padding:5px 14px;border-radius:99px;border:1.5px solid #e0e8f4;background:var(--cloud);transition:all 0.2s;"
+                   onmouseover="this.style.borderColor='var(--sky)'"
+                   onmouseout="this.style.borderColor='#e0e8f4'">
+                    <img id="userAvatar"
+                         src="https://ui-avatars.com/api/?name=User&background=1a6bff&color=fff&size=64"
+                         width="30" height="30"
+                         class="rounded-circle"
+                         style="object-fit:cover;">
+                    <span id="navbarUserName"
+                          style="font-size:14px;font-weight:600;color:var(--text-secondary);font-family:'Plus Jakarta Sans',sans-serif;">
+                        Profile
+                    </span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--text-muted);"></i>
+                </a>
+            </li>
+        </ul>
     </div>
 </nav>
 
-<!-- HERO SECTION -->
-<div class="hero-section text-white text-center py-5">
-    <h2 class="fw-bold">Book Domestic & International Flights</h2>
-    <p>Find best fares, seat selection & manage bookings easily</p>
-</div>
-
-<!-- SEARCH CARD -->
-<div class="container search-container">
-    <div class="card shadow-lg p-4 rounded-4">
-
-        <h4 class="mb-4 fw-bold">Search Flights</h4>
-
-        <!-- Flight Type -->
-        <div class="mb-3">
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="flightType" id="oneWay" value="oneWay" checked>
-                <label class="form-check-label" for="oneWay">One-way</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="flightType" id="roundTrip" value="roundTrip">
-                <label class="form-check-label" for="roundTrip">Return</label>
-            </div>
+<!-- ================= HERO ================= -->
+<div class="hero-section text-white text-center">
+    <div class="plane-float"><i class="fa-solid fa-plane"></i></div>
+    <div class="container hero-content">
+        <div class="hero-badge">
+            <i class="fa-solid fa-star me-1"></i> India's Trusted Flight Booking Platform
         </div>
-
-        <form id="flightSearchForm">
-
-            <div class="row g-3 mb-3">
-
-                <!-- From & To -->
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">From</label>
-                    <select class="form-select" id="origin" required>
-                        <option value="" disabled selected>Choose origin city</option>
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Chennai">Chennai</option>
-                        <option value="Kolkata">Kolkata</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">To</label>
-                    <select class="form-select" id="destination" required>
-                        <option value="" disabled selected>Choose destination city</option>
-                        <option value="Bangalore">Bangalore</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Chennai">Chennai</option>
-                        <option value="Kolkata">Kolkata</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="row g-3 mb-3">
-
-                <!-- Dates -->
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Journey Date</label>
-                    <input type="date" class="form-control" id="journeyDate" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Return Date</label>
-                    <input type="date" class="form-control" id="returnDate">
-                </div>
-
-            </div>
-
-            <div class="row g-3 mb-3">
-
-                <!-- Passengers & Class -->
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Passengers</label>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary w-100 text-start" type="button" id="passengersDropdown"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                            Passengers: <span id="passengerSummary">1 Adult</span>
-                        </button>
-                        <ul class="dropdown-menu p-3" aria-labelledby="passengersDropdown" style="width: 250px;">
-                            <li class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Adults (+12 yrs)</span>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="decrement('adult')">-</button>
-                                    <span id="adultCount">1</span>
-                                    <button type="button" class="btn btn-sm btn-outline-primary ms-1" onclick="increment('adult')">+</button>
-                                </div>
-                            </li>
-                            <li class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Children (2-12 yrs)</span>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="decrement('child')">-</button>
-                                    <span id="childCount">0</span>
-                                    <button type="button" class="btn btn-sm btn-outline-primary ms-1" onclick="increment('child')">+</button>
-                                </div>
-                            </li>
-                            <li class="d-flex justify-content-between align-items-center">
-                                <span>Infants (<2 yrs)</span>
-                                <div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="decrement('infant')">-</button>
-                                    <span id="infantCount">0</span>
-                                    <button type="button" class="btn btn-sm btn-outline-primary ms-1" onclick="increment('infant')">+</button>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Class</label>
-                    <select class="form-select" id="travelClass">
-                        <option value="Economy">Economy</option>
-                        <option value="Business">Business</option>
-                        <option value="First">First</option>
-                        <option value="Premium">Premium</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary px-5 fw-bold">Search Flights</button>
-            </div>
-
-        </form>
-
+        <h1>
+            Book Domestic &amp; <span>International</span> Flights
+        </h1>
+        <p>Find best fares, seat selection &amp; manage bookings easily</p>
+        <div class="hero-badges-row">
+            <span class="hero-pill"><i class="fa-solid fa-shield-halved"></i> Secure Payments</span>
+            <span class="hero-pill"><i class="fa-solid fa-bolt"></i> Instant Confirmation</span>
+            <span class="hero-pill"><i class="fa-solid fa-headset"></i> 24/7 Support</span>
+            <span class="hero-pill"><i class="fa-solid fa-tag"></i> Best Price Guarantee</span>
+        </div>
     </div>
 </div>
 
-<script src="/js/user.js"></script>
+<!-- ================= SEARCH CARD ================= -->
+<div class="container search-container">
+<div class="search-card">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div style="width:42px;height:42px;background:linear-gradient(135deg,var(--sky),var(--sky-dark));border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;font-size:17px;flex-shrink:0;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <h4 class="mb-0" style="font-family:'Clash Display',sans-serif;font-weight:700;color:var(--horizon);">
+            Search Flights
+        </h4>
+    </div>
+
+    <form id="flightSearchForm" autocomplete="off">
+
+        <!-- From / To -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <div class="field-label"><i class="fa-solid fa-plane-departure"></i> FROM</div>
+                <select class="form-select" id="origin" required>
+                    <option value="" disabled selected>Choose origin city</option>
+                    <option value="Bangalore">Bangalore</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Chennai">Chennai</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Hyderabad">Hyderabad</option>
+                    <option value="Kochi">Kochi</option>
+                    <option value="Pune">Pune</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <div class="field-label"><i class="fa-solid fa-plane-arrival"></i> TO</div>
+                <select class="form-select" id="destination" required>
+                    <option value="" disabled selected>Choose destination city</option>
+                    <option value="Bangalore">Bangalore</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Chennai">Chennai</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Hyderabad">Hyderabad</option>
+                    <option value="Kochi">Kochi</option>
+                    <option value="Pune">Pune</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Journey Date / Passengers -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="field-label"><i class="fa-regular fa-calendar"></i> JOURNEY DATE</div>
+                <input type="date" class="form-control" id="journeyDate" required>
+            </div>
+            <div class="col-md-6">
+                <div class="field-label"><i class="fa-solid fa-users"></i> PASSENGERS</div>
+                <div class="passenger-dropdown">
+                    <div class="passenger-trigger" id="passengerTrigger" onclick="togglePassengerPanel()">
+                        <span id="passengerSummary">1 Adult</span>
+                        <i class="fa-solid fa-chevron-down" style="font-size:11px;color:var(--text-muted)"></i>
+                    </div>
+                    <div class="passenger-panel" id="passengerPanel">
+                        <div class="pax-row">
+                            <div class="pax-info">
+                                <strong>Adults</strong>
+                                <span>12 years &amp; above</span>
+                            </div>
+                            <div class="pax-counter">
+                                <button type="button" class="pax-btn" onclick="decrement('adult')">−</button>
+                                <span class="pax-count" id="adultCount">1</span>
+                                <button type="button" class="pax-btn" onclick="increment('adult')">+</button>
+                            </div>
+                        </div>
+                        <div class="pax-row">
+                            <div class="pax-info">
+                                <strong>Children</strong>
+                                <span>2 – 12 years</span>
+                            </div>
+                            <div class="pax-counter">
+                                <button type="button" class="pax-btn" onclick="decrement('child')">−</button>
+                                <span class="pax-count" id="childCount">0</span>
+                                <button type="button" class="pax-btn" onclick="increment('child')">+</button>
+                            </div>
+                        </div>
+                        <div class="pax-row">
+                            <div class="pax-info">
+                                <strong>Infants</strong>
+                                <span>Under 2 years</span>
+                            </div>
+                            <div class="pax-counter">
+                                <button type="button" class="pax-btn" onclick="decrement('infant')">−</button>
+                                <span class="pax-count" id="infantCount">0</span>
+                                <button type="button" class="pax-btn" onclick="increment('infant')">+</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-search mt-2"
+                                style="padding:10px;font-size:13px;"
+                                onclick="togglePassengerPanel()">Done ✓</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn-search px-5">
+                <i class="fa-solid fa-magnifying-glass me-2"></i>Search Flights
+            </button>
+        </div>
+
+    </form>
+</div>
+</div>
+
+<!-- ================= ABOUT SECTION ================= -->
+<section class="about-section" id="about-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="section-badge" style="display:inline-flex;margin-bottom:16px;">
+                    <i class="fa-solid fa-circle-info"></i> About Us
+                </div>
+                <h3 style="font-family:'Clash Display',sans-serif;font-size:30px;font-weight:700;color:var(--horizon);letter-spacing:-0.8px;margin-bottom:16px;line-height:1.2;">
+                    Find the Best Deals on Flights with SimplyFly
+                </h3>
+                <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:14px;">
+                    Find and book cheap flights in seconds with SimplyFly, comparing prices from multiple airlines to secure the best fares. Enjoy flexible ticket options and reliable customer support.
+                </p>
+                <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:24px;">
+                    With our platform, you can effortlessly compare thousands of flights to find the best airline tickets and airfares for your dream destination.
+                </p>
+                <h5 style="font-family:'Clash Display',sans-serif;font-weight:700;margin-bottom:16px;color:var(--horizon);">
+                    How to Find the Cheapest Flights
+                </h5>
+                <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:13px;">
+                    <li style="display:flex;gap:12px;align-items:flex-start;">
+                        <span style="width:24px;height:24px;background:var(--sky-light);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                            <i class="fa-solid fa-check" style="color:var(--sky);font-size:10px;"></i>
+                        </span>
+                        <span style="color:var(--text-secondary);font-size:15px;line-height:1.6;"><strong style="color:var(--horizon);">Book in advance</strong> — Flight prices tend to be lower when booked early.</span>
+                    </li>
+                    <li style="display:flex;gap:12px;align-items:flex-start;">
+                        <span style="width:24px;height:24px;background:var(--sky-light);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                            <i class="fa-solid fa-check" style="color:var(--sky);font-size:10px;"></i>
+                        </span>
+                        <span style="color:var(--text-secondary);font-size:15px;line-height:1.6;"><strong style="color:var(--horizon);">Be flexible with travel dates</strong> — Adjusting departure dates can help you find better fares.</span>
+                    </li>
+                    <li style="display:flex;gap:12px;align-items:flex-start;">
+                        <span style="width:24px;height:24px;background:var(--sky-light);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                            <i class="fa-solid fa-check" style="color:var(--sky);font-size:10px;"></i>
+                        </span>
+                        <span style="color:var(--text-secondary);font-size:15px;line-height:1.6;"><strong style="color:var(--horizon);">Use nearby airports</strong> — Flying from alternative airports may save money.</span>
+                    </li>
+                    <li style="display:flex;gap:12px;align-items:flex-start;">
+                        <span style="width:24px;height:24px;background:var(--sky-light);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+                            <i class="fa-solid fa-check" style="color:var(--sky);font-size:10px;"></i>
+                        </span>
+                        <span style="color:var(--text-secondary);font-size:15px;line-height:1.6;"><strong style="color:var(--horizon);">Track price trends</strong> — Book at the right time for the best deal.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="about-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1464037866556-6812c9d1c72e?w=700&q=80"
+                         alt="Airplane flying over clouds" />
+                    <div class="about-float-badge top-badge">
+                        <div class="badge-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="badge-text">
+                            <strong>100% Secure</strong>
+                            <span>Payments</span>
+                        </div>
+                    </div>
+                    <div class="about-float-badge bottom-badge">
+                        <div class="badge-icon"><i class="fa-solid fa-plane-circle-check"></i></div>
+                        <div class="badge-text">
+                            <strong>50,000+</strong>
+                            <span>Happy Travellers</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stat-row">
+                    <div class="about-stat-pill">
+                        <i class="fa-solid fa-route"></i>
+                        <span><strong>200+</strong> Routes</span>
+                    </div>
+                    <div class="about-stat-pill">
+                        <i class="fa-solid fa-plane"></i>
+                        <span><strong>15+</strong> Airlines</span>
+                    </div>
+                    <div class="about-stat-pill">
+                        <i class="fa-solid fa-star"></i>
+                        <span><strong>98%</strong> Satisfaction</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= SERVICES ================= -->
+<div class="container text-center mt-5 mb-5" id="services-section">
+    <div class="section-badge" style="display:inline-flex;margin-bottom:12px;">
+        <i class="fa-solid fa-gears"></i> What We Offer
+    </div>
+    <h3 style="font-family:'Clash Display',sans-serif;font-weight:700;letter-spacing:-0.5px;margin-bottom:40px;color:var(--horizon);">
+        Our Services
+    </h3>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon blue"><i class="fa-solid fa-plane-departure"></i></div>
+                <div class="feature-title">Flight Booking</div>
+                <p class="feature-text">Book domestic and international flights at the best prices with instant confirmation.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon green"><i class="fa-solid fa-ticket"></i></div>
+                <div class="feature-title">Easy Booking</div>
+                <p class="feature-text">Quick search and instant ticket confirmation in just a few clicks.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon gold"><i class="fa-solid fa-headset"></i></div>
+                <div class="feature-title">24/7 Support</div>
+                <p class="feature-text">Customer support available anytime for all your travel assistance needs.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+    <div class="container">
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;">
+            <div class="footer-brand-icon"><i class="fa-solid fa-plane-departure"></i></div>
+            <span style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:white;">SimplyFly</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2"
+             style="color:rgba(255,255,255,0.45);font-size:14px;">
+            <span><i class="fa-solid fa-phone me-1"></i> +91 9876543210</span>
+            <span>© 2026 SimplyFly Airline Booking System</span>
+            <span><i class="fa-solid fa-envelope me-1"></i> support@simplyfly.com</span>
+        </div>
+    </div>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/user.js"></script>
+
+<script>
+    // Load username from sessionStorage / localStorage if available
+    document.addEventListener("DOMContentLoaded", function () {
+        const name = sessionStorage.getItem("userName") || localStorage.getItem("userName");
+        if (name) {
+            document.getElementById("navbarUserName").textContent = name;
+            document.getElementById("userAvatar").src =
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1a6bff&color=fff&size=64`;
+        }
+    });
+</script>
+
 </body>
 </html>
