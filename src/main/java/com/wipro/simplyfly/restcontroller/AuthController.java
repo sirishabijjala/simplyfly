@@ -15,7 +15,7 @@ import com.wipro.simplyfly.dto.LoginRequest;
 import com.wipro.simplyfly.dto.RegisterRequest;
 import com.wipro.simplyfly.entity.Account;
 import com.wipro.simplyfly.repository.AccountRepository;
-import com.wipro.simplyfly.service.AccountService;
+import com.wipro.simplyfly.service.IAccountService;
 
 import jakarta.validation.Valid;
 
@@ -24,7 +24,7 @@ import jakarta.validation.Valid;
 public class AuthController {
 
 	@Autowired
-    private AccountService accountService;
+    private IAccountService accountService;
 	
 	@Autowired
 	private AccountRepository accountRepository;

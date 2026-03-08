@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
 class AccountServiceImpTest {
 	
 	@Autowired
-    private AccountService accountService;
+    private IAccountService accountService;
 
     @Autowired
     private AccountRepository repository;
