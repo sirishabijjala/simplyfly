@@ -58,7 +58,7 @@ public class BookingServiceImp implements IBookingService{
                 .orElseThrow(() -> new RuntimeException("Schedule not found"));
        
         
-          //  double totalAmount = 0
+          
         Booking booking = new Booking();
         booking.setUser(user);
         booking.setSchedule(schedule);
