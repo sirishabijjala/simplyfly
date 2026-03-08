@@ -174,6 +174,12 @@ public class BookingServiceImp implements IBookingService{
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	    String username = authentication.getName();
 
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    
+	    // Check exactly what is inside:
+	    System.out.println("DEBUG: Auth Name is -> " + auth.getName());
+	    System.out.println("DEBUG: Principal is -> " + auth.getPrincipal());
+	    System.out.println("DEBUG: Authorities are -> " + auth.getAuthorities());
 	    if (!booking.getUser().getEmail().equals(username)) {
 	        throw new RuntimeException("Not authorized to cancel this booking");
 	    }
@@ -181,8 +187,13 @@ public class BookingServiceImp implements IBookingService{
 	    // Release seats
 	    for (Passenger passenger : booking.getPassengers()) {
 	        Seat seat = passenger.getSeat();
-	        seat.setAvailable(true);
-	        seatRepository.save(seat);
+	        if (seat != null) {
+	            seat.setAvailable(true);
+	            seatRepository.save(seat);
+	            
+	            // Break the link so the Unique Constraint in Passenger table is released
+	            passenger.setSeat(null); 
+	        }
 	    }
 
 	    // Increase available seats
@@ -230,7 +241,11 @@ public class BookingServiceImp implements IBookingService{
 	                p.setName(passenger.getName());
 	                p.setAge(passenger.getAge());
 	                p.setGender(passenger.getGender());
-	                p.setSeatId(passenger.getSeat().getSeatNumber());
+	                if (passenger.getSeat() != null) {
+	                    p.setSeatId(passenger.getSeat().getSeatNumber());
+	                } else {
+	                    p.setSeatId("Released"); // Or "N/A"
+	                }
 	                return p;
 	            })
 	            .toList();
