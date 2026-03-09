@@ -57,7 +57,7 @@ public class AccountServiceImp implements IAccountService{
 	            User user = new User();
 	            user.setName(request.getName());
 	            user.setEmail(request.getEmail());
-	            user.setPassword(request.getPassword());
+	            user.setPassword(passwordEncoder.encode(request.getPassword()));
 	            user.setPhone(request.getPhone());
 	            user.setAddress(request.getAddress());	
 	            user.setGender(request.getGender());
