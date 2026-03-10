@@ -1,7 +1,12 @@
 package com.wipro.simplyfly.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class TransactionRequestDTO {
+	@NotNull(message="bookingid cannot be null")
 	private long bookingId;
+	@NotBlank(message="payment method cannot be blank")
 	private String paymentMethod;
 	public TransactionRequestDTO() {
 		super();
